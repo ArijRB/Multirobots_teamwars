@@ -1,67 +1,93 @@
-from board import Board
+from spritebuilder import SpriteBuilder
 import constants
 import pygame
-from spritefactory import basicSpriteFactory
 from collections import OrderedDict
 from toolz import first
 
-if __name__ == '__main__':
+class Game:
 
-    pygame.init()
+    def __init__(self,fichiercarte,_SpriteBuilder):
 
-    board  = Board('data/gardenofdelight.json')
-    #board  = Board('data/le_terrain_2Ddemi.json')
+        pygame.init()
 
-    screen = pygame.display.set_mode([ board.spritesize*board.rowsize ,  board.spritesize*board.colsize ])
-    pygame.display.set_caption("Pygame Experiment")
+        # charge la carte et le spritesheet
+        self.spriteBuilder = _SpriteBuilder(fichiercarte)
 
-    board.sheet.convert_sprites()
-    groupdict = board.build_sprite_groups(basicSpriteFactory)
+        # cree la fenetre pygame
+        self.screen = pygame.display.set_mode([ self.spriteBuilder.spritesize*self.spriteBuilder.rowsize ,
+                                                self.spriteBuilder.spritesize*self.spriteBuilder.colsize ])
+        pygame.display.set_caption("pySpriteWorld Experiment")
 
-    try:
-        player = first(groupdict["joueur"])
-    except Exception:
-        raise IndexError("Je ne trouve pas de joueur dans le fichier TMX")
+        # converti les sprites meme format que l'ecran
+        self.spriteBuilder.prepareSprites()
+
+        # cree un groupe de sprites pour chaque layer
+        self.groupDict = self.spriteBuilder.buildGroups()
+        # cherche le sprite joueur
+        try:
+            self.player = first(self.groupDict["joueur"])
+        except Exception:
+            raise IndexError("Je ne trouve pas de joueur dans le fichier TMX")
+
+        # prepare le bitmap 'background'
+        self.background = pygame.Surface([ self.screen.get_width(), self.screen.get_height() ]).convert()
+        self.groupDict["bg1"].draw(self.background)
+        self.groupDict["bg2"].draw(self.background)
+        self.clock = pygame.time.Clock()
 
 
-    # prepare background surface
-    background = pygame.Surface([ screen.get_width(), screen.get_height() ]).convert()
-    groupdict["bg1"].draw(background)
-    groupdict["bg2"].draw(background)
+    def handle_event(self,event):
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT:
+                game.player.try_dx = -32
+            if event.key == pygame.K_RIGHT:
+                game.player.try_dx =  32
+            if event.key == pygame.K_UP:
+                game.player.try_dy = -32
+            if event.key == pygame.K_DOWN:
+                game.player.try_dy =  32
 
-    clock = pygame.time.Clock()
+    def update(self):
+        self.player.update(game.screen,game.groupDict["obstacles"])
 
-    done = False
-    while not done:
-        for event in pygame.event.get(): # User did something
-            if event.type == pygame.QUIT: # If user clicked close
-                done = True # Flag that we are done so we exit this loop
+        if self.player.rect.x >= self.screen.get_width():
+            self.player.rect.x = self.screen.get_width()
 
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    player.change_x = -32
-                if event.key == pygame.K_RIGHT:
-                    player.change_x =  32
-                if event.key == pygame.K_UP:
-                    player.change_y = -32
-                if event.key == pygame.K_DOWN:
-                    player.change_y =  32
+        if self.player.rect.x < 0:
+            self.player.rect.x = 0
 
-            player.update(screen,groupdict["obstacles"])
 
-            if player.rect.x >= screen.get_width():
-                player.rect.x = screen.get_width()
-
-            if player.rect.x < 0:
-                player.rect.x = 0
-
-        screen.blit(background, (0, 0), (0, 0, screen.get_width(), screen.get_height()))
+    def draw(self):
+        self.screen.blit(self.background, (0, 0), (0, 0, self.screen.get_width(), self.screen.get_height()))
 
         for layer in constants.NON_BG_LAYERS:
-            groupdict[layer].draw(screen)
+            self.groupDict[layer].draw(self.screen)
 
-        clock.tick(60)
+        self.clock.tick(60)
         pygame.display.flip()
 
 
-    pygame.quit()
+
+if __name__ == '__main__':
+
+    game = Game('data/gardenofdelight.json',SpriteBuilder)
+
+    while True:
+        for event in pygame.event.get(): # User did something
+            if event.type == pygame.QUIT: # If user clicked close
+                pygame.quit()
+                quit()
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    game.player.try_dx = -32
+                if event.key == pygame.K_RIGHT:
+                    game.player.try_dx =  32
+                if event.key == pygame.K_UP:
+                    game.player.try_dy = -32
+                if event.key == pygame.K_DOWN:
+                    game.player.try_dy =  32
+
+            #game.handle_event(event)
+            game.update()
+            game.draw()

@@ -2,23 +2,24 @@ from spritesheet_functions import SpriteSheet
 import json
 import constants
 import pygame
-from spritefactory import basicSpriteFactory
 from collections import OrderedDict
+from sprite import MySprite,MovingSprite
 
 
-class Board(object):
+class SpriteBuilder(object):
     '''
         cette classe charge le fichier TMX decrivant la carte du monde
-        Pour editer les fichiers TMX, utiliser l'application Tiled
+        ensuite, elle cree des sprites et des groupes de sprites
 
         Remarque: dans le fichier TMX, il y a le nom du fichier image des sprites,
                   qui est charge aussi par la fonction load_sprite_sheet()
     '''
-    carte    = None
-    sheet    = None
-    spritesize = None
-    # number of sprites in a row , column
-    rowsize,colsize = None,None
+
+
+    carte    = None                 # json data from file
+    sheet    = None                 # SpriteSheet object
+    spritesize = 0                  # sprite size in pixels (assume its a square)
+    rowsize,colsize = None,None     # number of sprites in a row , column
 
 
     def __init__(self, file_name):
@@ -38,24 +39,37 @@ class Board(object):
             print "Error - impossible de trouver le fichier images des sprites -"
             raise e
 
+    def prepareSprites(self):
+        self.sheet.convert_sprites()
 
-    def build_sprite_group(self,layername,spriteFactory):
+    ##########  Methodes a surcharger pour adapter la classe ##########
+
+    def basicSpriteFactory(self,spritegroup , layername,tileid,x,y,img):
+        if layername == "joueur":
+            spritegroup.add( MovingSprite(tileid,x,y,img) )
+        else:
+            spritegroup.add( MySprite(tileid,x,y,img) )
+
+    def basicGroupFactory(self):
+        return pygame.sprite.Group()
+
+    ##################################################################
+
+    def build_one_group(self,layername):
         """
             input: a layername. for example "bg1"
             output: an object pygame.sprite.Group containing all sprites from specified layer
         """
-        g = pygame.sprite.Group()
+        g = self.basicGroupFactory()
         for l in self.carte["layers"]:
             if l["name"] == layername:
                 for idx,e in enumerate(l["data"]):
                     y,x = (idx // self.rowsize)*self.spritesize , (idx % self.rowsize)*self.spritesize
                     if e > 0:
-                        #print "layer=",layername," , idx=",idx," , e=",e," , i,j=",i,j
-                        spr = spriteFactory( layername , self.sheet.get_row_col(e-1) , x,y , self.sheet[e-1])
-                        g.add(spr)
+                        self.basicSpriteFactory( g , layername , self.sheet.get_row_col(e-1) , x,y , self.sheet[e-1])
         return g
 
 
-
-    def build_sprite_groups(self,spriteFactory = basicSpriteFactory ):
-        return OrderedDict( [ (name,self.build_sprite_group(name,spriteFactory)) for name in constants.ALL_LAYERS ] )
+    def buildGroups(self):
+        """ builds one group of sprites for each layer """
+        return OrderedDict( [ (name,self.build_one_group(name)) for name in constants.ALL_LAYERS ] )
