@@ -1,4 +1,6 @@
 programarcadegames.com spritesheet_example-1/*
+.gitignore
+Unused/*
 *.pyc
 .*
 */.*
