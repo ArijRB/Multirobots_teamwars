@@ -5,8 +5,8 @@ from sprite import MySprite,MovingSprite
 
 
 
-def basicSpriteFactory(layername,row,col):
+def basicSpriteFactory(layername,tileid,x,y,img):
     if layername   == "joueur":
-        return MovingSprite(row,col)
+        return MovingSprite(tileid,x,y,img)
     else:
-        return MySprite(row,col)
+        return MySprite(tileid,x,y,img)

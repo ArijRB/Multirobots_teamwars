@@ -48,13 +48,10 @@ class Board(object):
         for l in self.carte["layers"]:
             if l["name"] == layername:
                 for idx,e in enumerate(l["data"]):
-                    i,j = idx // self.rowsize , idx % self.rowsize
+                    y,x = (idx // self.rowsize)*self.spritesize , (idx % self.rowsize)*self.spritesize
                     if e > 0:
-                        print "layer=",layername," , idx=",idx," , e=",e," , i,j=",i,j
-                        spr = spriteFactory( layername , *self.sheet.get_row_col(e-1) )
-                        spr.image = self.sheet[e-1]
-                        spr.rect  = spr.image.get_rect()
-                        spr.rect.x , spr.rect.y = j*self.spritesize , i*self.spritesize
+                        #print "layer=",layername," , idx=",idx," , e=",e," , i,j=",i,j
+                        spr = spriteFactory( layername , self.sheet.get_row_col(e-1) , x,y , self.sheet[e-1])
                         g.add(spr)
         return g
 

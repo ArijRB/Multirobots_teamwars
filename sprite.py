@@ -5,12 +5,15 @@ class MySprite(pygame.sprite.Sprite):
     """ MySprite is a sprite which knows which image was used to build it
         tilerow/col are the coordinates of the sprite image in the spritesheet
     """
-    tilerow   = 0
-    tilecol   = 0
+    tileid = (0,0) # tileid identifie le sprite sur la spritesheet. Generalement, c'est le row/col dans le spritesheet
 
-    def __init__(self,row,col):
+    def __init__(self,tileid,x,y,img):
         pygame.sprite.Sprite.__init__(self)
-        tilerow,tilecol = row,col
+        self.tileid = tileid
+        self.image = img
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect  = self.image.get_rect()
+        self.rect.x , self.rect.y = x,y
 
 
 
