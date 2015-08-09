@@ -9,8 +9,8 @@ if __name__ == '__main__':
 
     pygame.init()
 
-    #board  = Board('TileWorld/gardenofdelight.json')
-    board  = Board('TileWorld/le_terrain_2Ddemi.json')
+    board  = Board('data/gardenofdelight.json')
+    #board  = Board('data/le_terrain_2Ddemi.json')
 
     screen = pygame.display.set_mode([ board.spritesize*board.rowsize ,  board.spritesize*board.colsize ])
     pygame.display.set_caption("Pygame Experiment")
