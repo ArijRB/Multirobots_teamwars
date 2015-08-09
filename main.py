@@ -3,6 +3,7 @@ import constants
 import pygame
 from collections import OrderedDict
 from toolz import first
+from collisions import CollisionMask
 
 class Game:
 
@@ -33,6 +34,11 @@ class Game:
         self.background = pygame.Surface([ self.screen.get_width(), self.screen.get_height() ]).convert()
         self.groupDict["bg1"].draw(self.background)
         self.groupDict["bg2"].draw(self.background)
+
+        # cree un masque de la taille de l'ecran, pour le calcul des collisions
+        self.mask = CollisionMask(self.screen)
+
+        # click clock
         self.clock = pygame.time.Clock()
 
 
@@ -47,14 +53,13 @@ class Game:
             if event.key == pygame.K_DOWN:
                 game.player.try_dy =  32
 
+
     def update(self):
-        self.player.update(game.screen,game.groupDict["obstacles"])
+        # computes collisions mask of all obstacles (for pixel-based collisions)
+        self.mask.fill_with_group( self.groupDict["obstacles"] )
 
-        if self.player.rect.x >= self.screen.get_width():
-            self.player.rect.x = self.screen.get_width()
-
-        if self.player.rect.x < 0:
-            self.player.rect.x = 0
+        # send it to the player
+        self.player.update(game.screen,self.mask)
 
 
     def draw(self):
@@ -78,16 +83,6 @@ if __name__ == '__main__':
                 pygame.quit()
                 quit()
 
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    game.player.try_dx = -32
-                if event.key == pygame.K_RIGHT:
-                    game.player.try_dx =  32
-                if event.key == pygame.K_UP:
-                    game.player.try_dy = -32
-                if event.key == pygame.K_DOWN:
-                    game.player.try_dy =  32
-
-            #game.handle_event(event)
+            game.handle_event(event)
             game.update()
             game.draw()

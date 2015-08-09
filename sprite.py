@@ -1,4 +1,5 @@
 import pygame
+from collisions import CollisionMask
 
 
 class MySprite(pygame.sprite.Sprite):
@@ -30,39 +31,26 @@ class MovingSprite(MySprite):
     real_dy = 0
 
 
-    def update(self,screen,obstaclegroup):
+    def update(self,screen,collisionMask):
         """ Move the sprite. """
 
-        # Move left/right
+        initrect = self.rect.copy()
         self.rect.x += self.try_dx
-
-        # See if we hit anything
-        block_hit_list = pygame.sprite.spritecollide(self, obstaclegroup , False)
-
-        for block in block_hit_list:
-            # If we are moving right,
-            # set our right side to the left side of the item we hit
-            if self.try_dx > 0:
-                self.rect.right = block.rect.left
-            elif self.try_dx < 0:
-                # Otherwise if we are moving left, do the opposite.
-                self.rect.left = block.rect.right
-
-        # Move up/down
         self.rect.y += self.try_dy
 
-        # Check and see if we hit anything
-        block_hit_list = pygame.sprite.spritecollide(self, obstaclegroup, False)
-        for block in block_hit_list:
+        # si collision alors on ne bouge pas du tout
+        if collisionMask.collide_sprite(self):
+            self.rect = initrect
+            self.real_dx,self.real_dy = 0,0
+        else:
+            self.real_dx,self.real_dy = self.try_dx,self.try_dy
 
-            # Reset our position based on the top/bottom of the object.
-            if self.try_dy > 0:
-                self.rect.bottom = block.rect.top
-            elif self.try_dy < 0:
-                self.rect.top = block.rect.bottom
-
-            # Stop our vertical movement
-            #self.try_dy = 0
+        # ne pas sortir de l'ecran surtout !!!
+        w , h = collisionMask.mask.get_size()
+        if self.rect.x >= w:     self.rect.x = w
+        if self.rect.x < 0:      self.rect.x = 0
+        if self.rect.y >= h:     self.rect.y = h
+        if self.rect.y < 0:      self.rect.y = 0
 
         self.stop()
 
@@ -70,5 +58,3 @@ class MovingSprite(MySprite):
         """ Called when the user lets off the keyboard. """
         self.try_dx = 0
         self.try_dy = 0
-        self.real_dx = 0
-        self.real_dy = 0
