@@ -6,7 +6,7 @@ from collections import defaultdict
 
 
 
-def construit_ontologie(filename = 'ontology.csv',pairs=False):
+def construit_ontologie(filename = 'tiny_spritesheet_ontology.csv',pairs=False):
     '''
         Construit un dictionnaire (de type cles=pairs d entier ou juste entier, valeur=ensemble de strings)
         Ce dictionnaire decrit ce qu'il y a dans les tiles, en reprenant l information d un fichier csv
