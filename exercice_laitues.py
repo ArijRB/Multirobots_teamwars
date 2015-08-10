@@ -3,6 +3,7 @@ from discreteturtleinterface import *
 
 # quelques macros
 def fonce():
+    # avance tout droit tant qu'on est pas bloques par un obstacle
     while avance():
         pass
 
