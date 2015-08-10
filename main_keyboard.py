@@ -11,7 +11,7 @@ if __name__ == '__main__':
              taper c pour chercher un objet ramassable
              taper r pour ramasser
              taper d pour deposer
-             le but est de transferer 8 laitures dans l'enclos du chateau"""
+             le but est de transferer 8 laitues dans l'enclos du chateau"""
 
     while True:
         for event in pygame.event.get(): # User did something
