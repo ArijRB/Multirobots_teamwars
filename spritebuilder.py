@@ -29,6 +29,8 @@ class SpriteBuilder(object):
         with open(file_name, 'r') as f:
             self.carte = json.load(f)
 
+        assert self.carte["tilewidth"]==self.carte["tileheight"], "les sprites doivent etre carres"
+
         self.spritesize               = self.carte["tilewidth"]
         self.rowsize , self.colsize   = self.carte["width"],self.carte["height"]
 

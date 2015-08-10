@@ -44,14 +44,15 @@ class Game:
 
     def handle_event(self,event):
         if event.type == pygame.KEYDOWN:
+            d = self.spriteBuilder.spritesize
             if event.key == pygame.K_LEFT:
-                game.player.try_dx = -32
+                game.player.try_dx = -d
             if event.key == pygame.K_RIGHT:
-                game.player.try_dx =  32
+                game.player.try_dx =  d
             if event.key == pygame.K_UP:
-                game.player.try_dy = -32
+                game.player.try_dy = -d
             if event.key == pygame.K_DOWN:
-                game.player.try_dy =  32
+                game.player.try_dy =  d
 
 
     def update(self):

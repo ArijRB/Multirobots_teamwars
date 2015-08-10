@@ -18,7 +18,7 @@ class SpriteSheet(object):
 
 
 
-    def __init__(self, file_name,_spritesize=32):
+    def __init__(self, file_name,_spritesize):
         """ Constructor. Pass in the file name of the sprite sheet. """
         # Load the sprite sheet and set some variables
         self.sprite_sheet = pygame.image.load(file_name)
@@ -29,6 +29,7 @@ class SpriteSheet(object):
 
         assert  (self.rowsize*_spritesize ==  w) and (self.colsize*_spritesize == h) , \
                 "le spritesheet a une taille incorrecte"
+
 
         for i in range(0,h,_spritesize):
             for j in range(0,w,_spritesize):

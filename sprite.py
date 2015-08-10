@@ -47,6 +47,8 @@ class MovingSprite(MySprite):
 
         # ne pas sortir de l'ecran surtout !!!
         w , h = collisionMask.mask.get_size()
+        w -= self.rect.w
+        h -= self.rect.h
         if self.rect.x >= w:     self.rect.x = w
         if self.rect.x < 0:      self.rect.x = 0
         if self.rect.y >= h:     self.rect.y = h
