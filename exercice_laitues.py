@@ -1,5 +1,5 @@
 from discreteturtleinterface import *
-# le but de cet exercice est de programmer une tortue qui doit transferer 8 laitures dans l'enclos du chateau
+# le but de cet exercice est de programmer une tortue qui doit transferer 8 laitues dans l'enclos du chateau
 
 # quelques macros
 def fonce():
