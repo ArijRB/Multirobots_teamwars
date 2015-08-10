@@ -62,5 +62,3 @@ Chaque layer a des conventions qui lui sont propres:
 
 ## Dépendances:
   pygame
-
-  toolz (installer avec "pip install toolz")
