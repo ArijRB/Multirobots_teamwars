@@ -1,19 +1,24 @@
-from turtleinterface import *
+from discreteturtleinterface import *
 
-# s'orienter vers la gauche
+def fonce():
+    while avance():
+        pass
+
+def demitour():
+    gauche();gauche()
+
+
 def aller_devant_laitues():
-    gauche() ; gauche()
+    demitour()
     avance() ; avance()
     droite()
-    for i in range(3):
-      avance()
+    fonce()
 
     droite(); avance();gauche()
     for i in range(5):
       avance()
     gauche()
-    for i in range(5):
-        avance()
+    fonce()
     droite()
     avance()
     gauche()
@@ -28,26 +33,25 @@ def ramasse_laitues():
 
     avance()
     ramasse_rangee()
-    droite()
-    avance()
-    droite()
-    avance()
+    for i in range(2):
+        droite()
+        avance()
     ramasse_rangee()
+
+
 
 def rentre_au_chateau():
     # reviens en haut a gauche du chateau
-    avance(); avance()
+    fonce()
     droite(); avance(); avance();
     gauche();
     for i in range(4):
         avance()
-    gauche()
-    for i in range(4):
-        avance()
-    gauche()
-    for i in range(4):
-        avance()
-    droite();droite()
+    for i in range(2):
+        gauche()
+        fonce()
+    demitour()
+
 
 def repose_laitues():
     for i in range(4):
@@ -59,7 +63,8 @@ def repose_laitues():
         avance();droite()
         avance()
 
-aller_devant_laitues()
-ramasse_laitues()
-rentre_au_chateau()
-repose_laitues()
+if __name__ == '__main__':
+    aller_devant_laitues()
+    ramasse_laitues()
+    rentre_au_chateau()
+    repose_laitues()

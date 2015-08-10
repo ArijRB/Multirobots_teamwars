@@ -2,7 +2,11 @@ from spritebuilder import SpriteBuilder
 import constants
 import pygame
 from collections import OrderedDict
-from toolz import first
+try:
+    from toolz import first
+except:
+    first = lambda x: list(x)[0]
+
 from collisions import CollisionMask
 
 class Game:
