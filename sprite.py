@@ -29,8 +29,9 @@ class MovingSprite(MySprite):
 
     def update(self,screen,collisionMask):
         """ Move the sprite. """
+        MySprite.update(self)
 
-        previous_rect = self.rect.copy()
+        self.previous_rect = self.rect.copy()
         self.rect.x += self.try_dx
         self.rect.y += self.try_dy
         # ne pas sortir de l'ecran surtout !!!
@@ -38,8 +39,7 @@ class MovingSprite(MySprite):
 
         # si collision alors on ne bouge pas du tout
         if collisionMask.collide_sprite(self):
-            self.rect = previous_rect
-
+            self.rect = self.previous_rect
 
         self.stop()
 
