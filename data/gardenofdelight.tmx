@@ -1,34 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" renderorder="right-down" width="16" height="16" tilewidth="32" tileheight="32" nextobjectid="1">
  <tileset firstgid="1" name="tiny-Complete-Spritesheet-32x32" tilewidth="32" tileheight="32">
-  <image source="../data/tiny-Complete-Spritesheet-32x32.png" width="512" height="512"/>
+  <image source="tiny-Complete-Spritesheet-32x32.png" width="512" height="512"/>
  </tileset>
- <layer name="bg1" width="16" height="16" visible="0">
+ <layer name="bg1" width="16" height="16">
   <data encoding="base64" compression="zlib">
    eJxjYKAc1NFJz1AHPgPtgFEwKMFA5h8AvBwCRQ==
   </data>
  </layer>
- <layer name="bg2" width="16" height="16" visible="0">
+ <layer name="bg2" width="16" height="16">
   <data encoding="base64" compression="zlib">
    eJxjYKAcyAKxPIlYDkk/PnUGSBhdjlj9PmiY3vphmJ0M9+PDA6EfGyBVP6X201M/shp09cTqJ2S2Lhn69RioAwCIIRg7
   </data>
  </layer>
- <layer name="obstacles" width="16" height="16" visible="0">
+ <layer name="obstacles" width="16" height="16">
   <data encoding="base64" compression="zlib">
    eJyrY2BgqKMQkwuI0c8DxJxomIcE/Vx4xOihH9ndDGhsZP1SaJgYQMh+STSaVP3Y9JIT/5JI5iCrJ8b96H4gRT82QKp+ZDXo6onVT4zZlOinBAMAEwolMg==
   </data>
  </layer>
- <layer name="en_hauteur" width="16" height="16" visible="0">
+ <layer name="en_hauteur" width="16" height="16">
   <data encoding="base64" compression="zlib">
    eJxjYBgFo2AUjFQAAAQAAAE=
   </data>
  </layer>
- <layer name="lethal" width="16" height="16" visible="0">
+ <layer name="lethal" width="16" height="16">
   <data encoding="base64" compression="zlib">
    eJxjYBgFo2AUjFQAAAQAAAE=
   </data>
  </layer>
- <layer name="joueur" width="16" height="16" visible="0">
+ <layer name="joueur" width="16" height="16">
   <data encoding="base64" compression="zlib">
    eJxjYBgFo2AUDBXQQmXzAC1AAIU=
   </data>
