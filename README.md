@@ -17,6 +17,10 @@ Pour tester ce code, et jouer au clavier, taper
 
     python main_keyboard.py
 
+Pour voir la demo d'utilisation de la tortue, taper
+
+    python exercice_laitues.py
+
 Les cartes doivent être construites avec le logiciel Tiled ( http://www.mapeditor.org ) et exportées au format json
 
 
