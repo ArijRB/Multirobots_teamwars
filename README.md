@@ -24,7 +24,7 @@ Les cartes doivent être construites avec le logiciel Tiled ( http://www.mapedit
 
 Dans ces cartes, les sprites sont organisees par Layers.
 Par convention, ces layers doivent etre l'une des suivantes:
-"bg1","bg2","obstacles","lethal","ramassable","joueur","en_hauteur"
+"bg1","bg2","obstacles","ramassable","joueur","en_hauteur"
 
 Chaque layer a des conventions qui lui sont propres:
 
@@ -39,8 +39,6 @@ Chaque layer a des conventions qui lui sont propres:
     le joueur doit se trouver dessus. L'instruction "ramasse" n'en ramasse qu'un a la fois.
     les objets ramassables sont reposables devant soi, avec l'instruction "depose"
 
-  * le layer lethal comporte ce qui tue le joueur immediatement (ex: de la lave) et qui ne bouge pas
-
   * le layer en_hauteur n'interagit pas avec le joueur car est trop haut.
     ex: le haut d'une colonne. Ce layer est affiche en dernier
 
@@ -50,6 +48,8 @@ Chaque layer a des conventions qui lui sont propres:
    layers supplementaires, pas encore implementes:
    ----------------------------------------------
 
+  * le layer lethal comporte ce qui tue le joueur immediatement (ex: de la lave) et qui ne bouge pas
+
   * le layer actionable a un effet si on utilise l'instruction 'action'
     ex: une porte, un interrupteur
 
@@ -58,5 +58,5 @@ Chaque layer a des conventions qui lui sont propres:
 
 ## Dépendances:
   pygame
-  
+
   toolz (installer avec "pip install toolz")
