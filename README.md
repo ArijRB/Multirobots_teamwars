@@ -13,7 +13,7 @@ Pour l'instant les sprites se deplacent de facon discrete, mais le code est prev
 
 On peut par exemple afficher ce genre de map:
 
-![alt tag](https://github.com/yannche/pySpriteWorld/blob/master/data/tiny_example.png)
+![alt tag](https://github.com/yannche/pySpriteWorld/blob/master/data/gardenofdelight.png)
 
 Pour tester ce code, et jouer au clavier, taper
 
