@@ -17,3 +17,12 @@ class CollisionMask:
 
     def collide_sprite(self,spr):
         return self.mask.overlap(spr.mask,(spr.rect.x,spr.rect.y))
+
+    def stay_inside_mask_area(self,r):
+        w , h = self.mask.get_size()
+        w -= r.w
+        h -= r.h
+        if r.x >= w:     r.x = w
+        if r.x < 0:      r.x = 0
+        if r.y >= h:     r.y = h
+        if r.y < 0:      r.y = 0

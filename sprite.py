@@ -19,40 +19,26 @@ class MySprite(pygame.sprite.Sprite):
 
 
 class MovingSprite(MySprite):
-    """ This class represents the sprites that can move (ex: player, creatures, deplacable) """
 
-    # -- Attributes
+    """ This class represents the sprites that can move (ex: player, creatures, deplacable) """
     # vecteur vitesse requis. Si collision, alors il ne se realisera pas
     try_dx = 0
     try_dy = 0
-
-    # vecteur vitesse reel, obtenu apres collision
-    real_dx = 0
-    real_dy = 0
-
+    previous_rect = None
 
     def update(self,screen,collisionMask):
         """ Move the sprite. """
 
-        initrect = self.rect.copy()
+        previous_rect = self.rect.copy()
         self.rect.x += self.try_dx
         self.rect.y += self.try_dy
+        # ne pas sortir de l'ecran surtout !!!
+        collisionMask.stay_inside_mask_area(self.rect)
 
         # si collision alors on ne bouge pas du tout
         if collisionMask.collide_sprite(self):
-            self.rect = initrect
-            self.real_dx,self.real_dy = 0,0
-        else:
-            self.real_dx,self.real_dy = self.try_dx,self.try_dy
+            self.rect = previous_rect
 
-        # ne pas sortir de l'ecran surtout !!!
-        w , h = collisionMask.mask.get_size()
-        w -= self.rect.w
-        h -= self.rect.h
-        if self.rect.x >= w:     self.rect.x = w
-        if self.rect.x < 0:      self.rect.x = 0
-        if self.rect.y >= h:     self.rect.y = h
-        if self.rect.y < 0:      self.rect.y = 0
 
         self.stop()
 
