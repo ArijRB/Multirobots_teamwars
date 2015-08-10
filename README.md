@@ -9,7 +9,9 @@ http://programarcadegames.com/index.php
 ## Intro
 
 Affiche des sprites a l'ecran et tout et tout.
-Par exemple:
+Pour l'instant les sprites se deplacent de facon discrete, mais le code est prevu pour gerer des deplacements au pixel pres.
+
+On peut par exemple afficher ce genre de map:
 
 ![alt tag](https://github.com/yannche/pySpriteWorld/blob/master/data/tiny_example.png)
 
@@ -61,6 +63,6 @@ Chaque layer a des conventions qui lui sont propres:
 
 
 ## Dépendances:
+  python 2.7
+  
   pygame
-
-  toolz (installer avec "pip install toolz")
