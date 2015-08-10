@@ -42,18 +42,6 @@ class SpriteBuilder(object):
     def prepareSprites(self):
         self.sheet.convert_sprites()
 
-    ##########  Methodes a surcharger pour adapter la classe ##########
-
-    def basicSpriteFactory(self,spritegroup , layername,tileid,x,y,img):
-        if layername == "joueur":
-            spritegroup.add( MovingSprite(tileid,x,y,img) )
-        else:
-            spritegroup.add( MySprite(tileid,x,y,img) )
-
-    def basicGroupFactory(self):
-        return pygame.sprite.Group()
-
-    ##################################################################
 
     def build_one_group(self,layername):
         """
@@ -73,3 +61,16 @@ class SpriteBuilder(object):
     def buildGroups(self):
         """ builds one group of sprites for each layer """
         return OrderedDict( [ (name,self.build_one_group(name)) for name in constants.ALL_LAYERS ] )
+
+    ##########  Methodes a surcharger pour adapter la classe ##########
+
+    def basicSpriteFactory(self,spritegroup , layername,tileid,x,y,img):
+        if layername == "joueur":
+            spritegroup.add( MovingSprite(tileid,x,y,img) )
+        else:
+            spritegroup.add( MySprite(tileid,x,y,img) )
+
+    def basicGroupFactory(self):
+        return pygame.sprite.Group()
+
+    ##################################################################

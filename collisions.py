@@ -6,7 +6,6 @@ class CollisionMask:
     def __init__(self,screen):
         self.mask = pygame.mask.from_surface(screen)
         self.mask.clear()
-        #self.mask = build_collision_mask(self.obstacleMask,self.screen,self.groupDict):
 
     def add_sprite(self,spr):
         self.mask.draw(spr.mask,(spr.rect.x,spr.rect.y) )
