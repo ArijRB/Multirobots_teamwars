@@ -68,9 +68,9 @@ class SpriteBuilder(object):
 
     def basicSpriteFactory(self,spritegroup , layername,tileid,x,y,img):
         if layername == "joueur":
-            spritegroup.add( Player(tileid,x,y,img) )
+            spritegroup.add( Player(layername,tileid,x,y,img) )
         else:
-            spritegroup.add( MySprite(tileid,x,y,img) )
+            spritegroup.add( MySprite(layername,tileid,x,y,img) )
 
     def basicGroupFactory(self):
         return pygame.sprite.Group()

@@ -6,7 +6,7 @@ from collections import defaultdict
 
 
 
-def construit_ontologie(filename = 'tiny_spritesheet_ontology.csv',pairs=False):
+def construit_ontologie(pairs=True,filename='tiny_spritesheet_ontology.csv'):
     '''
         Construit un dictionnaire (de type cles=pairs d entier ou juste entier, valeur=ensemble de strings)
         Ce dictionnaire decrit ce qu'il y a dans les tiles, en reprenant l information d un fichier csv
@@ -29,8 +29,10 @@ def construit_ontologie(filename = 'tiny_spritesheet_ontology.csv',pairs=False):
     for i,row in enumerate(reader):
         for j,s in enumerate(row):
             l = s.lower().split(' ')
-            l.append('-'.join(l))
-            ontology[(i,j) if pairs else i*len(row)+j] = set(l)
+            summary = '-'.join(l)
+            if summary not in l:
+                l.append(summary)
+            ontology[(i,j) if pairs else i*len(row)+j] = l
     f.close()
     return ontology
 
@@ -38,10 +40,11 @@ def construit_ontologie(filename = 'tiny_spritesheet_ontology.csv',pairs=False):
 
 
 liste_categories = {
-    'creatures' : ['fantome','chauve_souris','blob','araignee','squelette','renard','fille','garcon'],
-    'marchable' : ['quadricouleur','gazon','herbe','parquet','motte','lave','fond','dalles','gemmes'],
-    'obstacle'  : ['colonne','rocs','rocher','escalier','panneau','feu','coffre','sapin','portail-1','portail-2','portail-3','porte-1','porte-2','porte-3','mur'],
-    'mortel'    : ['araignee','squelette','puit']
+     'plante' : ['gazon','herbe','sapin','motte','laitue']
+#    'creatures' : ['fantome','chauve_souris','blob','araignee','squelette','renard','fille','garcon'],
+#    'marchable' : ['quadricouleur','gazon','herbe','parquet','motte','lave','fond','dalles','gemmes'],
+#    'obstacle'  : ['colonne','rocs','rocher','escalier','panneau','feu','coffre','sapin','portail-1','portail-2','portail-3','porte-1','porte-2','porte-3','mur'],
+#    'mortel'    : ['araignee','squelette','puit']
 }
 
 
@@ -55,12 +58,12 @@ def construit_categories(ontologie):
 
     for categ,subcateg in liste_categories.iteritems():
         for idx,descr in ontologie.iteritems():
-            if set(subcateg).intersection(descr):
+            if set(subcateg).intersection(set(descr)):
                 cat[categ].add(idx)
     return cat
 
 
-def construit_ontologie_complete(pairs=False):
+def construit_ontologie_complete(pairs=True):
     onto = construit_ontologie(pairs)
     cate = construit_categories(onto)
     return onto , cate
