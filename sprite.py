@@ -46,3 +46,22 @@ class MovingSprite(MySprite):
         """ Called when the user lets off the keyboard. """
         self.try_dx = 0
         self.try_dy = 0
+
+
+
+class Player(MovingSprite):
+
+    def __init__(self,tileid,x,y,img):
+        MovingSprite.__init__(self,tileid,x,y,img)
+        self.inventory = []
+
+    def move_with_keyboard(self,event,increment):
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT:
+                self.try_dx = -increment
+            if event.key == pygame.K_RIGHT:
+                self.try_dx =  increment
+            if event.key == pygame.K_UP:
+                self.try_dy = -increment
+            if event.key == pygame.K_DOWN:
+                self.try_dy =  increment

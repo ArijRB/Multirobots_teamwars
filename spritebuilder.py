@@ -3,7 +3,7 @@ import json
 import constants
 import pygame
 from collections import OrderedDict
-from sprite import MySprite,MovingSprite
+from sprite import MySprite,MovingSprite,Player
 
 
 class SpriteBuilder(object):
@@ -68,7 +68,7 @@ class SpriteBuilder(object):
 
     def basicSpriteFactory(self,spritegroup , layername,tileid,x,y,img):
         if layername == "joueur":
-            spritegroup.add( MovingSprite(tileid,x,y,img) )
+            spritegroup.add( Player(tileid,x,y,img) )
         else:
             spritegroup.add( MySprite(tileid,x,y,img) )
 
