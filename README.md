@@ -13,9 +13,9 @@ Par exemple:
 
 ![alt tag](https://github.com/yannche/pySpriteWorld/blob/master/data/tiny_example.png)
 
-Pour tester ce code, taper
+Pour tester ce code, et jouer au clavier, taper
 
-    python main.py
+    python main_keyboard.py
 
 Les cartes doivent être construites avec le logiciel Tiled ( http://www.mapeditor.org ) et exportées au format json
 
