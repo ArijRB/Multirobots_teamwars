@@ -1,5 +1,7 @@
 from discreteturtleinterface import *
+# le but de cet exercice est de programmer une tortue qui doit transferer 8 laitures dans l'enclos du chateau
 
+# quelques macros
 def fonce():
     while avance():
         pass
@@ -7,7 +9,7 @@ def fonce():
 def demitour():
     gauche();gauche()
 
-
+# fonctions principales
 def aller_devant_laitues():
     demitour()
     avance() ; avance()
@@ -62,6 +64,7 @@ def repose_laitues():
         gauche();gauche()
         avance();droite()
         avance()
+
 
 if __name__ == '__main__':
     aller_devant_laitues()
