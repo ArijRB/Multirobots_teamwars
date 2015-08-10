@@ -62,4 +62,5 @@ Chaque layer a des conventions qui lui sont propres:
 
 ## Dépendances:
   python 2.7
+  
   pygame
