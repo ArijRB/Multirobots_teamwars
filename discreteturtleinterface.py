@@ -17,10 +17,10 @@ def droite():
 def avance():
     global direction,game
     d = game.player.rect.width
-    game.player.try_dx = d*direction[0]
-    game.player.try_dy = d*direction[1]
+    game.player.translate_sprite(d*direction[0] , d*direction[1])
+    game.collisions_single_player()
     update_n_draw()
-    return game.player.rect != game.player.previous_rect
+    return game.player.position_changed()
 
 def ramasse():
     global game
@@ -48,7 +48,6 @@ def update_n_draw():
             pygame.quit()
             quit()
 
-    game.update()
     game.draw()
     pygame.time.wait(200)
 

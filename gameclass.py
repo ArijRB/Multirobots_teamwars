@@ -2,6 +2,7 @@ from spritebuilder import SpriteBuilder
 import constants
 import pygame
 from collections import OrderedDict
+import random
 try:
     from toolz import first
 except:
@@ -46,12 +47,33 @@ class Game:
         self.clock = pygame.time.Clock()
 
 
-    def update(self):
+    def collisions_single_player(self):
         # computes collisions mask of all obstacles (for pixel-based collisions)
         self.mask.fill_with_group( self.groupDict["obstacles"] )
 
-        # send it to the players
-        self.groupDict["joueur"].update(self.screen,self.mask)
+        # send it to the player
+        assert not self.mask.collide_sprite( self.player , True ) , "sprite collision before any movement !!!"
+        if self.mask.collide_sprite( self.player ):
+            self.player.resume_position_to_backup()
+
+
+    def collisions_many_players(self):
+        joueurs = list(self.groupDict["joueur"])
+        random.shuffle( joueurs )
+
+        # computes collisions mask of all obstacles (for pixel-based collisions)
+        self.mask.fill_with_group( self.groupDict["obstacles"] )
+        # test if sprites at backup position do not collide anything and draw them on the mask
+        for j in joueurs:
+            assert not self.mask.collide_sprite( j , True ) , "sprite collision before any movement !!!"
+            self.mask.draw_sprite(j,backup=True)
+
+        # try their new position one by one
+        for j in joueurs:
+            self.mask.erase_sprite( j , backup = True )
+            if self.mask.collide_sprite( j ):
+                j.resume_position_to_backup()
+            self.mask.draw_sprite(j)
 
 
     def draw(self):

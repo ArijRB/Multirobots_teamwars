@@ -17,55 +17,72 @@ class MySprite(pygame.sprite.Sprite):
         self.rect  = self.image.get_rect()
         self.rect.x , self.rect.y = x,y
 
+    def get_pos(self,backup=False):
+        assert backup==False , "erreur: tentative d'acces a backup_rect d'un sprite non mobile"
+        return (self.rect.x,self.rect.y)
+
 
 
 class MovingSprite(MySprite):
 
     """ This class represents the sprites that can move (ex: player, creatures, deplacable) """
     # vecteur vitesse requis. Si collision, alors il ne se realisera pas
-    try_dx = 0
-    try_dy = 0
-    previous_rect = None
 
-    def update(self,screen,collisionMask):
-        """ Move the sprite. """
-        MySprite.update(self)
+    def __init__(self,*args):
+        MySprite.__init__(self,*args)
+        self.backup_rect = self.rect.copy()
 
-        self.previous_rect = self.rect.copy()
-        self.rect.x += self.try_dx
-        self.rect.y += self.try_dy
-        # ne pas sortir de l'ecran surtout !!!
-        collisionMask.stay_inside_mask_area(self.rect)
+    def backup_position(self):
+        self.backup_rect.x , self.backup_rect.y = self.rect.x , self.rect.y
 
-        # si collision alors on ne bouge pas du tout
-        if collisionMask.collide_sprite(self):
-            self.rect = self.previous_rect
+    def resume_position_to_backup(self):
+        self.rect.x , self.rect.y = self.backup_rect.x , self.backup_rect.y
 
-        self.stop()
+    def get_pos(self,backup=False):
+        return (self.backup_rect.x,self.backup_rect.y) if backup else (self.rect.x,self.rect.y)
 
-    def stop(self):
-        """ Called when the user lets off the keyboard. """
-        self.try_dx = 0
-        self.try_dy = 0
+    def position_changed(self): return self.backup_rect != self.rect
+
+    def translate_sprite(self,x,y,relative=True,boundingrect=None):
+        # Attention, backup_position() est indispensable,
+        # car la gestion des collision doit pouvoir revenir en arriere
+        self.backup_position()
+
+        if relative:
+            self.rect.move_ip(x,y)
+        else:
+            self.rect.x , self.rect.y = x , y
+
+        if boundingrect:
+            w , h = boundingrect.get_size()
+            w -= self.rect.w
+            h -= self.rect.h
+            if self.rect.x >= w:     self.rect.x = w
+            if self.rect.x < 0:      self.rect.x = 0
+            if self.rect.y >= h:     self.rect.y = h
+            if self.rect.y < 0:      self.rect.y = 0
+
+
+
 
 
 
 class Player(MovingSprite):
 
-    def __init__(self,layername,tileid,x,y,img):
-        MovingSprite.__init__(self,layername,tileid,x,y,img)
+    def __init__(self,*args):
+        MovingSprite.__init__(self,*args)
         self.inventory = pygame.sprite.Group()
 
     def move_with_keyboard(self,event,increment):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                self.try_dx = -increment
+                self.translate_sprite(-increment,0)
             if event.key == pygame.K_RIGHT:
-                self.try_dx =  increment
+                self.translate_sprite(increment,0)
             if event.key == pygame.K_UP:
-                self.try_dy = -increment
+                self.translate_sprite(0,-increment)
             if event.key == pygame.K_DOWN:
-                self.try_dy =  increment
+                self.translate_sprite(0,increment)
 
     def ramasse_depose_with_keyboard(self,event,groupDict):
         if event.type == pygame.KEYDOWN:

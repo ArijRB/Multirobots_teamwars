@@ -7,22 +7,18 @@ class CollisionMask:
         self.mask = pygame.mask.from_surface(screen)
         self.mask.clear()
 
-    def add_sprite(self,spr):
-        self.mask.draw(spr.mask,(spr.rect.x,spr.rect.y) )
+    def draw_sprite(self,spr,backup=False):
+        self.mask.draw(spr.mask, spr.get_pos(backup) )
 
-    def fill_with_group(self,group):
+
+    def erase_sprite(self,spr,backup=False):
+        self.mask.erase(spr.mask,spr.get_pos(backup) )
+
+    def collide_sprite(self,spr,backup=False):
+        return self.mask.overlap(spr.mask, spr.get_pos(backup) )
+
+
+    def fill_with_group(self,group,backup=False):
             self.mask.clear()
             for spr in group:
-                self.mask.draw(spr.mask,(spr.rect.x,spr.rect.y) )
-
-    def collide_sprite(self,spr):
-        return self.mask.overlap(spr.mask,(spr.rect.x,spr.rect.y))
-
-    def stay_inside_mask_area(self,r):
-        w , h = self.mask.get_size()
-        w -= r.w
-        h -= r.h
-        if r.x >= w:     r.x = w
-        if r.x < 0:      r.x = 0
-        if r.y >= h:     r.y = h
-        if r.y < 0:      r.y = 0
+                self.mask.draw(spr.mask, spr.get_pos(backup) )

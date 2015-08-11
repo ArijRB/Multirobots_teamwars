@@ -20,7 +20,8 @@ if __name__ == '__main__':
                 quit()
 
             game.player.move_with_keyboard(event,game.player.rect.width)
+            game.collisions_many_players()
+
             game.player.ramasse_depose_with_keyboard(event,game.groupDict)
 
-            game.update()
             game.draw()
