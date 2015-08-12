@@ -45,10 +45,10 @@ Chaque layer a des conventions qui lui sont propres:
     le joueur doit se trouver dessus. L'instruction "ramasse" n'en ramasse qu'un a la fois.
     les objets ramassables sont reposables devant soi, avec l'instruction "depose"
 
-    * le layer en_hauteur n'interagit pas avec le joueur car est trop haut.
+  * le layer en_hauteur n'interagit pas avec le joueur car est trop haut.
       ex: le haut d'une colonne. Ce layer est affiche en dernier
 
-    * le layer joueur contient le ou les joueurs. Un joueur est considere comme un obstacle pour un autre joueur.
+  * le layer joueur contient le ou les joueurs. Un joueur est considere comme un obstacle pour un autre joueur.
 
   PS: si possible, chaque objet doit figurer dans un seul layer
 
