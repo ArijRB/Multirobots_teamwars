@@ -45,8 +45,10 @@ Chaque layer a des conventions qui lui sont propres:
     le joueur doit se trouver dessus. L'instruction "ramasse" n'en ramasse qu'un a la fois.
     les objets ramassables sont reposables devant soi, avec l'instruction "depose"
 
-  * le layer en_hauteur n'interagit pas avec le joueur car est trop haut.
-    ex: le haut d'une colonne. Ce layer est affiche en dernier
+    * le layer en_hauteur n'interagit pas avec le joueur car est trop haut.
+      ex: le haut d'une colonne. Ce layer est affiche en dernier
+
+    * le layer joueur contient le ou les joueurs. Un joueur est considere comme un obstacle pour un autre joueur.
 
   PS: si possible, chaque objet doit figurer dans un seul layer
 
@@ -59,10 +61,10 @@ Chaque layer a des conventions qui lui sont propres:
   * le layer actionable a un effet si on utilise l'instruction 'action'
     ex: une porte, un interrupteur
 
-  * le layer creatures decrit les fantomes, trolls et autres trucs qui gelatineux
+  * le layer creatures decrit les fantomes, trolls et autres trucs qui gelatineux. Lorsqu'un joueur touche une creature, ca doit declencher un evenement particulier, mais les creatures ne sont pas consideres comme des obstacles.
 
 
 ## Dépendances:
   python 2.7
-  
+
   pygame
