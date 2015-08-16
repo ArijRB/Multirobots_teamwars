@@ -2,7 +2,9 @@
 #
 # Note:
 # Cython n'est pas indispensable pour ce code.
-# S'il est installe, il s'executera plus vite. Sinon, ce sera en "pure python"
+# S'il n'est pas installe, il s'executera en python simple.
+# S'il est installe, alors ce fichier se compile avec la commande
+# python setup.py build_ext --inplace
 
 from math import pi,cos,sin
 import numpy as np
@@ -50,20 +52,23 @@ def rayon(m,x,y,angle,w,h):
 
     i = 0
 
+    # boucle principale de l'algo de Bresenham
     while x >= 0 and y >= 0 and x < w and y < h and i <= dx:
         if steep:
+            #print y,x
             if _cython_compiled:
-                if cyBitmaskGetbit(bm,y,x) < 1:
+                if cyBitmaskGetbit(bm,y,x):
                     return (y,x)
             else:
-                if m.get_at((y,x)) < 1:
+                if m.get_at((y,x)):
                     return (y,x)
         else:
+            #print x,y
             if _cython_compiled:
-                if cyBitmaskGetbit(bm,x,y) < 1:
+                if cyBitmaskGetbit(bm,x,y):
                     return (x,y)
             else:
-                if m.get_at((x,y)) < 1:
+                if m.get_at((x,y)):
                     return (x,y)
 
         while d >= 0:
@@ -75,23 +80,34 @@ def rayon(m,x,y,angle,w,h):
         i += 1
     return None
 
+
+
+
+
+
+
 # Unit Test
 def test_rayon():
     """
-        ce test unitaire cree une image carre.png
-        ou est affiche le contour d'un carre en pointille
+        ce test unitaire charge une image Square2.png
+        et cree une image carre.png
+        ou est affiche le contour du carre en pointille
     """
     import numpy as np
     import matplotlib.pyplot as plt
 
-    im = pygame.image.load('Unused/DataUnused/Square.png')
+    im = pygame.image.load('Unused/DataUnused/Square2.png')
     m = pygame.mask.from_surface(im)
-    print "go..."
+    print "Unit test launched..."
 
-    T = np.zeros((256,256))
     w,h = im.get_width(),im.get_height()
+    T = np.zeros((w,h))
     for angle in np.linspace(0,2*pi-0.1,50):
         T[  rayon(m,w/2,h/2,angle,w,h) ] = 1
 
     plt.imshow(T,cmap='gist_ncar')
     plt.savefig('carre.png')
+    print "image file carre.png should have a dotted square"
+
+if __name__ == '__main__':
+    test_rayon()
