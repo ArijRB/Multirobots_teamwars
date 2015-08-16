@@ -20,7 +20,9 @@ except:
 def rayon(m,x,y,angle,w,h):
     """
         cette fonction lance un rayon, avec l'algo de bresenham
-        elle renvoie les coordonnees du premier point du masque qui soit a 1.
+        le rayon part de (x,y) et suit un angle donne jusqu'au bord
+        du carre (0,0,w,h)
+        la fonction renvoie les coordonnees du premier point du masque qui soit a 1.
     """
     _cython_compiled = cython_compiled
     if _cython_compiled:    bm = cyGetBitmask(m)
