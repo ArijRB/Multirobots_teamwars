@@ -53,5 +53,5 @@ def update_n_draw():
 
 
 
-game = Game('data/gardenofdelight.json',SpriteBuilder)
+game = Game('Cartes/gardenofdelight.json',SpriteBuilder)
 update_n_draw()

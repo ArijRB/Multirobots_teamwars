@@ -4,7 +4,7 @@ import pygame
 
 if __name__ == '__main__':
 
-    game = Game('data/gardenofdelight.json',SpriteBuilder)
+    game = Game('Cartes/gardenofdelight.json',SpriteBuilder)
 
     print """regles du Jeu :
              deplacer le joueur avec les touches du clavier
