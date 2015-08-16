@@ -1,4 +1,8 @@
 #cython: boundscheck=False, nonecheck=False,wraparound=False,initializedcheck=False,cdivision=True
+#
+# Note:
+# Cython n'est pas indispensable pour ce code.
+# S'il est installe, il s'executera plus vite. Sinon, ce sera en "pure python"
 
 from math import pi,cos,sin
 import numpy as np
