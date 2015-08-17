@@ -1,6 +1,8 @@
 import pygame
 from collisions import CollisionMask
-
+import random
+import math
+import rayon
 
 class MySprite(pygame.sprite.Sprite):
     """ MySprite is a sprite which knows which image was used to build it
@@ -126,3 +128,14 @@ class Player(MovingSprite):
         obj.rect.x , obj.rect.y = self.rect.x , self.rect.y
         groupDict[obj.layername].add( obj )
         return obj
+
+    def throw_ray_with_keyboard(self,event,mask):
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_t:
+                mask.erase_sprite( self )
+                angle = random.random()*2*math.pi
+                w,h = mask.mask.get_size()
+                self.center_x , self.center_y = self.rect.x+self.rect.w/2,self.rect.y+self.rect.h/2
+                rayon_hit = rayon.rayon(mask.mask,self.center_x , self.center_y,angle,w,h)
+                mask.draw_sprite( self )
+                return rayon_hit

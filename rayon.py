@@ -3,8 +3,13 @@
 # Note:
 # Cython n'est pas indispensable pour ce code.
 # S'il n'est pas installe, il s'executera en python simple.
-# S'il est installe, alors ce fichier se compile avec la commande
-# python setup.py build_ext --inplace
+# S'il est installe, alors il faut d'abord compiler ce fichier avec la commande:
+#   python setup.py build_ext --inplace
+# puis cython sera utilise par defaut
+#
+# Speed test sur l'image square2.png, le rayon parcourt 200 pixels avant de s'arreter
+# avec Cython actif,     un appel a rayon prend: 2.24 microsec per loop
+# avec seulement Python, un appel a rayon prend: 188 microsec per loop
 
 from math import pi,cos,sin
 import numpy as np
@@ -98,12 +103,12 @@ def test_rayon():
 
     im = pygame.image.load('Unused/DataUnused/Square2.png')
     m = pygame.mask.from_surface(im)
+    w,h = im.get_width(),im.get_height()
     print "Unit test launched..."
 
-    w,h = im.get_width(),im.get_height()
     T = np.zeros((w,h))
     for angle in np.linspace(0,2*pi-0.1,50):
-        T[  rayon(m,w/2,h/2,angle,w,h) ] = 1
+        T[ rayon(m,w/2,h/2,angle,w,h) ] = 1
 
     plt.imshow(T,cmap='gist_ncar')
     plt.savefig('carre.png')

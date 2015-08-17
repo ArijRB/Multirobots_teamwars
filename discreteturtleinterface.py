@@ -52,6 +52,5 @@ def update_n_draw():
     pygame.time.wait(200)
 
 
-
 game = Game('Cartes/gardenofdelight.json',SpriteBuilder)
 update_n_draw()
