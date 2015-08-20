@@ -3,6 +3,13 @@ from collisions import CollisionMask
 import random
 import math
 import rayon
+import polygons
+
+""" pour l'instant je stocke la position du sprite dans un pygame.Rect
+    probleme: les coordonnees dans les Rect sont des entiers et pas des floats
+    donc si je deplace comme un tortue de 5 degrees vers le haut, il faudrait que
+    la position soit reelle plutot qu'entiere
+"""
 
 class MySprite(pygame.sprite.Sprite):
     """ MySprite is a sprite which knows which image was used to build it
@@ -67,13 +74,18 @@ class MovingSprite(MySprite):
 
 
 
-
-
 class Player(MovingSprite):
+
 
     def __init__(self,*args):
         MovingSprite.__init__(self,*args)
         self.inventory = pygame.sprite.Group()
+
+    angle_degree = 90 # ne sert a rien pour l'instant
+    def draw_arrow(self,surf): # idem
+        self.center_x , self.center_y = self.rect.x+self.rect.w/2,self.rect.y+self.rect.h/2
+        polygons.draw_transparent_arrow(surf,self.center_x,self.center_y,angle_degree * math.pi/180)
+
 
     def move_with_keyboard(self,event,increment):
         if event.type == pygame.KEYDOWN:

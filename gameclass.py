@@ -92,6 +92,7 @@ class Game:
         self.clock.tick(60)
         pygame.display.flip()
 
+
     def mainloop(self):
         while True:
             for event in pygame.event.get(): # User did something
