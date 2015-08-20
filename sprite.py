@@ -1,13 +1,14 @@
 import pygame
 from collisions import CollisionMask
-import random
-import math
+from random import random
+from math import pi,sqrt,cos,sin
 import rayon
 import polygons
-
+from functools import partial
 
 class RecursiveDrawGroup(pygame.sprite.Group):
-    """ group that calls 'draw' on each of its sprite """
+    """ Standard pygame.sprite.Group classes draw sprites by calling 'blit' on sprite images.
+        Instead, this class calls 'draw' on each of its sprite """
     def draw(self,surf):
         for s in self:
             s.draw(surf)
@@ -28,8 +29,8 @@ class MySprite(pygame.sprite.Sprite):
         self.rect.x , self.rect.y = x,y
 
     def dist(self,x,y):
-        cx,cy = self.int_centroid()
-        return math.sqrt( (cx-x)**2 + (cy-y)**2 )
+        cx,cy = self.get_centroid()
+        return sqrt( (cx-x)**2 + (cy-y)**2 )
 
     def get_pos(self,backup=False):
         assert backup==False , "erreur: tentative d'acces a backup_rect d'un sprite non mobile"
@@ -97,8 +98,11 @@ class MovingSprite(MySprite):
             if self.y >= h:     self.y = h
             if self.y < 0:      self.y = 0
 
-    def int_centroid(self):
-        return self.rect.x+self.rect.w/2,self.rect.y+self.rect.h/2
+    def set_centroid(self,x,y):
+        self.translate_sprite(x-self.rect.w,y-self.rect.h,relative=False)
+
+    def get_centroid(self):
+        return self.x+self.rect.w/2,self.y+self.rect.h/2
 
     def update(self):
         self.rect.x , self.rect.y = int(self.x) , int(self.y)
@@ -111,41 +115,32 @@ class Player(MovingSprite):
         MovingSprite.__init__(self,*args)
         self.inventory = pygame.sprite.Group()
 
-    def move_with_keyboard(self,event,increment):
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
-                self.translate_sprite(-increment,0)
-            if event.key == pygame.K_RIGHT:
-                self.translate_sprite(increment,0)
-            if event.key == pygame.K_UP:
-                self.translate_sprite(0,-increment)
-            if event.key == pygame.K_DOWN:
-                self.translate_sprite(0,increment)
+    def gen_callbacks(self,incr,gDict,mask):
+        transl = self.translate_sprite
+        return {
+            pygame.K_LEFT:  partial(transl,x= -incr , y=0),
+            pygame.K_RIGHT: partial(transl,x=  incr , y=0),
+            pygame.K_UP:    partial(transl,x=  0    , y= -incr),
+            pygame.K_DOWN:  partial(transl,x=  0    , y=  incr),
+            pygame.K_c:     partial(self.cherche_ramassable,groupDict=gDict,verb=True),
+            pygame.K_r:     partial(self.ramasse,groupDict=gDict,verb=True),
+            pygame.K_d:     partial(self.depose,groupDict=gDict,verb=True),
+            pygame.K_t:     partial(self.throw_ray,radian_angle=None,mask=mask,groupDict=gDict)
+        }
 
-    def ramasse_depose_with_keyboard(self,event,groupDict):
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_c:
-                if self.cherche_ramassable(groupDict):
-                    print "je suis sur un objet ramassable"
-                else:
-                    print "rien a ramasser"
-            if event.key == pygame.K_r:
-                o = self.ramasse(groupDict)
-                if o == None:
-                    print "rien a ramasser"
-            if event.key == pygame.K_d:
-                if self.depose(groupDict) == None:
-                    print "rien a deposer"
 
-    def cherche_ramassable(self,groupDict):
+    def cherche_ramassable(self,groupDict,verb=False):
         for obj in groupDict["ramassable"]:
             if self.mask.overlap(obj.mask,(obj.x - self.x,obj.y - self.y)):
+                if verb: print "je suis sur un objet ramassable"
                 return obj
+        if verb: print "rien a ramasser"
         return None
 
-    def ramasse(self,groupDict):
+    def ramasse(self,groupDict,verb=False):
         o = self.cherche_ramassable(groupDict)
         if o == None:
+            if verb: print "rien a ramasser"
             return None
         self.ramasse_objet(o,groupDict)
         return o
@@ -155,9 +150,10 @@ class Player(MovingSprite):
         self.inventory.add( obj )
         obj.remove( groupDict.values() )
 
-    def depose(self,groupDict):
+    def depose(self,groupDict,verb=False):
         # remove object from existing groups displayed on the screen
         if not self.inventory:
+            if verb: print "rien a deposer"
             return None
         obj = list(self.inventory)[0]
         self.inventory.remove( obj )
@@ -167,18 +163,14 @@ class Player(MovingSprite):
 
     def throw_ray(self,radian_angle,mask,groupDict):
         mask.erase_sprite( self )
-        cx,cy = self.int_centroid()
+        cx,cy = self.get_centroid()
         w,h = mask.mask.get_size()
-        rayon_hit = rayon.rayon(mask.mask,cx,cy,radian_angle,w,h)
+        if radian_angle==None: radian_angle = random()*2*pi
+        self.rayon_hit = rayon.rayon(mask.mask,cx,cy,radian_angle,w,h)
         mask.draw_sprite( self )
-        if rayon_hit and groupDict:
-            groupDict["eye_candy"].add( DrawOnceSprite( pygame.draw.line , [(255,0,0),self.int_centroid(),rayon_hit,4] ) )
-        return rayon_hit
-
-    def throw_ray_with_keyboard(self,event,mask,groupDict):
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_t:
-                return self.throw_ray(random.random()*2*math.pi , mask,groupDict)
+        if self.rayon_hit and groupDict:
+            groupDict["eye_candy"].add( DrawOnceSprite( pygame.draw.line , [(255,0,0),self.get_centroid(),self.rayon_hit,4] ) )
+        return self.rayon_hit
 
 
 
@@ -190,27 +182,29 @@ class Turtle(Player):
     taille_fleche = 40
     fleche = None
 
-    def build_fleche(self,layername):
-        fleche_img = pygame.Surface((self.taille_fleche,self.taille_fleche))
-        fleche_img.set_colorkey( (0,0,0) )
-        fleche_img.set_alpha(150)
-        cx,cy = self.int_centroid()
-        self.fleche = MovingSprite(layername,None,cx-self.taille_fleche/2,cy-self.taille_fleche/2,fleche_img)
-        return self.fleche
+    def build_fleche(self):
+        self.fleche = pygame.Surface((self.taille_fleche,self.taille_fleche))
+        self.fleche.set_colorkey( (0,0,0) )
+        self.fleche.set_alpha(150)
+
+    def draw(self,surf):
+        cx,cy = self.get_centroid()
+        if self.fleche:
+            surf.blit(self.fleche,(cx-self.taille_fleche/2,cy-self.taille_fleche/2))
+
+        Player.draw(self,surf)
 
     def update(self):
         super(Turtle, self).update()
 
         if self.fleche:
-            cx,cy = self.int_centroid()
-            self.fleche.rect.x ,self.fleche.rect.y = cx - self.taille_fleche/2 , cy - self.taille_fleche/2
             if self.backup_angle_degree != self.angle_degree:
                 self.backup_angle_degree = self.angle_degree
-                self.fleche.translate_sprite( cx-self.taille_fleche/2 , cy-self.taille_fleche/2 , False)
-                polygons.draw_transparent_arrow(self.fleche.image,self.taille_fleche/2,self.taille_fleche/2,self.angle_degree * math.pi/180)
+                self.fleche.fill((0,0,0))
+                polygons.draw_arrow(self.fleche,self.taille_fleche/2,self.taille_fleche/2,self.angle_degree * pi/180)
 
     def forward(self,t):
-        self.translate_sprite(t*cos(self.angle_degree * math.pi/180),t*sin(self.angle_degree * math.pi/180))
+        self.translate_sprite(t*cos(self.angle_degree * pi/180),t*sin(self.angle_degree * pi/180))
 
     def rotate(self,a,relative=True):
         self.angle_degree = (self.angle_degree + 720 + a) % 360 if relative else a

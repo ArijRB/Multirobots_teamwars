@@ -2,6 +2,10 @@ import pygame
 from math import pi,cos,sin
 
 
+#class Point(tuple):
+#    def __init__(self,x,y):self = (x,y)
+#    def __add__(self,p):   return Point(self.x+p.x,self.y+p.y)
+
 def draw_arrow(surf,x,y,angle,r=20,tail_angle =  pi*0.4, clr=(255,0,0)):
     """ dessine une fleche pour indiquer la direction d'un sprite """
 
@@ -21,7 +25,7 @@ def draw_transparent_arrow(surf,x,y,angle,alpha=150,r=20,tail_angle = pi*0.4,clr
 
     draw_arrow(tmp,r,r,angle,r,tail_angle)
     surf.blit(tmp,(x-r,y-r))
-
+    return tmp
 
 
 def test_polygon():

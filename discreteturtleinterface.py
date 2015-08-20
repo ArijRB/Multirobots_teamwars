@@ -4,6 +4,16 @@ import pygame
 
 direction = (1,0)
 
+def update_n_draw():
+    global game
+    game.mainiteration()
+    pygame.time.wait(200)
+
+game = Game('Cartes/gardenofdelight.json',SpriteBuilder)
+update_n_draw()
+
+######################################
+
 def gauche():
     global direction
     direction = (direction[1],-direction[0])
@@ -18,7 +28,6 @@ def avance():
     global direction,game
     d = game.player.rect.width
     game.player.translate_sprite(d*direction[0] , d*direction[1])
-    game.collisions_single_player()
     update_n_draw()
     return game.player.position_changed()
 
@@ -39,19 +48,3 @@ def cherche():
     o = game.player.cherche_ramassable(game.groupDict)
     update_n_draw()
     return o
-
-
-def update_n_draw():
-    global game
-    for event in pygame.event.get(): # User did something
-        if event.type == pygame.QUIT: # If user clicked close
-            pygame.quit()
-            quit()
-
-    game.update()
-    game.draw()
-    pygame.time.wait(200)
-
-
-game = Game('Cartes/gardenofdelight.json',SpriteBuilder)
-update_n_draw()

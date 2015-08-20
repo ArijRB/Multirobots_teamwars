@@ -3,20 +3,12 @@ from spritebuilder import SpriteBuilder
 import pygame
 import constants
 
-class GameKeyboard(Game):
-    rayon_hit_point = None
-
-    def update(self,event):
-        game.player.move_with_keyboard(event,game.player.rect.width)
-        game.player.ramasse_depose_with_keyboard(event,game.groupDict)
-        self.rayon_hit_point =game.player.throw_ray_with_keyboard(event,game.mask,game.groupDict)
-        Game.update(self,None)
-
 
 
 if __name__ == '__main__':
 
-    game = GameKeyboard('Cartes/gardenofdelight.json',SpriteBuilder)
+    game = Game('Cartes/gardenofdelight.json',SpriteBuilder)
+    game.setup_keyboard_callbacks()
 
     print """regles du Jeu :
              deplacer le joueur avec les touches du clavier

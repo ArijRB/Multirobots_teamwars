@@ -77,7 +77,7 @@ class SpriteBuilder(object):
 
     @classmethod
     def basicGroupFactory(self,layername):
-        if layername == "eye_candy":
+        if layername in ["eye_candy","joueur"]:
             return RecursiveDrawGroup()
         else:
             return pygame.sprite.Group()

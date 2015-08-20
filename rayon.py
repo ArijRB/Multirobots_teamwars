@@ -83,7 +83,7 @@ def rayon(m,x,y,angle,w,h):
         x += sx
         d += 2 * dy
         i += 1
-    return None
+    return (y,x) if steep else (x,y) # or None ?
 
 
 
