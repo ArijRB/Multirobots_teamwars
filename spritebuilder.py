@@ -45,24 +45,24 @@ class SpriteBuilder(object):
         self.sheet.convert_sprites()
 
 
-    def build_one_group(self,layername):
-        """
-            input: a layername. for example "bg1"
-            output: an object pygame.sprite.Group containing all sprites from specified layer
-        """
-        g = self.basicGroupFactory()
-        for l in self.carte["layers"]:
-            if l["name"] == layername:
-                for idx,e in enumerate(l["data"]):
-                    y,x = (idx // self.rowsize)*self.spritesize , (idx % self.rowsize)*self.spritesize
-                    if e > 0:
-                        self.basicSpriteFactory( g , layername , self.sheet.get_row_col(e-1) , x,y , self.sheet[e-1])
-        return g
-
-
     def buildGroups(self):
         """ builds one group of sprites for each layer """
-        return OrderedDict( [ (name,self.build_one_group(name)) for name in constants.ALL_LAYERS ] )
+
+        # build ordered dictionary - first add groups from constants.ALL_LAYERS, with correct order
+        Grps = OrderedDict( [(gr,self.basicGroupFactory()) for gr in constants.ALL_LAYERS])
+        Grps.update( {l["name"]:self.basicGroupFactory() for l in self.carte["layers"] if l["name"] not in Grps} )
+
+
+        for l in self.carte["layers"]:
+            layername = l["name"]
+            g = Grps[layername]
+
+            for idx,e in enumerate(l["data"]):
+                y,x = (idx // self.rowsize)*self.spritesize , (idx % self.rowsize)*self.spritesize
+                if e > 0:
+                    self.basicSpriteFactory( g , layername , self.sheet.get_row_col(e-1) , x,y , self.sheet[e-1])
+
+        return Grps
 
     ##########  Methodes a surcharger pour adapter la classe ##########
 
