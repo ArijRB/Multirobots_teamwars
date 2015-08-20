@@ -3,7 +3,7 @@ import json
 import constants
 import pygame
 from collections import OrderedDict
-from sprite import MySprite,MovingSprite,Player
+from sprite import MySprite,MovingSprite,Player,Turtle,RecursiveDrawGroup
 
 
 class SpriteBuilder(object):
@@ -49,8 +49,8 @@ class SpriteBuilder(object):
         """ builds one group of sprites for each layer """
 
         # build ordered dictionary - first add groups from constants.ALL_LAYERS, with correct order
-        Grps = OrderedDict( [(gr,self.basicGroupFactory()) for gr in constants.ALL_LAYERS])
-        Grps.update( {l["name"]:self.basicGroupFactory() for l in self.carte["layers"] if l["name"] not in Grps} )
+        Grps = OrderedDict( [(gr,self.basicGroupFactory(gr)) for gr in constants.ALL_LAYERS])
+        Grps.update( {l["name"]:self.basicGroupFactory(l["name"]) for l in self.carte["layers"] if l["name"] not in Grps} )
 
 
         for l in self.carte["layers"]:
@@ -60,19 +60,26 @@ class SpriteBuilder(object):
             for idx,e in enumerate(l["data"]):
                 y,x = (idx // self.rowsize)*self.spritesize , (idx % self.rowsize)*self.spritesize
                 if e > 0:
-                    self.basicSpriteFactory( g , layername , self.sheet.get_row_col(e-1) , x,y , self.sheet[e-1])
+                    self.basicSpriteFactory( Grps , layername , self.sheet.get_row_col(e-1) , x,y , self.sheet[e-1])
 
         return Grps
 
     ##########  Methodes a surcharger pour adapter la classe ##########
-
-    def basicSpriteFactory(self,spritegroup , layername,tileid,x,y,img):
+    @classmethod
+    def basicSpriteFactory(self,spritegroups , layername,tileid,x,y,img):
         if layername == "joueur":
-            spritegroup.add( Player(layername,tileid,x,y,img) )
-        else:
-            spritegroup.add( MySprite(layername,tileid,x,y,img) )
+            spritegroups[layername].add( Player(layername,tileid,x,y,img) )
 
-    def basicGroupFactory(self):
-        return pygame.sprite.Group()
+        elif layername == "ramassable":
+            spritegroups[layername].add( MovingSprite(layername,tileid,x,y,img) )
+        else:
+            spritegroups[layername].add( MySprite(layername,tileid,x,y,img) )
+
+    @classmethod
+    def basicGroupFactory(self,layername):
+        if layername == "eye_candy":
+            return RecursiveDrawGroup()
+        else:
+            return pygame.sprite.Group()
 
     ##################################################################

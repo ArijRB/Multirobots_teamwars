@@ -59,7 +59,7 @@ class Game:
 
     def collisions_many_players(self):
         joueurs = list(self.groupDict["joueur"])
-        random.shuffle( joueurs )
+        if len(joueurs) > 1:  random.shuffle( joueurs )
 
         self.mask.fill_with_group( self.groupDict["obstacles"] )
 
@@ -76,12 +76,13 @@ class Game:
             self.mask.draw_sprite(j)
 
 
-    def update(self,event):
+    def update(self,event=None):
         if len(self.groupDict["joueur"]) == 1:
             self.collisions_single_player()
         else:
             self.collisions_many_players()
-
+        for layer in constants.NON_BG_LAYERS:
+            self.groupDict[layer].update()
 
     def draw(self):
         self.screen.blit(self.background, (0, 0), (0, 0, self.screen.get_width(), self.screen.get_height()))

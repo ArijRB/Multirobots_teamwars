@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="16" height="16" tilewidth="32" tileheight="32" nextobjectid="1">
+ <tileset firstgid="1" name="tiny-Complete-Spritesheet-32x32" tilewidth="32" tileheight="32">
+  <image source="../SpriteSheet-32x32/tiny-Complete-Spritesheet-32x32.png" width="512" height="512"/>
+ </tileset>
+ <layer name="obstacles" width="16" height="16">
+  <data encoding="base64" compression="zlib">
+   eJzjYmBg4CYTc0ExuQCf/kgoRhcjVj8x5pGjH9kcWtqPrhYbQNePzY2k6CcVEKMfn5uobT+x/iZVP7ofcMU/rjSLKwyo4X9y8y4MAwDfQg77
+  </data>
+ </layer>
+ <layer name="joueur" width="16" height="16">
+  <data encoding="base64" compression="zlib">
+   eJxjYBhe4PRAO2AUjIIhBACLLgDM
+  </data>
+ </layer>
+</map>

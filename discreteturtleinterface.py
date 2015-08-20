@@ -48,6 +48,7 @@ def update_n_draw():
             pygame.quit()
             quit()
 
+    game.update()
     game.draw()
     pygame.time.wait(200)
 

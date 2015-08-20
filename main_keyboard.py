@@ -9,20 +9,9 @@ class GameKeyboard(Game):
     def update(self,event):
         game.player.move_with_keyboard(event,game.player.rect.width)
         game.player.ramasse_depose_with_keyboard(event,game.groupDict)
-        game.player.throw_ray_with_keyboard(event,game.mask)
+        self.rayon_hit_point =game.player.throw_ray_with_keyboard(event,game.mask,game.groupDict)
         Game.update(self,None)
-        self.rayon_hit_point = game.player.throw_ray_with_keyboard(event,game.mask)
 
-    def draw(self):
-        self.screen.blit(self.background, (0, 0), (0, 0, self.screen.get_width(), self.screen.get_height()))
-
-        for layer in constants.NON_BG_LAYERS:
-            if layer == "joueur" and self.rayon_hit_point != None:
-                pygame.draw.line(self.screen,(255,0,0),(game.player.center_x,game.player.center_y),self.rayon_hit_point,4)
-            self.groupDict[layer].draw(self.screen)
-
-        self.clock.tick(60)
-        pygame.display.flip()
 
 
 if __name__ == '__main__':

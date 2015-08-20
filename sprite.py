@@ -5,15 +5,16 @@ import math
 import rayon
 import polygons
 
-""" pour l'instant je stocke la position du sprite dans un pygame.Rect
-    probleme: les coordonnees dans les Rect sont des entiers et pas des floats
-    donc si je deplace comme un tortue de 5 degrees vers le haut, il faudrait que
-    la position soit reelle plutot qu'entiere
-"""
+
+class RecursiveDrawGroup(pygame.sprite.Group):
+    """ group that calls 'draw' on each of its sprite """
+    def draw(self,surf):
+        for s in self:
+            s.draw(surf)
+
 
 class MySprite(pygame.sprite.Sprite):
-    """ MySprite is a sprite which knows which image was used to build it
-        tilerow/col are the coordinates of the sprite image in the spritesheet
+    """ MySprite est un sprite qui connait l'image a afficher
     """
     tileid = (0,0) # tileid identifie le sprite sur la spritesheet. Generalement, c'est le row/col dans le spritesheet
 
@@ -23,34 +24,58 @@ class MySprite(pygame.sprite.Sprite):
         self.tileid = tileid
         self.image = img
         self.mask = pygame.mask.from_surface(self.image)
-        self.rect  = self.image.get_rect()
+        self.rect = img.get_rect()
         self.rect.x , self.rect.y = x,y
+
+    def dist(self,x,y):
+        cx,cy = self.int_centroid()
+        return math.sqrt( (cx-x)**2 + (cy-y)**2 )
 
     def get_pos(self,backup=False):
         assert backup==False , "erreur: tentative d'acces a backup_rect d'un sprite non mobile"
         return (self.rect.x,self.rect.y)
 
+    def draw(self,surf):
+        surf.blit(self.image,self.rect)
+
+class DrawOnceSprite(pygame.sprite.Sprite):
+    def __init__(self,fun,arglist):
+        pygame.sprite.Sprite.__init__(self)
+        self.fun = fun
+        self.arglist = arglist
+        self.lifespan = 5
+    def draw(self,surf):
+        self.fun(surf,*self.arglist)
+        self.lifespan -= 1
+        if self.lifespan == 0:
+            self.kill()
+
 
 
 class MovingSprite(MySprite):
 
-    """ This class represents the sprites that can move (ex: player, creatures, deplacable) """
+    """ Cette classe represente les sprites qui peuvent bouger (ex: player, creatures, deplacable)
+        les coordonnees ne sont plus stockees dans self.rect comme dans MySprite,
+        mais dans self.x,self.y sous forme de flottant.
+    """
+
     # vecteur vitesse requis. Si collision, alors il ne se realisera pas
 
     def __init__(self,*args):
         MySprite.__init__(self,*args)
-        self.backup_rect = self.rect.copy()
+        self.x , self.y = self.rect.x , self.rect.y
+        self.backup_position()
 
     def backup_position(self):
-        self.backup_rect.x , self.backup_rect.y = self.rect.x , self.rect.y
+        self.backup_x , self.backup_y = self.x , self.y
 
     def resume_position_to_backup(self):
-        self.rect.x , self.rect.y = self.backup_rect.x , self.backup_rect.y
+        self.x , self.y = self.backup_x , self.backup_y
 
     def get_pos(self,backup=False):
-        return (self.backup_rect.x,self.backup_rect.y) if backup else (self.rect.x,self.rect.y)
+        return (int(self.backup_x),int(self.backup_y)) if backup else (int(self.x),int(self.y))
 
-    def position_changed(self): return self.backup_rect != self.rect
+    def position_changed(self): return (self.backup_x,self.backup_y) != (self.x,self.y)
 
     def translate_sprite(self,x,y,relative=True,boundingrect=None):
         # Attention, backup_position() est indispensable,
@@ -58,34 +83,33 @@ class MovingSprite(MySprite):
         self.backup_position()
 
         if relative:
-            self.rect.move_ip(x,y)
+            self.x += x
+            self.y += y
         else:
-            self.rect.x , self.rect.y = x , y
+            self.x , self.y = x , y
 
         if boundingrect:
             w , h = boundingrect.get_size()
             w -= self.rect.w
             h -= self.rect.h
-            if self.rect.x >= w:     self.rect.x = w
-            if self.rect.x < 0:      self.rect.x = 0
-            if self.rect.y >= h:     self.rect.y = h
-            if self.rect.y < 0:      self.rect.y = 0
+            if self.x >= w:     self.x = w
+            if self.x < 0:      self.x = 0
+            if self.y >= h:     self.y = h
+            if self.y < 0:      self.y = 0
 
+    def int_centroid(self):
+        return self.rect.x+self.rect.w/2,self.rect.y+self.rect.h/2
+
+    def update(self):
+        self.rect.x , self.rect.y = int(self.x) , int(self.y)
 
 
 
 class Player(MovingSprite):
 
-
     def __init__(self,*args):
         MovingSprite.__init__(self,*args)
         self.inventory = pygame.sprite.Group()
-
-    angle_degree = 90 # ne sert a rien pour l'instant
-    def draw_arrow(self,surf): # idem
-        self.center_x , self.center_y = self.rect.x+self.rect.w/2,self.rect.y+self.rect.h/2
-        polygons.draw_transparent_arrow(surf,self.center_x,self.center_y,angle_degree * math.pi/180)
-
 
     def move_with_keyboard(self,event,increment):
         if event.type == pygame.KEYDOWN:
@@ -115,7 +139,7 @@ class Player(MovingSprite):
 
     def cherche_ramassable(self,groupDict):
         for obj in groupDict["ramassable"]:
-            if self.mask.overlap(obj.mask,(obj.rect.x - self.rect.x,obj.rect.y - self.rect.y)):
+            if self.mask.overlap(obj.mask,(obj.x - self.x,obj.y - self.y)):
                 return obj
         return None
 
@@ -137,17 +161,56 @@ class Player(MovingSprite):
             return None
         obj = list(self.inventory)[0]
         self.inventory.remove( obj )
-        obj.rect.x , obj.rect.y = self.rect.x , self.rect.y
+        obj.translate_sprite(self.x,self.y,False)
         groupDict[obj.layername].add( obj )
         return obj
 
-    def throw_ray_with_keyboard(self,event,mask):
+    def throw_ray(self,radian_angle,mask,groupDict):
+        mask.erase_sprite( self )
+        cx,cy = self.int_centroid()
+        w,h = mask.mask.get_size()
+        rayon_hit = rayon.rayon(mask.mask,cx,cy,radian_angle,w,h)
+        mask.draw_sprite( self )
+        if rayon_hit and groupDict:
+            groupDict["eye_candy"].add( DrawOnceSprite( pygame.draw.line , [(255,0,0),self.int_centroid(),rayon_hit,4] ) )
+        return rayon_hit
+
+    def throw_ray_with_keyboard(self,event,mask,groupDict):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_t:
-                mask.erase_sprite( self )
-                angle = random.random()*2*math.pi
-                w,h = mask.mask.get_size()
-                self.center_x , self.center_y = self.rect.x+self.rect.w/2,self.rect.y+self.rect.h/2
-                rayon_hit = rayon.rayon(mask.mask,self.center_x , self.center_y,angle,w,h)
-                mask.draw_sprite( self )
-                return rayon_hit
+                return self.throw_ray(random.random()*2*math.pi , mask,groupDict)
+
+
+
+class Turtle(Player):
+
+    angle_degree  = 90
+    backup_angle_degree = None
+
+    taille_fleche = 40
+    fleche = None
+
+    def build_fleche(self,layername):
+        fleche_img = pygame.Surface((self.taille_fleche,self.taille_fleche))
+        fleche_img.set_colorkey( (0,0,0) )
+        fleche_img.set_alpha(150)
+        cx,cy = self.int_centroid()
+        self.fleche = MovingSprite(layername,None,cx-self.taille_fleche/2,cy-self.taille_fleche/2,fleche_img)
+        return self.fleche
+
+    def update(self):
+        super(Turtle, self).update()
+
+        if self.fleche:
+            cx,cy = self.int_centroid()
+            self.fleche.rect.x ,self.fleche.rect.y = cx - self.taille_fleche/2 , cy - self.taille_fleche/2
+            if self.backup_angle_degree != self.angle_degree:
+                self.backup_angle_degree = self.angle_degree
+                self.fleche.translate_sprite( cx-self.taille_fleche/2 , cy-self.taille_fleche/2 , False)
+                polygons.draw_transparent_arrow(self.fleche.image,self.taille_fleche/2,self.taille_fleche/2,self.angle_degree * math.pi/180)
+
+    def forward(self,t):
+        self.translate_sprite(t*cos(self.angle_degree * math.pi/180),t*sin(self.angle_degree * math.pi/180))
+
+    def rotate(self,a,relative=True):
+        self.angle_degree = (self.angle_degree + 720 + a) % 360 if relative else a

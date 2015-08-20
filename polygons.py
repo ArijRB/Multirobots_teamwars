@@ -17,8 +17,9 @@ def draw_transparent_arrow(surf,x,y,angle,alpha=150,r=20,tail_angle = pi*0.4,clr
     """ dessine une fleche semi-transparente pour indiquer la direction d'un sprite """
     tmp = pygame.Surface((2*r,2*r))
     tmp.set_colorkey( (0,0,0) )
-    draw_arrow(tmp,r,r,angle,r,tail_angle)
     tmp.set_alpha(alpha)
+
+    draw_arrow(tmp,r,r,angle,r,tail_angle)
     surf.blit(tmp,(x-r,y-r))
 
 
