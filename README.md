@@ -19,9 +19,13 @@ Pour tester ce code, et jouer au clavier, taper
 
     python main_keyboard.py
 
-Pour voir la demo d'utilisation de la tortue, taper
+Pour voir la demo d'utilisation du ramasseur de laitues, taper
 
     python exercice_laitues.py
+
+Pour une demo du simulateur de robot, taper
+
+    python exercice_robot_sim.py
 
 Les cartes doivent être construites avec le logiciel Tiled ( http://www.mapeditor.org ) et exportées au format json
 
