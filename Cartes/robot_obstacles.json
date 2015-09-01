@@ -33,7 +33,7 @@
  "tilesets":[
         {
          "firstgid":1,
-         "image":"SpriteSheet-32x32\/tiny-Complete-Spritesheet-32x32.png",
+         "image":"SpriteSheet-32x32\/tiny-Complete-Spritesheet-32x32.bmp",
          "imageheight":512,
          "imagewidth":512,
          "margin":0,
