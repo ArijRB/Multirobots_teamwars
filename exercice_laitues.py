@@ -67,8 +67,7 @@ def repose_laitues():
         avance()
 
 
-if __name__ == '__main__':
-    aller_devant_laitues()
-    ramasse_laitues()
-    rentre_au_chateau()
-    repose_laitues()
+aller_devant_laitues()
+ramasse_laitues()
+rentre_au_chateau()
+repose_laitues()
