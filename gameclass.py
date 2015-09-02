@@ -3,6 +3,7 @@ import constants
 import pygame
 from collections import OrderedDict
 import random
+
 try:
     from toolz import first
 except:
