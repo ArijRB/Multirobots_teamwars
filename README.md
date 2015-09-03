@@ -6,7 +6,7 @@ http://opengameart.org/content/tiny-16-basic
 Et du code a été pris ici:
 http://programarcadegames.com/index.php
 
-## Intro
+## Introduction
 
 Affiche des sprites a l'ecran et tout et tout.
 Pour l'instant les sprites se deplacent de facon discrete, mais le code est prevu pour gerer des deplacements au pixel pres.
