@@ -39,27 +39,23 @@ def construit_ontologie(pairs=True,filename='tiny_spritesheet_ontology.csv'):
 
 
 
-liste_categories = {
-     'plante' : ['gazon','herbe','sapin','motte','laitue']
-#    'creatures' : ['fantome','chauve_souris','blob','araignee','squelette','renard','fille','garcon'],
-#    'marchable' : ['quadricouleur','gazon','herbe','parquet','motte','lave','fond','dalles','gemmes'],
-#    'obstacle'  : ['colonne','rocs','rocher','escalier','panneau','feu','coffre','sapin','portail-1','portail-2','portail-3','porte-1','porte-2','porte-3','mur'],
-#    'mortel'    : ['araignee','squelette','puit']
-}
-
 
 def construit_categories(ontologie):
     '''
         cree un dictionnaire (key=categorie, valeur=ensemble d indexs)
         par exemple, on a:
-            cat['mortel'] = {(6,0),(6,1),(6,2),...}
+        >>> c["salade"]
+        set([(10, 11)])
+        >>> c["citrouille"]
+        set([(10, 12)])
+        >>> c["epinards"]
+        set([(2, 8)])
     '''
     cat = defaultdict(set)
 
-    for categ,subcateg in liste_categories.iteritems():
-        for idx,descr in ontologie.iteritems():
-            if set(subcateg).intersection(set(descr)):
-                cat[categ].add(idx)
+    for idx,descr in ontologie.iteritems():
+        for nom in descr:
+            cat[nom].add( idx )
     return cat
 
 
