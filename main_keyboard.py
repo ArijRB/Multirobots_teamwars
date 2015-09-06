@@ -1,3 +1,4 @@
+from gardenworld import GardenSpriteBuilder
 from gameclass import Game
 from spritebuilder import SpriteBuilder
 import pygame
@@ -5,8 +6,8 @@ import constants
 
 
 
-
-game = Game('Cartes/gardenofdelight.json',SpriteBuilder)
+game = Game('Cartes/gardenofdelight.json',GardenSpriteBuilder)
+game.player.translate_sprite(0,0,90) # tourne le joueur pour qu'il nous regarde
 game.setup_keyboard_callbacks()
 
 print """regles du Jeu :

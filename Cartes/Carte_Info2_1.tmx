@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="16" height="16" tilewidth="32" tileheight="32" nextobjectid="1">
+ <tileset firstgid="1" name="tiny-Complete-Spritesheet-32x32-fruits" tilewidth="32" tileheight="32">
+  <image source="../SpriteSheet-32x32/tiny-Complete-Spritesheet-32x32-fruits.bmp" width="512" height="512"/>
+ </tileset>
+ <layer name="bg1" width="16" height="16">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFowABbKhgRuUQ1Q/yuzwJGB2QopcW+skBAEkbBiE=
+  </data>
+ </layer>
+ <layer name="bg2" width="16" height="16">
+  <data encoding="base64" compression="zlib">
+   eJyzYWBgsKESdgVieRLxqP7hpZ8UjCsduSFhUtIeJfbD/E4KQNdPKqCmfnIxAP5FKjI=
+  </data>
+ </layer>
+ <layer name="obstacles" width="16" height="16">
+  <data encoding="base64" compression="zlib">
+   eJzjYWBg4CQT8wAxFxDXQTEMSBKJuXDoJxbg0j9q/8DaT65+bOagyyFjZP3kgOGgn9y8C8MAAtsWZQ==
+  </data>
+ </layer>
+ <layer name="ramassable" width="16" height="16">
+  <data encoding="base64" compression="zlib">
+   eJxjYBh8QBOI5yLRa9CwJhSPglFATaBJIkYHc0nE6AA9nRPC1AAAdYQV5w==
+  </data>
+ </layer>
+ <layer name="joueur" width="16" height="16">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUDDRYOED2AgBPeACi
+  </data>
+ </layer>
+</map>

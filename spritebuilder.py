@@ -3,7 +3,8 @@ import json
 import constants
 import pygame
 from collections import OrderedDict
-from sprite import MySprite,MovingSprite,Player,Turtle,RecursiveDrawGroup
+from sprite import MySprite,MovingSprite,RecursiveDrawGroup
+from players import Player,Turtle
 import os
 
 
@@ -71,12 +72,12 @@ class SpriteBuilder(object):
     @classmethod
     def basicSpriteFactory(self,spritegroups , layername,tileid,x,y,img):
         if layername == "joueur":
-            spritegroups[layername].add( Player(layername,tileid,x,y,img) )
+            spritegroups[layername].add( Player(layername,tileid,x,y,[img]) )
 
         elif layername == "ramassable":
-            spritegroups[layername].add( MovingSprite(layername,tileid,x,y,img) )
+            spritegroups[layername].add( MovingSprite(layername,tileid,x,y,[img]) )
         else:
-            spritegroups[layername].add( MySprite(layername,tileid,x,y,img) )
+            spritegroups[layername].add( MySprite(layername,tileid,x,y,[img]) )
 
     @classmethod
     def basicGroupFactory(self,layername):

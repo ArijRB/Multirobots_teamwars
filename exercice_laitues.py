@@ -1,4 +1,4 @@
-from discreteturtleinterface import *
+from gardenworld import *
 # le but de cet exercice est de programmer une tortue qui doit transferer 8 laitues dans l'enclos du chateau
 
 # quelques macros
@@ -8,23 +8,23 @@ def fonce():
         pass
 
 def demitour():
-    gauche();gauche()
+    tournegauche();tournegauche()
 
 # fonctions principales
 def aller_devant_laitues():
     demitour()
     avance() ; avance()
-    droite()
+    tournedroite()
     fonce()
 
-    droite(); avance();gauche()
+    tournedroite(); avance();tournegauche()
     for i in range(5):
       avance()
-    gauche()
+    tournegauche()
     fonce()
-    droite()
+    tournedroite()
     avance()
-    gauche()
+    tournegauche()
 
 
 def ramasse_laitues():
@@ -37,21 +37,21 @@ def ramasse_laitues():
     avance()
     ramasse_rangee()
     for i in range(2):
-        droite()
+        tournedroite()
         avance()
     ramasse_rangee()
 
 
 
 def rentre_au_chateau():
-    # reviens en haut a gauche du chateau
+    # reviens en haut a tournegauche du chateau
     fonce()
-    droite(); avance(); avance();
-    gauche();
+    tournedroite(); avance(); avance();
+    tournegauche();
     for i in range(4):
         avance()
     for i in range(2):
-        gauche()
+        tournegauche()
         fonce()
     demitour()
 
@@ -59,11 +59,11 @@ def rentre_au_chateau():
 def repose_laitues():
     for i in range(4):
         depose()
-        droite()
+        tournedroite()
         avance()
         depose()
-        gauche();gauche()
-        avance();droite()
+        tournegauche();tournegauche()
+        avance();tournedroite()
         avance()
 
 

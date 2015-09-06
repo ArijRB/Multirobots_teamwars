@@ -10,7 +10,7 @@ except:
     first = lambda x: list(x)[0]
 
 
-from collisions import CollisionMask
+from collisions import CollisionHandler
 
 
 class Game:
@@ -47,7 +47,7 @@ class Game:
         self.groupDict["bg2"].draw(self.background)
 
         # cree un masque de la taille de l'ecran, pour le calcul des collisions
-        self.mask = CollisionMask(self.screen)
+        self.mask = CollisionHandler(self.screen)
 
         # click clock
         self.clock = pygame.time.Clock()
@@ -63,6 +63,7 @@ class Game:
         for layer in constants.NON_BG_LAYERS:
             self.groupDict[layer].update()
 
+
     def draw(self):
         self.screen.blit(self.background, (0, 0), (0, 0, self.screen.get_width(), self.screen.get_height()))
         for layer in constants.NON_BG_LAYERS:
@@ -71,7 +72,7 @@ class Game:
         pygame.display.flip()
 
 
-    def mainiteration(self):
+    def mainiteration(self,fps=60):
         if pygame.event.peek():
             for event in pygame.event.get(): # User did something
                 if event.type == pygame.QUIT: # If user clicked close
@@ -84,7 +85,7 @@ class Game:
 
         self.update()
         self.draw()
-        self.clock.tick(60)
+        self.clock.tick(fps)
 
     def mainloop(self):
         while True:

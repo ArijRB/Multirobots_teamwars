@@ -73,6 +73,7 @@ class SpriteSheet(object):
                 or sprite at row i and column j
         '''
         if isinstance(idx,tuple):
+            i,j = idx
             return self.sprite_images[i*self.rowsize + j]
         else:
             return self.sprite_images[idx]

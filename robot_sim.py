@@ -1,5 +1,6 @@
 from gameclass import Game
-from sprite import MySprite,MovingSprite,Player,Turtle
+from sprite import MySprite,MovingSprite
+from player import Player,Turtle
 from spritebuilder import SpriteBuilder
 import random
 from math import pi,cos,sin
