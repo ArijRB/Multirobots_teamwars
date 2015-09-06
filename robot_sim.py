@@ -5,6 +5,7 @@ from spritebuilder import SpriteBuilder
 import random
 from math import pi,cos,sin
 
+
 class TurtleSpriteBuilder(SpriteBuilder):
     def basicSpriteFactory(self,spritegroups , layername,tileid,x,y,img):
         if layername == "joueur":
