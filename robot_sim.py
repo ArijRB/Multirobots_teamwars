@@ -1,6 +1,6 @@
 from gameclass import Game
 from sprite import MySprite,MovingSprite
-from player import Player,Turtle
+from players import Player,Turtle
 from spritebuilder import SpriteBuilder
 import random
 from math import pi,cos,sin
@@ -8,7 +8,7 @@ from math import pi,cos,sin
 class TurtleSpriteBuilder(SpriteBuilder):
     def basicSpriteFactory(self,spritegroups , layername,tileid,x,y,img):
         if layername == "joueur":
-            j = Turtle(layername,tileid,x,y,img)
+            j = Turtle(layername,tileid,x,y,[img])
             spritegroups[layername].add( j )
             j.build_fleche()
         else:
@@ -28,7 +28,8 @@ def avance(s):
 def setheading(a):
     # angle en degre
     global game
-    game.player.rotate(a,False)
+    game.player.translate_sprite(0,0,a)
+    #game.player.rotate(a,False)
     game.mainiteration()
 
 def telemetre():

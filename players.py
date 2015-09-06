@@ -4,6 +4,7 @@ from functools import partial
 from random import random
 from math import pi,sqrt,cos,sin,floor
 import rayon
+import polygons
 
 
 class Player(MovingSprite):
