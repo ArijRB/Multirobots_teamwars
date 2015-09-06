@@ -1,6 +1,6 @@
 from gardenworld import *
 # le but de cet exercice est de programmer une tortue qui doit transferer 8 laitues dans l'enclos du chateau
-
+init()
 # quelques macros
 def fonce():
     # avance tout droit tant qu'on est pas bloques par un obstacle

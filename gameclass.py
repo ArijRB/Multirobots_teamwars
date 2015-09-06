@@ -1,5 +1,5 @@
 from spritebuilder import SpriteBuilder
-import constants
+import glo
 import pygame
 from collections import OrderedDict
 import random
@@ -60,13 +60,13 @@ class Game:
     def update(self):
         self.mask.compute_collision(self.groupDict,self.player)
 
-        for layer in constants.NON_BG_LAYERS:
+        for layer in glo.NON_BG_LAYERS:
             self.groupDict[layer].update()
 
 
     def draw(self):
         self.screen.blit(self.background, (0, 0), (0, 0, self.screen.get_width(), self.screen.get_height()))
-        for layer in constants.NON_BG_LAYERS:
+        for layer in glo.NON_BG_LAYERS:
             self.groupDict[layer].draw(self.screen)
 
         pygame.display.flip()

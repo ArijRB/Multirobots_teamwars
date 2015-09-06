@@ -2,7 +2,7 @@
 This module is used to pull individual sprites from sprite sheets.
 """
 import pygame
-import constants
+import glo
 
 
 class SpriteSheet(object):
@@ -50,7 +50,7 @@ class SpriteSheet(object):
         # Copy the sprite from the large sheet onto the smaller image
         image.blit(self.sprite_sheet, (0, 0), (x, y, width, height))
         # Assuming black works as the transparent color
-        image.set_colorkey(constants.BLACK)
+        image.set_colorkey(glo.BLACK)
         # Return the image
         return image
 

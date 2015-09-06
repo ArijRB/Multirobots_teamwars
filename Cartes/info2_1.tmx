@@ -20,7 +20,7 @@
  </layer>
  <layer name="ramassable" width="17" height="17">
   <data encoding="base64" compression="zlib">
-   eJzlUEEKwDAI8zv+WX9Q/zgLDQSn540tENqqMVqRbyKSK2lJPeeml5g+NeCPocQJNsSgc+oVTR1Yc1K0SveNVfzx5j6Yw0++2wP6GHaBJ3LWePMedQb2cbl7TP/3Rly9jRuD
+   eJzdUFsKwDAI8zp+7cJ6g/aOs9BAcPq5URYIbX0kWpF/YgZH0IK6z0VPMX15jutwva+0GUrsYE0MfU5as6gDc05Sr9J9YSR/vFkHc/jOV3ugfza7wBM5K7x5jzwD+7g8Pbr/OxE3SjscEA==
   </data>
  </layer>
  <layer name="joueur" width="17" height="17">

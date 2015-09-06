@@ -1,6 +1,6 @@
 from spritesheet_functions import SpriteSheet
 import json
-import constants
+import glo
 import pygame
 from collections import OrderedDict
 from sprite import MySprite,MovingSprite,RecursiveDrawGroup
@@ -52,8 +52,8 @@ class SpriteBuilder(object):
     def buildGroups(self):
         """ builds one group of sprites for each layer """
 
-        # build ordered dictionary - first add groups from constants.ALL_LAYERS, with correct order
-        Grps = OrderedDict( [(gr,self.basicGroupFactory(gr)) for gr in constants.ALL_LAYERS])
+        # build ordered dictionary - first add groups from glo.ALL_LAYERS, with correct order
+        Grps = OrderedDict( [(gr,self.basicGroupFactory(gr)) for gr in glo.ALL_LAYERS])
         Grps.update( {l["name"]:self.basicGroupFactory(l["name"]) for l in self.carte["layers"] if l["name"] not in Grps} )
 
 

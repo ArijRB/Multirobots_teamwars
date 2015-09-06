@@ -2,7 +2,6 @@ from gardenworld import GardenSpriteBuilder
 from gameclass import Game
 from spritebuilder import SpriteBuilder
 import pygame
-import constants
 
 
 

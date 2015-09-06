@@ -1,5 +1,5 @@
 """
-Global constants
+Globals (mainly constants)
 """
 
 # Colors
