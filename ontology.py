@@ -3,6 +3,7 @@ import csv
 import sys
 #import cytoolz # pip install cytoolz
 from collections import defaultdict
+import os
 
 class Ontology:
 
@@ -33,8 +34,10 @@ class Ontology:
             Ainsi, ontology[(15,12)] = {'araignee', 'mort','araignee-mort'}
         '''
 
+        dirname = os.path.dirname(os.path.abspath(__file__))
+
         ontology = {}
-        f = open(filename, 'r')
+        f = open(dirname + "/" + filename, 'r')
         reader = csv.reader(f)
         for i,row in enumerate(reader):
             for j,s in enumerate(row):
