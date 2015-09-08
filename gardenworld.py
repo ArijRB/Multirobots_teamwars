@@ -19,7 +19,10 @@ class GardenSpriteBuilder(SpriteBuilder):
     def basicSpriteFactory(self,spritegroups , layername,tileid,x,y,img):
         if layername == "joueur":
             imglist = [ self.sheet[i,j] for i,j in ((10,0),(8,0),(9,0),(11,0))]
-            spritegroups[layername].add( Player(layername,tileid,x,y,imglist) )
+            p = Player(layername,tileid,x,y,imglist)
+            if tileid[0] in [10,8,9,11]:
+                p.translate_sprite(0,0,90*[10,8,9,11].index(tileid[0]))
+            spritegroups[layername].add( p )
         else:
             SpriteBuilder.basicSpriteFactory(spritegroups , layername,tileid,x,y,img)
 

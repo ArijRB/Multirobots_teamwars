@@ -41,9 +41,13 @@ class SpriteBuilder(object):
         try:
             sheet_filename  = dirname + "/" + self.carte["tilesets"][0]["image"]
             self.sheet      = SpriteSheet(sheet_filename,self.spritesize)
-        except Exception as e:
-            print "Error - impossible de trouver le fichier images des sprites -"
-            raise e
+        except pygame.error:
+            try:
+                sheet_filename  = dirname + "/Cartes/" + self.carte["tilesets"][0]["image"]
+                self.sheet      = SpriteSheet(sheet_filename,self.spritesize)
+            except pygame.error as e2:
+                print "Error - impossible de trouver le fichier images des sprites -"
+                raise e2
 
     def prepareSprites(self):
         self.sheet.convert_sprites()
