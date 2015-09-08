@@ -58,7 +58,7 @@ class Game:
 
 
     def update(self):
-        self.mask.compute_collision(self.groupDict,self.player)
+        self.mask.handle_collision(self.groupDict,self.player)
 
         for layer in glo.NON_BG_LAYERS:
             self.groupDict[layer].update()

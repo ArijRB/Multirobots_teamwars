@@ -27,25 +27,28 @@ class CollisionHandler:
 
     ###############  compute collision ###################
 
-    def compute_collision(self,gDict,player):
+    def handle_collision(self,gDict,player):
         """ dispatches among all collision detection algorithms
         """
         if len(gDict["joueur"]) > 1:
-            self.pixel_collisions_many_players(gDict)
+            self.handle_pixel_collisions_many_players(gDict)
         else:
             if CollisionHandler.pixel_perfect:
-                self.pixel_collisions_single_player(gDict,player)
+                self.handle_pixel_collisions_single_player(gDict,player)
             else:
-                self.box_collisions_single_player(gDict,player)
+                self.handle_box_collisions_single_player(gDict,player)
 
 
-    def box_collisions_single_player(self,gDict,player):
+    def check_box_collisions_single_player(self,gDict,player):
+        return pygame.sprite.spritecollide(player, gDict["obstacles"], False) != []
+
+    def handle_box_collisions_single_player(self,gDict,player):
         block_hit_list = pygame.sprite.spritecollide(player, gDict["obstacles"], False)
         if block_hit_list:
             player.resume_to_backup()
 
 
-    def pixel_collisions_single_player(self,gDict,player):
+    def handle_pixel_collisions_single_player(self,gDict,player):
         # computes collisions mask of all obstacles (for pixel-based collisions)
         self.fill_with_group( gDict["obstacles"] )
 
@@ -55,7 +58,7 @@ class CollisionHandler:
             player.resume_to_backup()
 
 
-    def pixel_collisions_many_players(self,gDict):
+    def handle_pixel_collisions_many_players(self,gDict):
         joueurs = list(gDict["joueur"])
         random.shuffle( joueurs )
 
