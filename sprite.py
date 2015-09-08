@@ -96,7 +96,7 @@ class MovingSprite(MySprite):
         i = int(floor( a*l/360 + 0.5 )) % l
         self.image = self.imagelist[ i ]
 
-    def translate_sprite(self,x,y,a,relative=True,boundingrect=None):
+    def translate_sprite(self,x,y,a,relative=True):
         # Attention, backup() est indispensable,
         # car la gestion des collision doit pouvoir revenir en arriere
         self.backup()
@@ -107,15 +107,6 @@ class MovingSprite(MySprite):
             self.angle_degree = (self.angle_degree + 720 + a) % 360
         else:
             self.x , self.y , self.angle_degree = x , y , a
-
-        if boundingrect:
-            w , h = boundingrect.get_size()
-            w -= self.rect.w
-            h -= self.rect.h
-            if self.x >= w:     self.x = w
-            if self.x < 0:      self.x = 0
-            if self.y >= h:     self.y = h
-            if self.y < 0:      self.y = 0
 
         self.rotate_image(self.angle_degree)
         self.rect.x , self.rect.y = round(self.x) , round(self.y)
