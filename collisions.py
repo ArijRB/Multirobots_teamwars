@@ -27,6 +27,7 @@ class CollisionHandler:
 
     ###############  compute collision ###################
 
+
     def handle_collision(self,gDict,player):
         """ dispatches among all collision detection algorithms
         """
@@ -38,13 +39,18 @@ class CollisionHandler:
             else:
                 self.handle_box_collisions_single_player(gDict,player)
 
+    def out_of_screen(self,player):
+        w , h = self.mask.get_size()
+        w -= player.rect.w
+        h -= player.rect.h
+        return player.rect.x >= w or player.rect.x < 0 or player.rect.y >= h or player.rect.y < 0
 
     def check_box_collisions_single_player(self,gDict,player):
-        return pygame.sprite.spritecollide(player, gDict["obstacles"], False) != []
+        return pygame.sprite.spritecollide(player, gDict["obstacles"], False) != [] or self.out_of_screen(player)
 
     def handle_box_collisions_single_player(self,gDict,player):
         block_hit_list = pygame.sprite.spritecollide(player, gDict["obstacles"], False)
-        if block_hit_list:
+        if block_hit_list or self.out_of_screen(player):
             player.resume_to_backup()
 
 
@@ -54,7 +60,7 @@ class CollisionHandler:
 
         # send it to the player
         assert not self.collide_sprite( player , True ) , "sprite collision before any movement !!!"
-        if self.collide_sprite( player ):
+        if self.collide_sprite( player ) or self.out_of_screen(player):
             player.resume_to_backup()
 
 
@@ -72,6 +78,6 @@ class CollisionHandler:
         # try their new position one by one
         for j in joueurs:
             self.erase_sprite( j , backup = True )
-            if self.collide_sprite( j ):
+            if self.collide_sprite( j ) or self.out_of_screen( j ):
                 j.resume_position_to_backup()
             self.draw_sprite(j)
