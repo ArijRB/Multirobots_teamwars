@@ -6,7 +6,7 @@ from collections import OrderedDict
 from sprite import MySprite,MovingSprite,RecursiveDrawGroup
 from players import Player,Turtle
 import os
-
+import zlib
 
 class SpriteBuilder(object):
     '''
@@ -64,8 +64,14 @@ class SpriteBuilder(object):
         for l in self.carte["layers"]:
             layername = l["name"]
             g = Grps[layername]
+            dat = l["data"]
+            if "compression" in l:
+                if l["compression"] == "zlib":
+                    print "error: je ne sais pas encore traiter les fichiers json compresses"
+                    exit()
+                    dat = map(ord , list( zlib.decompress( dat.decode('base64') ) ) )
 
-            for idx,e in enumerate(l["data"]):
+            for idx,e in enumerate(dat):
                 y,x = (idx // self.rowsize)*self.spritesize , (idx % self.rowsize)*self.spritesize
                 if e > 0:
                     self.basicSpriteFactory( Grps , layername , self.sheet.get_row_col(e-1) , x,y , self.sheet[e-1])
