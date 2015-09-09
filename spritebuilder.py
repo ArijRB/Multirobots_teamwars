@@ -66,10 +66,11 @@ class SpriteBuilder(object):
             g = Grps[layername]
             dat = l["data"]
             if "compression" in l:
-                if l["compression"] == "zlib":
-                    print "error: je ne sais pas encore traiter les fichiers json compresses"
-                    exit()
-                    dat = map(ord , list( zlib.decompress( dat.decode('base64') ) ) )
+                assert l["compression"] == "zlib"
+                # algo super-moche pour decompresser et decoder les donnees dat
+                dat2 = dat.decode('base64').decode('zlib')
+                dat3 = [dat2[i*4:i*4+4]for i in range(len(dat2)/4)]
+                dat  = map(lambda x: ord(x[0])+256*ord(x[1])+256**2*ord(x[2])+256**3*ord(x[3]),dat3)
 
             for idx,e in enumerate(dat):
                 y,x = (idx // self.rowsize)*self.spritesize , (idx % self.rowsize)*self.spritesize
