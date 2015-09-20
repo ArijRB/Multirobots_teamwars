@@ -12,12 +12,13 @@ class Ontology:
         self.cate = self.construit_categories()
 
     def names(self,sprt):
-        return None if sprt==None else self.onto[sprt.tileid]
+        return None if sprt is None else self.onto[sprt.tileid]
 
     def firstname(self,sprt):
         return None if sprt==None else self.names(sprt)[0]
 
-    def construit_ontologie(self,pairs,filename):
+    @staticmethod
+    def construit_ontologie(pairs,filename):
         '''
             Construit un dictionnaire (de type cles=pairs d entier ou juste entier, valeur=ensemble de strings)
             Ce dictionnaire decrit ce qu'il y a dans les tiles, en reprenant l information d un fichier csv
@@ -65,7 +66,7 @@ class Ontology:
         '''
         cat = defaultdict(set)
 
-        for idx,descr in self.onto.iteritems():
+        for idx,descr in self.onto.items():
             for nom in descr:
                 cat[nom].add( idx )
         return cat

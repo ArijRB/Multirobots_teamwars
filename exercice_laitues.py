@@ -1,25 +1,34 @@
 from gardenworld import *
 # le but de cet exercice est de programmer une tortue qui doit transferer 8 laitues dans l'enclos du chateau
+
 init()
+
+
 # quelques macros
 def fonce():
     # avance tout droit tant qu'on est pas bloques par un obstacle
     while avance():
         pass
 
+
 def demitour():
-    tournegauche();tournegauche()
+    tournegauche();
+    tournegauche()
+
 
 # fonctions principales
 def aller_devant_laitues():
     demitour()
-    avance() ; avance()
+    avance();
+    avance()
     tournedroite()
     fonce()
 
-    tournedroite(); avance();tournegauche()
+    tournedroite();
+    avance();
+    tournegauche()
     for i in range(5):
-      avance()
+        avance()
     tournegauche()
     fonce()
     tournedroite()
@@ -28,7 +37,6 @@ def aller_devant_laitues():
 
 
 def ramasse_laitues():
-
     def ramasse_rangee():
         for j in range(4):
             ramasse()
@@ -42,11 +50,12 @@ def ramasse_laitues():
     ramasse_rangee()
 
 
-
 def rentre_au_chateau():
     # reviens en haut a tournegauche du chateau
     fonce()
-    tournedroite(); avance(); avance();
+    tournedroite();
+    avance();
+    avance();
     tournegauche();
     for i in range(4):
         avance()
@@ -62,8 +71,10 @@ def repose_laitues():
         tournedroite()
         avance()
         depose()
-        tournegauche();tournegauche()
-        avance();tournedroite()
+        tournegauche();
+        tournegauche()
+        avance();
+        tournedroite()
         avance()
 
 

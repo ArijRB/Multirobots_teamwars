@@ -46,7 +46,7 @@ class SpriteBuilder(object):
                 sheet_filename  = dirname + "/Cartes/" + self.carte["tilesets"][0]["image"]
                 self.sheet      = SpriteSheet(sheet_filename,self.spritesize)
             except pygame.error as e2:
-                print "Error - impossible de trouver le fichier images des sprites -"
+                print ("Error - impossible de trouver le fichier images des sprites -")
                 raise e2
 
     def prepareSprites(self):
@@ -69,7 +69,7 @@ class SpriteBuilder(object):
                 assert l["compression"] == "zlib"
                 # algo super-moche pour decompresser et decoder les donnees dat
                 dat2 = dat.decode('base64').decode('zlib')
-                dat3 = [dat2[i*4:i*4+4]for i in range(len(dat2)/4)]
+                dat3 = [dat2[i*4:i*4+4]for i in range(len(dat2)//4)]
                 dat  = map(lambda x: ord(x[0])+256*ord(x[1])+256**2*ord(x[2])+256**3*ord(x[3]),dat3)
 
             for idx,e in enumerate(dat):
@@ -81,7 +81,7 @@ class SpriteBuilder(object):
 
     ##########  Methodes a surcharger pour adapter la classe ##########
     @classmethod
-    def basicSpriteFactory(self,spritegroups , layername,tileid,x,y,img):
+    def basicSpriteFactory(cls,spritegroups , layername,tileid,x,y,img):
         if layername == "joueur":
             spritegroups[layername].add( Player(layername,tileid,x,y,[img]) )
 
@@ -91,7 +91,7 @@ class SpriteBuilder(object):
             spritegroups[layername].add( MySprite(layername,tileid,x,y,[img]) )
 
     @classmethod
-    def basicGroupFactory(self,layername):
+    def basicGroupFactory(cls,layername):
         if layername in ["eye_candy","joueur"]:
             return RecursiveDrawGroup()
         else:

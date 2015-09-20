@@ -1,32 +1,41 @@
 from gardenworld import *
 from collections import Counter
+
 init('info2_1')
 
 gw.fps = 25
 
+
 def avance_many(k):
     for i in range(k):
         av()
+
 
 def ramasse_rangee():
     L = []
     while True:
         o = ramasse()
         if not o is None:
-            L.append( o )
+            L.append(o)
         if obstacle():
             break
         avance()
     return L
 
+
 def ramasse_tout():
     L = []
     for i in range(4):
         L += ramasse_rangee()
-        tg(); av(); tg()
+        tg();
+        av();
+        tg()
         L += ramasse_rangee()
-        td(); av(); td()
+        td();
+        av();
+        td()
     return L
+
 
 def va_dans_jardin():
     avance_many(7)
@@ -34,16 +43,19 @@ def va_dans_jardin():
     avance_many(10)
     tg()
     avance_many(7)
-    tg();tg()
+    tg();
+    tg()
+
 
 def enregistre_rangee():
     L = []
     while True:
-        L.append( cherche() )
+        L.append(cherche())
         if obstacle():
             break
         avance()
     return L
+
 
 def plante_rangee(L):
     for leg in L:
@@ -51,14 +63,20 @@ def plante_rangee(L):
         depose(leg)
         avance()
 
+
 def plante_jardin():
     L = enregistre_rangee()
     for i in range(4):
-        tg();tg();avance_many(15);tg();av();tg()
+        tg();
+        tg();
+        avance_many(15);
+        tg();
+        av();
+        tg()
         plante_rangee(L)
 
 
 panier = ramasse_tout()
-print "J'ai ramasse: ",dict(Counter(panier))
+print "J'ai ramasse: ", dict(Counter(panier))
 va_dans_jardin()
 plante_jardin()

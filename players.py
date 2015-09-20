@@ -34,15 +34,15 @@ class Player(MovingSprite):
         for obj in groupDict["ramassable"]:
             if filtre(obj):
                 if self.mask.overlap(obj.mask,(obj.rect.x - self.rect.x,obj.rect.y - self.rect.y)):
-                    if verb: print "j'en ai trouve un"
+                    if verb: print ("j'en ai trouve un")
                     return obj
-        if verb: print "rien a ramasser"
+        if verb: print ("rien a ramasser")
         return None
 
     def ramasse(self,groupDict,verb=False):
         o = self.cherche_ramassable(groupDict)
-        if o == None:
-            if verb: print "rien a ramasser"
+        if o is None:
+            if verb: print ("rien a ramasser")
             return None
         self.inventory.add( o )
         o.remove( groupDict.values() )
@@ -53,8 +53,8 @@ class Player(MovingSprite):
         # remove object from existing groups displayed on the screen
         candidats = [o for o in self.inventory if filtre(o)]
 
-        if candidats == []:
-            if verb: print "rien a deposer"
+        if not candidats:
+            if verb: print ("rien a deposer")
             return None
         obj = candidats[0]
         self.inventory.remove( obj )
@@ -66,7 +66,7 @@ class Player(MovingSprite):
         mask.erase_sprite( self )
         cx,cy = self.get_centroid()
         w,h = mask.mask.get_size()
-        if radian_angle==None: radian_angle = random()*2*pi
+        if radian_angle is None: radian_angle = random()*2*pi
         self.rayon_hit = rayon.rayon(mask.mask,cx,cy,radian_angle,w,h)
         mask.draw_sprite( self )
         if self.rayon_hit and groupDict:

@@ -24,7 +24,7 @@ class MySprite(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.x , self.rect.y = x,y
-
+        #print("layername=",layername,"id = ",self.tileid)
     def dist(self,x,y):
         cx,cy = self.get_centroid()
         return sqrt( (cx-x)**2 + (cy-y)**2 )

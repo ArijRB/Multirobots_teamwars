@@ -24,8 +24,8 @@ class SpriteSheet(object):
         self.sprite_sheet = pygame.image.load(file_name)
         self.spritesize   = _spritesize
         w , h             = self.sprite_sheet.get_width() , self.sprite_sheet.get_height()
-        self.rowsize =  w / _spritesize
-        self.colsize =  h / _spritesize
+        self.rowsize =  w // _spritesize
+        self.colsize =  h // _spritesize
 
         assert  (self.rowsize*_spritesize ==  w) and (self.colsize*_spritesize == h) , \
                 "le spritesheet a une taille incorrecte"
@@ -59,13 +59,13 @@ class SpriteSheet(object):
         try:
             self.sprite_images = [img.convert() for img in self.sprite_images]
         except pygame.error as e:
-            print "-- Erreur: il faut initialiser pygame avec pygame.display.set_mode(...) AVANT d'utiliser la fonction pygame convert(...) --"
-            print "-- sinon, pygame ne saura pas dans quelle resolution convertir les bitmaps --"
+            print( "-- Erreur: il faut initialiser pygame avec pygame.display.set_mode(...) AVANT d'utiliser la fonction pygame convert(...) --")
+            print ("-- sinon, pygame ne saura pas dans quelle resolution convertir les bitmaps --")
             raise e
 
 
     def get_row_col(self,idx):
-        return idx / self.rowsize , idx % self.rowsize
+        return int(idx / self.rowsize) , int(idx % self.rowsize)
 
 
     def __getitem__(self,idx):
@@ -74,6 +74,6 @@ class SpriteSheet(object):
         '''
         if isinstance(idx,tuple):
             i,j = idx
-            return self.sprite_images[i*self.rowsize + j]
+            return self.sprite_images[int(i*self.rowsize + j)]
         else:
             return self.sprite_images[idx]

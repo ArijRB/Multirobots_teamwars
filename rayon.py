@@ -36,7 +36,9 @@ def rayon(m,x,y,angle,w,h):
 
     x2 = x + int( cos(angle)*(w+h) )
     y2 = y + int( sin(angle)*(w+h) )
-
+    x,y = int(x),int(y)
+    w,h = int(w),int(h)
+    
     steep = 0
     dx = abs(x2 - x)
     dy = abs(y2 - y)
@@ -58,7 +60,7 @@ def rayon(m,x,y,angle,w,h):
     i = 0
 
     # boucle principale de l'algo de Bresenham
-    while x >= 0 and y >= 0 and x < w and y < h and i <= dx:
+    while y >= 0 and 0 <= x < w and y < h and i <= dx:
         if steep:
             #print y,x
             if _cython_compiled:
@@ -77,7 +79,7 @@ def rayon(m,x,y,angle,w,h):
                     return (x,y)
 
         while d >= 0:
-            y = y + sy
+            y += sy
             d = d - (2 * dx)
 
         x += sx
@@ -104,7 +106,7 @@ def test_rayon():
     im = pygame.image.load('Unused/DataUnused/Square2.png')
     m = pygame.mask.from_surface(im)
     w,h = im.get_width(),im.get_height()
-    print "Unit test launched..."
+    print ("Unit test launched...")
 
     T = np.zeros((w,h))
     for angle in np.linspace(0,2*pi-0.1,50):
@@ -112,7 +114,7 @@ def test_rayon():
 
     plt.imshow(T,cmap='gist_ncar')
     plt.savefig('carre.png')
-    print "image file carre.png should have a dotted square"
+    print ("image file carre.png should have a dotted square")
 
 if __name__ == '__main__':
     test_rayon()

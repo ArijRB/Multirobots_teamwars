@@ -9,16 +9,14 @@ try:
 except:
     first = lambda x: list(x)[0]
 
-
 from collisions import CollisionHandler
 
 
 class Game:
-
     # callbacks is a dictionary of functions to call depending on key pressed
     callbacks = {}
 
-    def __init__(self,fichiercarte,_SpriteBuilder):
+    def __init__(self, fichiercarte, _SpriteBuilder):
 
         pygame.init()
 
@@ -26,8 +24,8 @@ class Game:
         self.spriteBuilder = _SpriteBuilder(fichiercarte)
 
         # cree la fenetre pygame
-        self.screen = pygame.display.set_mode([ self.spriteBuilder.spritesize*self.spriteBuilder.rowsize ,
-                                                self.spriteBuilder.spritesize*self.spriteBuilder.colsize ])
+        self.screen = pygame.display.set_mode([self.spriteBuilder.spritesize * self.spriteBuilder.rowsize,
+                                               self.spriteBuilder.spritesize * self.spriteBuilder.colsize])
         pygame.display.set_caption("pySpriteWorld Experiment")
 
         # converti les sprites meme format que l'ecran
@@ -42,7 +40,7 @@ class Game:
             raise IndexError("Je ne trouve aucun joueur dans le fichier TMX")
 
         # prepare le bitmap 'background'
-        self.background = pygame.Surface([ self.screen.get_width(), self.screen.get_height() ]).convert()
+        self.background = pygame.Surface([self.screen.get_width(), self.screen.get_height()]).convert()
         self.groupDict["bg1"].draw(self.background)
         self.groupDict["bg2"].draw(self.background)
 
@@ -52,17 +50,14 @@ class Game:
         # click clock
         self.clock = pygame.time.Clock()
 
-
     def setup_keyboard_callbacks(self):
-        self.callbacks = self.player.gen_callbacks(self.player.rect.w,self.groupDict,self.mask)
-
+        self.callbacks = self.player.gen_callbacks(self.player.rect.w, self.groupDict, self.mask)
 
     def update(self):
-        self.mask.handle_collision(self.groupDict,self.player)
+        self.mask.handle_collision(self.groupDict, self.player)
 
         for layer in glo.NON_BG_LAYERS:
             self.groupDict[layer].update()
-
 
     def draw(self):
         self.screen.blit(self.background, (0, 0), (0, 0, self.screen.get_width(), self.screen.get_height()))
@@ -71,11 +66,10 @@ class Game:
 
         pygame.display.flip()
 
-
-    def mainiteration(self,fps=60):
+    def mainiteration(self, fps=60):
         if pygame.event.peek():
-            for event in pygame.event.get(): # User did something
-                if event.type == pygame.QUIT: # If user clicked close
+            for event in pygame.event.get():  # User did something
+                if event.type == pygame.QUIT:  # If user clicked close
                     pygame.quit()
                     quit()
 
