@@ -47,48 +47,69 @@ def init(_boardname=None):
 
 
 def tournegauche():
-    player.translate_sprite(0, 0, -90)
-    gw.game.mainiteration(gw.fps)
-
+    try:
+        player.translate_sprite(0, 0, -90)
+        gw.game.mainiteration(gw.fps)
+    except NameError:
+        print("Erreur: appeler la fonction init() avant toute chose")
 
 def tournedroite():
-    player.translate_sprite(0, 0, 90)
-    gw.game.mainiteration(gw.fps)
+    try:
+        player.translate_sprite(0, 0, 90)
+        gw.game.mainiteration(gw.fps)
+    except NameError:
+        print("Erreur: appeler la fonction init() avant toute chose")
 
 
 def avance():
-    player.forward(player.rect.width)
-    gw.game.mainiteration(gw.fps)
-    return player.position_changed()
+    try:
+        player.forward(player.rect.width)
+        gw.game.mainiteration(gw.fps)
+        return player.position_changed()
+    except NameError:
+        print("Erreur: appeler la fonction init() avant toute chose")
 
 
 def ramasse():
-    o = gw.game.player.ramasse(gw.game.groupDict)
-    gw.game.mainiteration(gw.fps)
-    return gw.O.firstname(o)
+    try:
+        o = gw.game.player.ramasse(gw.game.groupDict)
+        gw.game.mainiteration(gw.fps)
+        return gw.O.firstname(o)
+    except NameError:
+        print("Erreur: appeler la fonction init() avant toute chose")
 
 
 def obstacle():
-    player.forward(player.rect.width)
-    c = gw.game.mask.check_box_collisions_single_player(gw.game.groupDict, player)
-    player.resume_to_backup()
-    return c
+    try:
+        player.forward(player.rect.width)
+        c = gw.game.mask.check_box_collisions_single_player(gw.game.groupDict, player)
+        player.resume_to_backup()
+        return c
+    except NameError:
+        print("Erreur: appeler la fonction init() avant toute chose")
 
 
 def depose(nom=None):
-    def _filtre(o): return nom in gw.O.names(o) + [None]
+    try:
+        def _filtre(o): return nom in gw.O.names(o) + [None]
 
-    o = player.depose(gw.game.groupDict, _filtre)
-    gw.game.mainiteration(gw.fps)
-    return gw.O.firstname(o)
+        o = player.depose(gw.game.groupDict, _filtre)
+        gw.game.mainiteration(gw.fps)
+        return gw.O.firstname(o)
+    except NameError:
+        print("Erreur: appeler la fonction init() avant toute chose")
 
 
 def cherche(nom=None):
-    def _filtre(o): return nom in gw.O.names(o) + [None]
+    try:
+        def _filtre(o): return nom in gw.O.names(o) + [None]
 
-    o = player.cherche_ramassable(gw.game.groupDict, _filtre)
-    gw.game.mainiteration(gw.fps)
-    return gw.O.firstname(o)
+        o = player.cherche_ramassable(gw.game.groupDict, _filtre)
+        gw.game.mainiteration(gw.fps)
+        return gw.O.firstname(o)
+    except NameError:
+        print("Erreur: appeler la fonction init() avant toute chose")
+
 
 
 tg, td, av, ra, dp, ch, reset, ob = tournegauche, tournedroite, avance, ramasse, depose, cherche, init, obstacle
