@@ -20,7 +20,7 @@
  </layer>
  <layer name="ramassable" width="17" height="17">
   <data encoding="base64" compression="zlib">
-   eJxjYBgF5II5RKjRp7Kd1DaPXmaPglGACwAAkSEBKg==
+   eJxjYBgFuMAcKpihTwUzaGkevcweBaMAFwAApKEBKg==
   </data>
  </layer>
  <layer name="joueur" width="17" height="17">
