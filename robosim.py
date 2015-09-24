@@ -48,13 +48,13 @@ def init(_boardname=None):
 def check_init_done(fun):
     """ decorator checking if init() has correctly been called before anything """
     @wraps(fun  )
-    def fun_checked(*args):
+    def fun_checked(*args,**kwargs):
         try:
             gw.game
         except AttributeError:
             print("Erreur: appeler la fonction init() avant toute chose")
         else:
-            return fun(*args)
+            return fun(*args,**kwargs)
     return fun_checked
 
 @check_init_done
@@ -181,22 +181,28 @@ def obstacle_coords(x,y):
         return False
 
 @check_init_done
-def line(x1,y1,x2,y2):
+def line(x1,y1,x2,y2,wait=False):
     """
     line(x1,y1,x2,y2) dessine une ligne de (x1,y1) a (x2,y2)
+    si wait est True, alors la mise a jour de l'affichage est differe, ce qui
+    accelere la fonction.
     """
     gw.game.prepare_dessinable()
     pygame.draw.aaline(gw.game.surfaceDessinable, gw.pencolor, (x1,y1), (x2,y2))
-    gw.game.mainiteration(gw.fps)
+    if not wait:
+        gw.game.mainiteration(gw.fps)
 
 @check_init_done
-def circle(x1,y1,r=10):
+def circle(x1,y1,r=10,wait=False):
     """
     circle(x,y,r) dessine un cercle
+    si wait est True, alors la mise a jour de l'affichage est differe, ce qui
+    accelere la fonction.
     """
     gw.game.prepare_dessinable()
     pygame.draw.circle(gw.game.surfaceDessinable, gw.pencolor, (x1,y1), r)
-    gw.game.mainiteration(gw.fps)
+    if not wait:
+        gw.game.mainiteration(gw.fps)
 
 @check_init_done
 def efface():
