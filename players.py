@@ -74,15 +74,15 @@ class Player(MovingSprite):
         groupDict[obj.layername].add( obj )
         return obj
 
-    def throw_ray(self,radian_angle,mask,groupDict):
+    def throw_ray(self,radian_angle,mask,groupDict,coords=None):
         mask.erase_sprite( self )
-        cx,cy = self.get_centroid()
+        cx,cy = coords if coords else self.get_centroid()
         w,h = mask.mask.get_size()
         if radian_angle is None: radian_angle = random()*2*pi
         self.rayon_hit = rayon.rayon(mask.mask,cx,cy,radian_angle,w,h)
         mask.draw_sprite( self )
         if self.rayon_hit and groupDict:
-            groupDict["eye_candy"].add( DrawOnceSprite( pygame.draw.line , [(255,0,0),self.get_centroid(),self.rayon_hit,4] ) )
+            groupDict["eye_candy"].add( DrawOnceSprite( pygame.draw.line , [(255,0,0),(cx,cy),self.rayon_hit,4] ) )
         return self.rayon_hit
 
 
@@ -110,9 +110,8 @@ class Turtle(Player):
         w,h = self.rect.w , self.rect.h
         self.dessin = pygame.Surface((w,h)).convert()
         self.dessin.set_colorkey( (0,0,0) )
-        self.dessin.set_alpha(250)
+        #self.dessin.set_alpha(250)
         self.draw_dessin()
-        #self.dessin.set_alpha(0)
 
     def draw(self,surf):
         cx,cy = self.get_centroid()

@@ -1,9 +1,7 @@
 from robosim import *
 import numpy as np
 
-#game.fps = 100
 init()
-
 
 while True:
     angles = np.random.randint(360, size=1)

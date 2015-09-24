@@ -3,10 +3,17 @@ from sprite import MySprite,MovingSprite
 from players import Player,Turtle
 from spritebuilder import SpriteBuilder
 import random
-from math import pi,cos,sin
+from math import pi,cos,sin,sqrt
 import pygame
 import glo
 from functools import wraps
+import pygame.draw
+
+
+print("""\n---==[ Fonction disponibles ]==---""")
+print("""init,avance,obstacle,oriente,\ntournegauche,tournedroite,telemetre,\ntelemetre_coords,position,\nset_position,obstacle_coords\nline,circle,efface\npenup,pendown,color""")
+print("""=[ Pour l'aide, tapez help(fonction) ]=\n""")
+
 
 class TurtleSpriteBuilder(SpriteBuilder):
     def basicSpriteFactory(self,spritegroups , layername,tileid,x,y,img):
@@ -20,29 +27,34 @@ class TurtleSpriteBuilder(SpriteBuilder):
 ###########################################
 
 class gw:
-    game = None
-    fps = None
-    name = 'robot_obstacles'
-
+    pass
 
 def init(_boardname=None):
+    """
+    Reinitialise la carte et l'ensemble des parametres
+    """
     global player
     pygame.quit()
     if _boardname: gw.name = _boardname
-    gw.fps = 60  # frames per second
-    gw.game = Game('Cartes/' + gw.name + '.json', TurtleSpriteBuilder)
-    gw.game.mainiteration(60)
-    player = gw.game.player
 
+    gw.name = 'robot_obstacles'
+    gw.pencolor = glo.RED
+    gw.usepen = False
+    gw.fps = 200  # frames per second
+    gw.game = Game('Cartes/' + gw.name + '.json', TurtleSpriteBuilder)
+    gw.game.mainiteration(gw.fps)
+    player = gw.game.player
 
 def check_init_done(fun):
     """ decorator checking if init() has correctly been called before anything """
     @wraps(fun  )
     def fun_checked(*args):
         try:
-            return fun(*args)
-        except NameError:
+            gw.game
+        except AttributeError:
             print("Erreur: appeler la fonction init() avant toute chose")
+        else:
+            return fun(*args)
     return fun_checked
 
 @check_init_done
@@ -55,9 +67,16 @@ def avance(s=1.0):
     et le robot reste a sa position courante et la fonction renvoie False.
     S'il n'y a pas d'obstacle la fonction renvoie True
     """
+    cx1,cy1 = player.get_centroid()
     player.forward(s)
-    gw.game.mainiteration()
-    return player.position_changed()
+    gw.game.mainiteration(gw.fps)
+    if player.position_changed():
+        if gw.usepen:
+            cx2,cy2 = player.get_centroid()
+            line(cx1,cy1,cx2,cy2)
+        return True
+    else:
+        return False
 
 @check_init_done
 def obstacle(s=1.0):
@@ -85,7 +104,7 @@ def oriente(a):
     Donc oriente(180) le fait se tourner vers l'Ouest
     """
     player.translate_sprite(player.x,player.y,a,relative=False)
-    gw.game.mainiteration()
+    gw.game.mainiteration(gw.fps)
 
 @check_init_done
 def tournegauche(a):
@@ -93,7 +112,7 @@ def tournegauche(a):
     pivote d'un angle donne, en degrees
     """
     player.translate_sprite(0,0,-a,relative=True)
-    gw.game.mainiteration()
+    gw.game.mainiteration(gw.fps)
 
 @check_init_done
 def tournedroite(a):
@@ -101,7 +120,7 @@ def tournedroite(a):
     pivote d'un angle donne, en degrees
     """
     player.translate_sprite(0,0,a,relative=True)
-    gw.game.mainiteration()
+    gw.game.mainiteration(gw.fps)
 
 @check_init_done
 def telemetre():
@@ -111,8 +130,21 @@ def telemetre():
     de rencontrer un obstacle
     """
     rayon_hit = player.throw_ray(player.angle_degree*pi/180 , gw.game.mask,gw.game.groupDict)
-    gw.game.mainiteration()
+    gw.game.mainiteration(gw.fps)
     return player.dist(*rayon_hit)
+
+@check_init_done
+def telemetre_coords(x,y,a):
+    """
+    telemetre_coords(x,y,a)
+    tire un rayon laser depuis x,y avec l'angle a
+    la fonction renvoie le nombre de pixels parcourus par le rayon avant
+    de rencontrer un obstacle
+    """
+    rx,ry = player.throw_ray(a*pi/180 , gw.game.mask,gw.game.groupDict,coords=(x,y))
+    gw.game.mainiteration(gw.fps)
+
+    return sqrt( (rx-x)**2 + (ry-y)**2 )
 
 @check_init_done
 def position():
@@ -128,7 +160,7 @@ def set_position(x,y):
     Renvoie False si la teleportation a echouee, pour cause d'obstacle
     """
     player.set_centroid(x,y)
-    gw.game.mainiteration()
+    gw.game.mainiteration(gw.fps)
     return player.position_changed()
 
 @check_init_done
@@ -147,5 +179,56 @@ def obstacle_coords(x,y):
     else:
         player.resume_to_backup()
         return False
+
+@check_init_done
+def line(x1,y1,x2,y2):
+    """
+    line(x1,y1,x2,y2) dessine une ligne de (x1,y1) a (x2,y2)
+    """
+    gw.game.prepare_dessinable()
+    pygame.draw.aaline(gw.game.surfaceDessinable, gw.pencolor, (x1,y1), (x2,y2))
+    gw.game.mainiteration(gw.fps)
+
+@check_init_done
+def circle(x1,y1,r=10):
+    """
+    circle(x,y,r) dessine un cercle
+    """
+    gw.game.prepare_dessinable()
+    pygame.draw.circle(gw.game.surfaceDessinable, gw.pencolor, (x1,y1), r)
+    gw.game.mainiteration(gw.fps)
+
+@check_init_done
+def efface():
+    """
+    efface() va effacer tous les dessins
+    """
+    gw.game.kill_dessinable()
+    gw.game.mainiteration(gw.fps)
+
+
+@check_init_done
+def color(c):
+    """
+    color(c) change la couleur du dessin.
+    par exemple, pour avoir du bleu, faire color((0,255,0))
+    Attention, il y a un bug: la couleur bleue ne fonctionne pas
+    """
+    gw.pencolor = c
+
+@check_init_done
+def pendown():
+    """
+    abaisse le stylo
+    """
+    gw.usepen = True
+
+@check_init_done
+def penup():
+    """
+    releve le stylo
+    """
+    gw.usepen = False
+
 
 av, tele, setheading, tg, td, pos, teleporte  = avance, telemetre, oriente, tournegauche, tournedroite, position, set_position

@@ -3,6 +3,7 @@ import glo
 import pygame
 from collections import OrderedDict
 import random
+from sprite import MySprite
 
 try:
     from toolz import first
@@ -65,6 +66,16 @@ class Game:
             self.groupDict[layer].draw(self.screen)
 
         pygame.display.flip()
+
+    def kill_dessinable(self):
+        while self.groupDict['dessinable']:
+            first(self.groupDict['dessinable']).kill()
+
+    def prepare_dessinable(self):
+        if not self.groupDict['dessinable']:
+            self.surfaceDessinable = pygame.Surface([self.screen.get_width(), self.screen.get_height()]).convert()
+            self.surfaceDessinable.set_colorkey( (0,0,0) )
+            self.groupDict['dessinable'].add( MySprite('dessinable',None,0,0,[self.surfaceDessinable]) )
 
     def mainiteration(self, fps=60):
         if pygame.event.peek():
