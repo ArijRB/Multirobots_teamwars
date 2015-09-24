@@ -1,16 +1,20 @@
-from robot_sim import *
+from robosim import *
 import numpy as np
 
+#game.fps = 100
+init()
+
+
 while True:
-    angles = np.random.randint(360, size=10)
+    angles = np.random.randint(360, size=1)
     distances = []
 
     for a in angles:
-        setheading(a)
+        oriente(a)
         distances.append(telemetre())
 
     best = np.argmax(distances)
-    setheading(angles[best])
+    oriente(angles[best])
 
-    for t in range(int(distances[best] * 0.8)):
+    while not obstacle():
         avance(1)

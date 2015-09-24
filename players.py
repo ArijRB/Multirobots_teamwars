@@ -5,7 +5,19 @@ from random import random
 from math import pi,sqrt,cos,sin,floor
 import rayon
 import polygons
+import glo
+try:
+    from pygame.gfxdraw import aacircle,filled_circle
+    #filled_circle(surface, x, y, r, color) -> None
+    #aacircle(surface, x, y, r, color) -> None
+    def circle(surf,c,(x,y),r,w):
+        filled_circle(surf,x,y,r,(20,20,60))
+        aacircle(surf,x,y,r,c)
+        aacircle(surf,x,y,r-1,c)
 
+except:
+    from pygame.draw import circle
+    #circle(Surface, color, pos, radius, width=0) -> Rect
 
 class Player(MovingSprite):
     """ cette classe modelise un sprite controlable par l'utilisateur
@@ -79,26 +91,53 @@ class Turtle(Player):
 
     def __init__(self,*args):
         Player.__init__(self,*args)
-        self.taille_fleche = 40
-        self.fleche = None
+        cx,cy = self.get_centroid()
+        w,h = self.rect.w , self.rect.h
 
-    def build_fleche(self):
-        self.fleche = pygame.Surface((self.taille_fleche,self.taille_fleche))
-        self.fleche.set_colorkey( (0,0,0) )
-        self.fleche.set_alpha(150)
+        self.taille_geometrique = 22
+        self.penwidth = 1
+        self.typedessin = 'fleche' # is 'cercle' or 'fleche'
+        self.tileid = None
+        self.image = pygame.Surface((w,h)).convert()
+        #pygame.gfxdraw.aacircle(self.image, w/2,h/2, self.taille_geometrique/2 - self.penwidth,glo.WHITE)
+        circle(self.image, glo.WHITE, (w/2,h/2), self.taille_geometrique/2 - self.penwidth,self.penwidth)
+        self.image.set_colorkey( (0,0,0) )
+        self.imagelist = [self.image]
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect.w,self.rect.h = self.image.get_rect().w,self.image.get_rect().h
+
+    def build_dessin(self):
+        w,h = self.rect.w , self.rect.h
+        self.dessin = pygame.Surface((w,h)).convert()
+        self.dessin.set_colorkey( (0,0,0) )
+        self.dessin.set_alpha(250)
+        self.draw_dessin()
+        #self.dessin.set_alpha(0)
 
     def draw(self,surf):
         cx,cy = self.get_centroid()
-        if self.fleche:
-            surf.blit(self.fleche,(cx-self.taille_fleche/2,cy-self.taille_fleche/2))
-
         Player.draw(self,surf)
+        if self.dessin:
+            surf.blit(self.dessin,self.rect)
+
+    def draw_dessin(self):
+        self.backup_angle_degree = self.angle_degree
+        self.dessin.fill((0,0,0))
+        w,h = self.rect.w , self.rect.h
+        if self.typedessin == 'fleche':
+            polygons.draw_arrow(self.dessin,w/2,h/2,self.angle_degree * pi/180,r=self.taille_geometrique-14,clr=glo.WHITE)
+        elif self.typedessin == 'cercle':
+            x1,y1,x2,y2 = w/2,h/2,int(w/2+(self.taille_geometrique/2-1)*cos(self.angle_degree * pi/180)),int(h/2+(self.taille_geometrique/2-1)*sin(self.angle_degree * pi/180))
+            pygame.draw.line(self.dessin,glo.WHITE,(x1,y1),(x2,y2),2)
+            #pygame.gfxdraw.line(self.dessin,x1,y1,x2,y2,glo.WHITE)
+            #polygons.draw_arrow(self.dessin,w/2,h/2,self.angle_degree * pi/180,r=self.taille_geometrique-14,clr=glo.WHITE)
+        else:
+            raise 'erreur: le dessin de la tortue peut etre un cercle ou une fleche'
+
 
     def update(self):
         super(Turtle, self).update()
 
-        if self.fleche:
+        if self.dessin:
             if self.backup_angle_degree != self.angle_degree:
-                self.backup_angle_degree = self.angle_degree
-                self.fleche.fill((0,0,0))
-                polygons.draw_arrow(self.fleche,self.taille_fleche/2,self.taille_fleche/2,self.angle_degree * pi/180)
+                self.draw_dessin()

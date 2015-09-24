@@ -74,12 +74,14 @@ class MovingSprite(MySprite):
         self.backup_x , self.backup_y = self.x , self.y
         self.backup_angle_degree = self.angle_degree
         self.backup_image = self.image
+        self.resumed = False
 
     def resume_to_backup(self):
         self.x , self.y = self.backup_x , self.backup_y
         self.rect.x , self.rect.y = int(self.x) , int(self.y)
         self.angle_degree = self.backup_angle_degree
         self.image = self.backup_image
+        self.resumed = True
 
 
 
@@ -99,8 +101,12 @@ class MovingSprite(MySprite):
     def translate_sprite(self,x,y,a,relative=True):
         # Attention, backup() est indispensable,
         # car la gestion des collision doit pouvoir revenir en arriere
-        self.backup()
+        try:
+            self.compteur +=1
+        except:
+            self.compteur = 0
 
+        self.backup()
         if relative:
             self.x += x
             self.y += y
@@ -109,14 +115,15 @@ class MovingSprite(MySprite):
             self.x , self.y , self.angle_degree = x , y , a
 
         self.rotate_image(self.angle_degree)
-        self.rect.x , self.rect.y = round(self.x) , round(self.y)
+        self.rect.x , self.rect.y = int(self.x) , int(self.y)
 
 
     def set_centroid(self,x,y):
-        self.translate_sprite(x-self.rect.w,y-self.rect.h,self.angle_degree,relative=False)
+        self.translate_sprite(x-self.rect.w//2,y-self.rect.h//2,self.angle_degree,relative=False)
 
     def get_centroid(self):
-        return self.x+self.rect.w/2,self.y+self.rect.h/2
+        #print "x=",self.x," , w=",self.rect.w
+        return self.x+self.rect.w//2,self.y+self.rect.h//2
 
     def forward(self,t):
         self.translate_sprite(t*cos(self.angle_degree * pi/180),t*sin(self.angle_degree * pi/180),0)

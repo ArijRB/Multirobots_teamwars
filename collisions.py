@@ -58,6 +58,10 @@ class CollisionHandler:
         # send it to the player
         assert not self.collide_sprite(player, True), "sprite collision before any movement !!!"
         if self.collide_sprite(player) or self.out_of_screen(player):
+            #print("COLLISION !!! in ",player.x,",",player.y)
+            #print("resuming to ",player.backup_x,",",player.backup_y)
+            #print("int coordinates:",player.rect.x,player.rect.y,player.)
+            #print "\n\n"
             player.resume_to_backup()
 
     def handle_pixel_collisions_many_players(self, gDict):
