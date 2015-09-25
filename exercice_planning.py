@@ -39,7 +39,6 @@ def prune_nodes(g):
     raw_input()
     for (i1,j1),(i2,j2) in g.edges():
         if  i1 != i2 and j1 != j2 and not g.has_edge( (i1,j2),(i2,j1) ):
-            print "removing", (i1,j1),(i2,j2)
             g.remove_edge( (i1,j1),(i2,j2) )
 
 def vaa(x,y):
@@ -59,6 +58,8 @@ def vaa(x,y):
     return True
 
 g = init_graph()
+draw_graph(g)
+raw_input()
 prune_nodes(g)
 draw_graph(g)
 p = nx.shortest_path(g,(fst,fst),(lst,lst),weight='weight')
