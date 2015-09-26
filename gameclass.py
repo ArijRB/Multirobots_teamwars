@@ -77,7 +77,7 @@ class Game:
             self.surfaceDessinable.set_colorkey( (0,0,0) )
             self.groupDict['dessinable'].add( MySprite('dessinable',None,0,0,[self.surfaceDessinable]) )
 
-    def mainiteration(self, fps=60):
+    def mainiteration(self, fps=60, display=True):
         if pygame.event.peek():
             for event in pygame.event.get():  # User did something
                 if event.type == pygame.QUIT:  # If user clicked close
@@ -89,8 +89,10 @@ class Game:
                         self.callbacks[event.key]()
 
         self.update()
-        self.draw()
-        self.clock.tick(fps)
+        if display:
+            self.draw()
+            self.clock.tick(fps)
+
 
     def mainloop(self):
         while True:

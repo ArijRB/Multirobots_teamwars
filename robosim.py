@@ -11,7 +11,7 @@ import pygame.draw
 
 
 print("""\n---==[ Fonction disponibles ]==---""")
-print("""init,avance,obstacle,oriente,\ntournegauche,tournedroite,telemetre,\ntelemetre_coords,position,\nset_position,obstacle_coords\nline,circle,efface\npenup,pendown,color""")
+print("""init,avance,obstacle,oriente,\ntournegauche,tournedroite,telemetre,\ntelemetre_coords,position,orientation\nset_position,obstacle_coords\nline,circle,efface\npenup,pendown,color""")
 print("""=[ Pour l'aide, tapez help(fonction) ]=\n""")
 
 
@@ -44,6 +44,8 @@ def init(_boardname=None):
     gw.game = Game('Cartes/' + gw.name + '.json', TurtleSpriteBuilder)
     gw.game.mainiteration(gw.fps)
     player = gw.game.player
+    gw.always_update_screen = True
+
 
 def check_init_done(fun):
     """ decorator checking if init() has correctly been called before anything """
@@ -58,6 +60,15 @@ def check_init_done(fun):
     return fun_checked
 
 @check_init_done
+def always_update_screen(on_off):
+    """
+    Call always_update_screen(False) to prevent refreshing the screen
+    This will speed up the simulation
+    """
+    gw.always_update_screen = on_off
+
+
+@check_init_done
 def avance(s=1.0):
     """
     avance() deplace robot d'un pixel dans sa direction courante
@@ -69,7 +80,7 @@ def avance(s=1.0):
     """
     cx1,cy1 = player.get_centroid()
     player.forward(s)
-    gw.game.mainiteration(gw.fps)
+    gw.game.mainiteration(gw.fps,display= gw.always_update_screen)
     if player.position_changed():
         if gw.usepen:
             cx2,cy2 = player.get_centroid()
@@ -104,70 +115,80 @@ def oriente(a):
     Donc oriente(180) le fait se tourner vers l'Ouest
     """
     player.translate_sprite(player.x,player.y,a,relative=False)
-    gw.game.mainiteration(gw.fps)
+    gw.game.mainiteration(gw.fps,display= gw.always_update_screen)
 
 @check_init_done
 def tournegauche(a):
     """
-    pivote d'un angle donne, en degrees
+    tournegauche(a) pivote d'un angle donne, en degrees
     """
     player.translate_sprite(0,0,-a,relative=True)
-    gw.game.mainiteration(gw.fps)
+    gw.game.mainiteration(gw.fps,display= gw.always_update_screen)
 
 @check_init_done
 def tournedroite(a):
     """
-    pivote d'un angle donne, en degrees
+    tournedroite(a) pivote d'un angle a donne, en degrees
     """
     player.translate_sprite(0,0,a,relative=True)
-    gw.game.mainiteration(gw.fps)
+    gw.game.mainiteration(gw.fps,display= gw.always_update_screen)
 
 @check_init_done
 def telemetre():
     """
-    tire un rayon laser dans la direction courante.
+    telemetre() tire un rayon laser dans la direction courante.
     la fonction renvoie le nombre de pixels parcourus par le rayon avant
     de rencontrer un obstacle
     """
     rayon_hit = player.throw_ray(player.angle_degree*pi/180 , gw.game.mask,gw.game.groupDict)
-    gw.game.mainiteration(gw.fps)
-    return player.dist(*rayon_hit)
+    gw.game.mainiteration(gw.fps,display= gw.always_update_screen)
+    return player.dist(*rayon_hit)-(player.taille_geometrique//2)
 
 @check_init_done
 def telemetre_coords(x,y,a):
     """
-    telemetre_coords(x,y,a)
+    telemetre_coords(x,y,a,display=True)
     tire un rayon laser depuis x,y avec l'angle a
     la fonction renvoie le nombre de pixels parcourus par le rayon avant
     de rencontrer un obstacle
     """
     rx,ry = player.throw_ray(a*pi/180 , gw.game.mask,gw.game.groupDict,coords=(x,y))
-    gw.game.mainiteration(gw.fps)
+    gw.game.mainiteration(gw.fps,display= gw.always_update_screen)
 
     return sqrt( (rx-x)**2 + (ry-y)**2 )
 
 @check_init_done
-def position():
+def position(entiers=False):
     """
-    renvoie un couple (x,y) representant les coordonnees du robot
+    position() renvoie un couple (x,y) representant les coordonnees du robot
+               ces coordonnees peuvent etre des flottants
+    position(entiers=True) renvoie un couple de coordonnees entieres
     """
-    return player.get_centroid()
+    cx,cy = player.get_centroid()
+    return (int(cx),int(cy)) if entiers else (cx,cy)
+
+@check_init_done
+def orientation():
+    """
+    orientation() renvoie l'angle en degres
+    """
+    return player.angle_degree
 
 @check_init_done
 def set_position(x,y):
     """
-    Tente une teleportation du robot aux coordonnees x,y
+    set_position(x,y) tente une teleportation du robot aux coordonnees x,y
     Renvoie False si la teleportation a echouee, pour cause d'obstacle
     """
     player.set_centroid(x,y)
-    gw.game.mainiteration(gw.fps)
+    gw.game.mainiteration(gw.fps,gw.always_update_screen)
     return player.position_changed()
 
 @check_init_done
 def obstacle_coords(x,y):
     """
-    verifie si aux coordonnees x,y il y a un obstacle qui empecherait
-    le robot d'y etre
+    obstacle_coords(x,y) verifie si aux coordonnees x,y il y a un
+    obstacle qui empecherait le robot d'y etre
     renvoie True s'il y a un obstacle, False sinon
     """
     player.set_centroid(x,y)
@@ -183,14 +204,13 @@ def obstacle_coords(x,y):
 @check_init_done
 def line(x1,y1,x2,y2,wait=False):
     """
-    line(x1,y1,x2,y2) dessine une ligne de (x1,y1) a (x2,y2)
+    line(x1,y1,x2,y2,wait=False) dessine une ligne de (x1,y1) a (x2,y2)
     si wait est True, alors la mise a jour de l'affichage est differe, ce qui
     accelere la fonction.
     """
     gw.game.prepare_dessinable()
     pygame.draw.aaline(gw.game.surfaceDessinable, gw.pencolor, (x1,y1), (x2,y2))
-    if not wait:
-        gw.game.mainiteration(gw.fps)
+    gw.game.mainiteration(gw.fps,display= gw.always_update_screen and not wait)
 
 @check_init_done
 def circle(x1,y1,r=10,wait=False):
@@ -201,8 +221,7 @@ def circle(x1,y1,r=10,wait=False):
     """
     gw.game.prepare_dessinable()
     pygame.draw.circle(gw.game.surfaceDessinable, gw.pencolor, (x1,y1), r)
-    if not wait:
-        gw.game.mainiteration(gw.fps)
+    gw.game.mainiteration(gw.fps,display= gw.always_update_screen and not wait)
 
 @check_init_done
 def efface():
@@ -210,7 +229,7 @@ def efface():
     efface() va effacer tous les dessins
     """
     gw.game.kill_dessinable()
-    gw.game.mainiteration(gw.fps)
+    gw.game.mainiteration(gw.fps,gw.always_update_screen)
 
 
 @check_init_done
@@ -225,14 +244,14 @@ def color(c):
 @check_init_done
 def pendown():
     """
-    abaisse le stylo
+    pendown() abaisse le stylo
     """
     gw.usepen = True
 
 @check_init_done
 def penup():
     """
-    releve le stylo
+    penup() releve le stylo
     """
     gw.usepen = False
 

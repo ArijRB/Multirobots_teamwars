@@ -45,7 +45,7 @@ class DrawOnceSprite(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.drawfun = drawfun
         self.arglist = arglist
-        self.lifespan = 4
+        self.lifespan = 1
 
     def draw(self,surf):
         self.drawfun(surf,*self.arglist)

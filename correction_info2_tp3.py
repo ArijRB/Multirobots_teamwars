@@ -48,26 +48,24 @@ def prune_nodes(g):
 
 def aller(x,y):
     """
-    le robot se deplace direction Est/Sud/Sud-Est et arrive exactement en (x,y)
-    La position du robot peut etre flottant. par exemple (80.3,29.7)
-    du coup, le robot va devoir avancer au sous-pixel pres pour atteindre (x,y)
+    le robot se deplace direction Est/Sud/Sud-Est et arrive en (x,y)
     """
-    cx,cy = position()
+    cx,cy = position(entiers=True)
 
     oriente(45)
     while (cx+1) < x and (cy+1) < y:
-        av(1)
-        cx,cy = position()
+        av()
+        cx,cy = position(entiers=True)
 
     oriente(0)
     while cx < x:
-        av( min(1,x-cx) )
-        cx,cy = position()
+        av()
+        cx,cy = position(entiers=True)
 
     oriente(90)
     while cy < y:
-        av( min(1,y-cy) )
-        cx,cy = position()
+        av()
+        cx,cy = position(entiers=True)
 
 def suivre_chemin(traj):
     """
