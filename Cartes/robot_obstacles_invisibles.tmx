@@ -8,9 +8,9 @@
    eJzzYWBg8BnFo3gUj0gMAKToTAE=
   </data>
  </layer>
- <layer name="obstacles" width="16" height="16" visible="0">
+ <layer name="obstacles" width="16" height="16">
   <data encoding="base64" compression="zlib">
-   eJzjYmBg4CYTc0ExuQCffh8oRhcjVj8x5hGr3wcLprX96GqxAXT92NxIin5SATH68bmJ2vYT629S9ePyAzH6ae1/cvMuDAMAHVQM2w==
+   eJzjYmBg4CYTc0ExuYCe+n1I1O+DxvZhwDSDHP3I4uj6canD5nZc+gm5hVT9uNxEiv24AC30Y3MnKe7Hp5dQ/JEKqKGf3LwLwwCMUw1z
   </data>
  </layer>
  <layer name="joueur" width="16" height="16" visible="0">
