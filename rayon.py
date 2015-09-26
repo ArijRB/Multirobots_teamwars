@@ -38,7 +38,7 @@ def rayon(m,x,y,angle,w,h):
     y2 = y + int( sin(angle)*(w+h) )
     x,y = int(x),int(y)
     w,h = int(w),int(h)
-    
+
     steep = 0
     dx = abs(x2 - x)
     dy = abs(y2 - y)

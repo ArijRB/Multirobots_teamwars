@@ -35,12 +35,12 @@ def init(_boardname=None):
     """
     global player
     pygame.quit()
-    if _boardname: gw.name = _boardname
 
     gw.name = 'robot_obstacles'
     gw.pencolor = glo.RED
     gw.usepen = False
     gw.fps = 200  # frames per second
+    if _boardname: gw.name = _boardname
     gw.game = Game('Cartes/' + gw.name + '.json', TurtleSpriteBuilder)
     gw.game.mainiteration(gw.fps)
     player = gw.game.player

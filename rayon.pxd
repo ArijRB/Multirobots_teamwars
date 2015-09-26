@@ -23,6 +23,7 @@ cdef extern from "pygame/mask.h":
 
 ### Fast Inline Functions ###
 
+
 cdef inline bitmaskptr_t cyGetBitmask(object mymask):
     return (<PyMaskObject*>mymask).mask
 
