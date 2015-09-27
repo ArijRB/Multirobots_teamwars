@@ -15,7 +15,7 @@
  </layer>
  <layer name="obstacles" width="16" height="16">
   <data encoding="base64" compression="zlib">
-   eJzjYmBg4CYTc0ExuYCe+n0o0O+DhCnVj2wGun5c9mBzOy79uOwnVz8ut5NiPy5AC/24wo9Y9+PTSyj+SAXU0E9u3oVhAC6VDI8=
+   eJzjYmBg4CYTc0ExuYCe+n0o0O+DhCnVj2wGun5c9mBzOy79uOwnVz8ut5NiPy5AC/24wo+Y+Menl5L4xwWooZ/cvAvDAJ7WC/c=
   </data>
  </layer>
  <layer name="joueur" width="16" height="16" visible="0">

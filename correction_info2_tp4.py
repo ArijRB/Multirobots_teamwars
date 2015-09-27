@@ -2,6 +2,10 @@ from robosim import *
 from correction_info2_tp3 import init_graph,draw_graph, suivre_chemin
 from math import cos,sin,pi,sqrt
 
+# si   display='on', le programme affiche tout et c'est lent
+# avec display='off' c'est bcp bcp plus rapide
+display = 'on'
+
 def octant(x,y):
     """ Renvoie l'angle parmi [0,45,90,135,180,-135,-90,-45]
         s'orientant vers (x,y)
@@ -28,14 +32,14 @@ def aller(x,y):
     s'il croise un obstacle il s'arrete et renvoie False
     """
     cx,cy = position(entiers=True)
-    always_update_screen(False)
     while x != cx or y != cy:
         oriente(octant(x,y))
         if not av():
-            always_update_screen(True)
+            turn_screen_update('on')
             return False
+        turn_screen_update(display)
         cx,cy = position(entiers=True)
-    always_update_screen(True)
+    turn_screen_update('on')
     return True
 
 
@@ -46,7 +50,7 @@ def testArete(G,d):
     """
     angle_initial = orientation()
     td(90)
-    always_update_screen(False) # speeds up simulation a lot
+    turn_screen_update(display)
     for i in range(0,181,10):
         a = i*pi/180.0
         r = telemetre()
@@ -55,21 +59,21 @@ def testArete(G,d):
             oriente(angle_initial)
             return False
         tg(10)
-    always_update_screen(True)
+    turn_screen_update('on')
     oriente(angle_initial)
     return True
 
-def effaceLesAretesBloquees(G):
+def effaceLesAretesBloquees(G,K):
     """ renvoie vrai si au moins une arete a ete supprimee
     """
     x,y = position(entiers=True)
     assert (x,y) in G
     changed = False
-    
+
     for x2,y2 in G.neighbors( (x,y) ):
         oriente(octant(x2,y2))
         d = sqrt( (x2-x)**2 + (y2-y)**2 )
-        if not testArete(G,d):
+        if not testArete(G,d) and not (x2,y2) in K:
             G.remove_edge( (x2,y2),(x,y) )
             changed = True
     return changed
@@ -79,7 +83,7 @@ def main_algorithm(G):
     while len(K) < len(G):
         p = position(entiers=True)
         if p not in K:
-            if effaceLesAretesBloquees(G):
+            if effaceLesAretesBloquees(G,K):
                 draw_graph(G)
             K.add( p )
         explore_random(G,K)
@@ -87,6 +91,7 @@ def main_algorithm(G):
 def explore_random(G,K):
     """ explores randomly, but selects unknown states if there are some"""
     N = set(G.neighbors( position(entiers=True) ))
+
     if len(N-K) > 0:
         (x2,y2) = random.choice( list(N-K) )
     else:
@@ -95,7 +100,7 @@ def explore_random(G,K):
     aller(x2,y2)
 
 if __name__ == '__main__':
-    init()
+    init('robot_obstacles_invisibles')
     G = init_graph(80,440,30)
     teleporte(80,80)
     draw_graph(G)

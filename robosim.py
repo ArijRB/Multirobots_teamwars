@@ -11,7 +11,7 @@ import pygame.draw
 
 
 print("""\n---==[ Fonction disponibles ]==---""")
-print("""init,avance,obstacle,oriente,\ntournegauche,tournedroite,telemetre,\ntelemetre_coords,position,orientation\nset_position,obstacle_coords\nline,circle,efface\npenup,pendown,color""")
+print("""init,avance,obstacle,oriente,\ntournegauche,tournedroite,telemetre,\ntelemetre_coords,position,orientation\nset_position,obstacle_coords\nline,circle,efface\npenup,pendown,color,turn_screen_update""")
 print("""=[ Pour l'aide, tapez help(fonction) ]=\n""")
 
 
@@ -60,12 +60,13 @@ def check_init_done(fun):
     return fun_checked
 
 @check_init_done
-def always_update_screen(on_off):
+def turn_screen_update(on_off):
     """
-    Call always_update_screen(False) to prevent refreshing the screen
+    Call turn_screen_update('on') to prevent refreshing the screen
     This will speed up the simulation
     """
-    gw.always_update_screen = on_off
+    assert on_off in ['on','off']
+    gw.always_update_screen = (on_off=='on')
 
 
 @check_init_done
