@@ -11,7 +11,7 @@ import pygame.draw
 
 
 print("""\n---==[ Fonction disponibles ]==---""")
-print("""init,avance,obstacle,oriente,\ntournegauche,tournedroite,telemetre,\ntelemetre_coords,position,orientation\nset_position,obstacle_coords\nline,circle,efface\npenup,pendown,color,turn_screen_update""")
+print("""init,avance,obstacle,oriente,\ntournegauche,tournedroite,telemetre,\ntelemetre_coords,position,orientation\nset_position,obstacle_coords\nline,circle,efface\npenup,pendown,color,frame_skip""")
 print("""=[ Pour l'aide, tapez help(fonction) ]=\n""")
 
 
@@ -44,7 +44,7 @@ def init(_boardname=None):
     gw.game = Game('Cartes/' + gw.name + '.json', TurtleSpriteBuilder)
     gw.game.mainiteration(gw.fps)
     player = gw.game.player
-    gw.always_update_screen = True
+    gw.frame_skip = 0
 
 
 def check_init_done(fun):
@@ -60,13 +60,12 @@ def check_init_done(fun):
     return fun_checked
 
 @check_init_done
-def turn_screen_update(on_off):
+def frameskip(n):
     """
-    Call turn_screen_update('on') to prevent refreshing the screen
-    This will speed up the simulation
+    frameskip(n) n'affichera qu'une image sur n.
+    frameskip(0) affiche tout, et donc c'est assez lent.
     """
-    assert on_off in ['on','off']
-    gw.always_update_screen = (on_off=='on')
+    gw.frame_skip = n
 
 
 @check_init_done
@@ -81,7 +80,7 @@ def avance(s=1.0):
     """
     cx1,cy1 = player.get_centroid()
     player.forward(s)
-    gw.game.mainiteration(gw.fps,display= gw.always_update_screen)
+    gw.game.mainiteration(gw.fps,frameskip= gw.frame_skip)
     if player.position_changed():
         if gw.usepen:
             cx2,cy2 = player.get_centroid()
@@ -116,7 +115,7 @@ def oriente(a):
     Donc oriente(180) le fait se tourner vers l'Ouest
     """
     player.translate_sprite(player.x,player.y,a,relative=False)
-    gw.game.mainiteration(gw.fps,display= gw.always_update_screen)
+    gw.game.mainiteration(gw.fps,frameskip= gw.frame_skip)
 
 @check_init_done
 def tournegauche(a):
@@ -124,7 +123,7 @@ def tournegauche(a):
     tournegauche(a) pivote d'un angle donne, en degrees
     """
     player.translate_sprite(0,0,-a,relative=True)
-    gw.game.mainiteration(gw.fps,display= gw.always_update_screen)
+    gw.game.mainiteration(gw.fps,frameskip= gw.frame_skip)
 
 @check_init_done
 def tournedroite(a):
@@ -132,7 +131,7 @@ def tournedroite(a):
     tournedroite(a) pivote d'un angle a donne, en degrees
     """
     player.translate_sprite(0,0,a,relative=True)
-    gw.game.mainiteration(gw.fps,display= gw.always_update_screen)
+    gw.game.mainiteration(gw.fps,frameskip= gw.frame_skip)
 
 @check_init_done
 def telemetre():
@@ -142,7 +141,7 @@ def telemetre():
     de rencontrer un obstacle
     """
     rayon_hit = player.throw_ray(player.angle_degree*pi/180 , gw.game.mask,gw.game.groupDict)
-    gw.game.mainiteration(gw.fps,display= gw.always_update_screen)
+    gw.game.mainiteration(gw.fps,frameskip= gw.frame_skip)
     return player.dist(*rayon_hit)-(player.taille_geometrique//2)
 
 @check_init_done
@@ -154,7 +153,7 @@ def telemetre_coords(x,y,a):
     de rencontrer un obstacle
     """
     rx,ry = player.throw_ray(a*pi/180 , gw.game.mask,gw.game.groupDict,coords=(x,y))
-    gw.game.mainiteration(gw.fps,display= gw.always_update_screen)
+    gw.game.mainiteration(gw.fps,frameskip= gw.frame_skip)
 
     return sqrt( (rx-x)**2 + (ry-y)**2 )
 
@@ -182,7 +181,7 @@ def set_position(x,y):
     Renvoie False si la teleportation a echouee, pour cause d'obstacle
     """
     player.set_centroid(x,y)
-    gw.game.mainiteration(gw.fps,gw.always_update_screen)
+    gw.game.mainiteration(gw.fps,frameskip= gw.frame_skip)
     return player.position_changed()
 
 @check_init_done
@@ -211,7 +210,8 @@ def line(x1,y1,x2,y2,wait=False):
     """
     gw.game.prepare_dessinable()
     pygame.draw.aaline(gw.game.surfaceDessinable, gw.pencolor, (x1,y1), (x2,y2))
-    gw.game.mainiteration(gw.fps,display= gw.always_update_screen and not wait)
+    if not wait:
+        gw.game.mainiteration(gw.fps,frameskip= gw.frame_skip)
 
 @check_init_done
 def circle(x1,y1,r=10,wait=False):
@@ -222,7 +222,8 @@ def circle(x1,y1,r=10,wait=False):
     """
     gw.game.prepare_dessinable()
     pygame.draw.circle(gw.game.surfaceDessinable, gw.pencolor, (x1,y1), r)
-    gw.game.mainiteration(gw.fps,display= gw.always_update_screen and not wait)
+    if not wait:
+        gw.game.mainiteration(gw.fps,frameskip= gw.frame_skip)
 
 @check_init_done
 def efface():
@@ -230,7 +231,7 @@ def efface():
     efface() va effacer tous les dessins
     """
     gw.game.kill_dessinable()
-    gw.game.mainiteration(gw.fps,gw.always_update_screen)
+    gw.game.mainiteration(gw.fps,frameskip= gw.frame_skip)
 
 
 @check_init_done

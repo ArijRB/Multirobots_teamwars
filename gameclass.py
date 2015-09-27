@@ -50,6 +50,7 @@ class Game:
 
         # click clock
         self.clock = pygame.time.Clock()
+        self.framecount = 0
 
     def setup_keyboard_callbacks(self):
         self.callbacks = self.player.gen_callbacks(self.player.rect.w, self.groupDict, self.mask)
@@ -77,7 +78,7 @@ class Game:
             self.surfaceDessinable.set_colorkey( (0,0,0) )
             self.groupDict['dessinable'].add( MySprite('dessinable',None,0,0,[self.surfaceDessinable]) )
 
-    def mainiteration(self, fps=60, display=True):
+    def mainiteration(self, fps=60, frameskip = 0):
         if pygame.event.peek():
             for event in pygame.event.get():  # User did something
                 if event.type == pygame.QUIT:  # If user clicked close
@@ -89,7 +90,10 @@ class Game:
                         self.callbacks[event.key]()
 
         self.update()
-        if display:
+
+        # call self.draw() once every 'frameskip' iterations
+        self.framecount = (self.framecount+1) % (frameskip+1)
+        if self.framecount==0:
             self.draw()
             self.clock.tick(fps)
 

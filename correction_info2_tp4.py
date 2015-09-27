@@ -2,9 +2,6 @@ from robosim import *
 from correction_info2_tp3 import init_graph,draw_graph, suivre_chemin
 from math import cos,sin,pi,sqrt
 
-# si   display='on', le programme affiche tout et c'est lent
-# avec display='off' c'est bcp bcp plus rapide
-display = 'on'
 
 def octant(x,y):
     """ Renvoie l'angle parmi [0,45,90,135,180,-135,-90,-45]
@@ -35,11 +32,8 @@ def aller(x,y):
     while x != cx or y != cy:
         oriente(octant(x,y))
         if not av():
-            turn_screen_update('on')
             return False
-        turn_screen_update(display)
         cx,cy = position(entiers=True)
-    turn_screen_update('on')
     return True
 
 
@@ -50,7 +44,6 @@ def testArete(G,d):
     """
     angle_initial = orientation()
     td(90)
-    turn_screen_update(display)
     for i in range(0,181,10):
         a = i*pi/180.0
         r = telemetre()
@@ -59,7 +52,6 @@ def testArete(G,d):
             oriente(angle_initial)
             return False
         tg(10)
-    turn_screen_update('on')
     oriente(angle_initial)
     return True
 
@@ -101,6 +93,7 @@ def explore_random(G,K):
 
 if __name__ == '__main__':
     init('robot_obstacles_invisibles')
+    frameskip(30) # affiche une image sur n pour acceler la simulation
     G = init_graph(80,440,30)
     teleporte(80,80)
     draw_graph(G)
