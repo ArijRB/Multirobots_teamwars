@@ -20,8 +20,9 @@ class MySprite(pygame.sprite.Sprite):
         self.layername = layername
         self.tileid = tileid # tileid identifie le sprite sur la spritesheet. Generalement, c'est le row/col dans le spritesheet
         self.imagelist = imglist
+        self.masklist  = [pygame.mask.from_surface(im) for im in imglist]
         self.image = imglist[0]
-        self.mask = pygame.mask.from_surface(self.image)
+        self.mask = self.masklist[0]
         self.rect = self.image.get_rect()
         self.rect.x , self.rect.y = x,y
         #print("layername=",layername,"id = ",self.tileid)
@@ -64,8 +65,8 @@ class MovingSprite(MySprite):
 
     # vecteur vitesse requis. Si collision, alors il ne se realisera pas
 
-    def __init__(self,*args):
-        MySprite.__init__(self,*args)
+    def __init__(self,*args,**kwargs):
+        MySprite.__init__(self,*args,**kwargs)
         self.x , self.y = self.rect.x , self.rect.y
         self.angle_degree  = 0
         self.backup()
@@ -97,6 +98,7 @@ class MovingSprite(MySprite):
         l = len(self.imagelist)
         i = int(floor( a*l/360 + 0.5 )) % l
         self.image = self.imagelist[ i ]
+        self.mask =  self.masklist [ i ]
 
     def translate_sprite(self,x,y,a,relative=True):
         # Attention, backup() est indispensable,

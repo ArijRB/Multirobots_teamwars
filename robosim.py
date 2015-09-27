@@ -18,9 +18,9 @@ print("""=[ Pour l'aide, tapez help(fonction) ]=\n""")
 class TurtleSpriteBuilder(SpriteBuilder):
     def basicSpriteFactory(self,spritegroups , layername,tileid,x,y,img):
         if layername == "joueur":
-            j = Turtle(layername,tileid,x,y,[img])
+            j = Turtle(layername,x,y,*img.get_size())
             spritegroups[layername].add( j )
-            j.build_dessin()
+            #j.build_dessin()
         else:
             SpriteBuilder.basicSpriteFactory(spritegroups,layername,tileid,x,y,img)
 

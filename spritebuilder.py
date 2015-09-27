@@ -4,7 +4,7 @@ import glo
 import pygame
 from collections import OrderedDict
 from sprite import MySprite,MovingSprite,RecursiveDrawGroup
-from players import Player,Turtle
+from players import Player
 import os
 import zlib
 

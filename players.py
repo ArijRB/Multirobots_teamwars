@@ -2,30 +2,28 @@ import pygame
 from sprite import MySprite,MovingSprite,RecursiveDrawGroup,DrawOnceSprite
 from functools import partial
 from random import random
+from itertools import izip
 from math import pi,sqrt,cos,sin,floor
 import rayon
 import polygons
 import glo
 try:
     from pygame.gfxdraw import aacircle,filled_circle
-    #filled_circle(surface, x, y, r, color) -> None
-    #aacircle(surface, x, y, r, color) -> None
     def circle(surf,c,(x,y),r,w):
         filled_circle(surf,x,y,r,(20,20,60))
         aacircle(surf,x,y,r,c)
         aacircle(surf,x,y,r-1,c)
-
 except:
     from pygame.draw import circle
-    #circle(Surface, color, pos, radius, width=0) -> Rect
+
 
 class Player(MovingSprite):
     """ cette classe modelise un sprite controlable par l'utilisateur
         soit au tile pres, soit au pixel pres
         soit au clavier directement, soit par instructions
     """
-    def __init__(self,*args):
-        MovingSprite.__init__(self,*args)
+    def __init__(self,*args,**kwargs):
+        MovingSprite.__init__(self,*args,**kwargs)
         self.inventory = pygame.sprite.Group()
 
     def gen_callbacks(self,incr,gDict,mask):
@@ -86,57 +84,18 @@ class Player(MovingSprite):
         return self.rayon_hit
 
 
-
 class Turtle(Player):
+    def __init__(self,layername,x,y,w,h):
+        self.taille_geometrique, self.penwidth = 22, 1
+        Player.__init__(self,layername,tileid=None,x=x,y=y,imglist=self.build_Turtle_list_images(w,h))
 
-    def __init__(self,*args):
-        Player.__init__(self,*args)
-        cx,cy = self.get_centroid()
-        w,h = self.rect.w , self.rect.h
-
-        self.taille_geometrique = 22
-        self.penwidth = 1
-        self.typedessin = 'fleche' # is 'cercle' or 'fleche'
-        self.tileid = None
-        self.image = pygame.Surface((w,h)).convert()
-        #pygame.gfxdraw.aacircle(self.image, w/2,h/2, self.taille_geometrique/2 - self.penwidth,glo.WHITE)
-        circle(self.image, glo.WHITE, (w/2,h/2), self.taille_geometrique/2 - self.penwidth,self.penwidth)
-        self.image.set_colorkey( (0,0,0) )
-        self.imagelist = [self.image]
-        self.mask = pygame.mask.from_surface(self.image)
-        self.rect.w,self.rect.h = self.image.get_rect().w,self.image.get_rect().h
-
-    def build_dessin(self):
-        w,h = self.rect.w , self.rect.h
-        self.dessin = pygame.Surface((w,h)).convert()
-        self.dessin.set_colorkey( (0,0,0) )
-        #self.dessin.set_alpha(250)
-        self.draw_dessin()
-
-    def draw(self,surf):
-        cx,cy = self.get_centroid()
-        Player.draw(self,surf)
-        if self.dessin:
-            surf.blit(self.dessin,self.rect)
-
-    def draw_dessin(self):
-        self.backup_angle_degree = self.angle_degree
-        self.dessin.fill((0,0,0))
-        w,h = self.rect.w , self.rect.h
-        if self.typedessin == 'fleche':
-            polygons.draw_arrow(self.dessin,w/2,h/2,self.angle_degree * pi/180,r=self.taille_geometrique-14,clr=glo.WHITE)
-        elif self.typedessin == 'cercle':
-            x1,y1,x2,y2 = w/2,h/2,int(w/2+(self.taille_geometrique/2-1)*cos(self.angle_degree * pi/180)),int(h/2+(self.taille_geometrique/2-1)*sin(self.angle_degree * pi/180))
-            pygame.draw.line(self.dessin,glo.WHITE,(x1,y1),(x2,y2),2)
-            #pygame.gfxdraw.line(self.dessin,x1,y1,x2,y2,glo.WHITE)
-            #polygons.draw_arrow(self.dessin,w/2,h/2,self.angle_degree * pi/180,r=self.taille_geometrique-14,clr=glo.WHITE)
-        else:
-            raise 'erreur: le dessin de la tortue peut etre un cercle ou une fleche'
-
-
-    def update(self):
-        super(Turtle, self).update()
-
-        if self.dessin:
-            if self.backup_angle_degree != self.angle_degree:
-                self.draw_dessin()
+    def build_Turtle_list_images(self,w,h):
+        """ cree 360 images de tortues (une par degre)"""
+        imglist = [pygame.Surface((w,h)).convert() for a in range(360)]
+        for a,img in izip(range(360),imglist):
+            img.set_colorkey( (0,0,0) )
+            img.fill((0,0,0))
+            circle(img, glo.WHITE, (w/2,h/2), self.taille_geometrique/2 - self.penwidth,self.penwidth)
+            polygons.draw_arrow(img,w/2,h/2,a * pi/180,r=self.taille_geometrique-14,clr=glo.WHITE)
+            #pygame.gfxdraw.aacircle(self.image, w/2,h/2, self.taille_geometrique/2 - self.penwidth,glo.WHITE)
+        return imglist
