@@ -67,16 +67,14 @@ def aller(x,y):
         av()
         cx,cy = position(entiers=True)
 
-def suivre_chemin(traj):
+def suivre_chemin(traj,aller_=aller):
     """
     traj est une liste de noeuds
     le robot se deplace direction Est/Sud/Sud-Est
     il rejoint le premier noeud de traj auquel il peut acceder
     """
-    for x,y in p:
-        cx,cy = position()
-        if cx <= x and cy <= y:
-            aller(x,y)
+    for x,y in traj:
+        aller_(x,y)
 
 
 if __name__ == '__main__':

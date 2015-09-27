@@ -1,7 +1,9 @@
 from robosim import *
 from correction_info2_tp3 import init_graph,draw_graph, suivre_chemin
 from math import cos,sin,pi,sqrt
-
+from operator import itemgetter
+import networkx as nx
+from time import time
 
 def octant(x,y):
     """ Renvoie l'angle parmi [0,45,90,135,180,-135,-90,-45]
@@ -29,6 +31,7 @@ def aller(x,y):
     s'il croise un obstacle il s'arrete et renvoie False
     """
     cx,cy = position(entiers=True)
+
     while x != cx or y != cy:
         oriente(octant(x,y))
         if not av():
@@ -70,15 +73,17 @@ def effaceLesAretesBloquees(G,K):
             changed = True
     return changed
 
-def main_algorithm(G):
+def main_algorithm(G,exploration_strategy):
     K = set()
-    while len(K) < len(G):
+    p = position(entiers=True)
+
+    while len(K) < len(nx.node_connected_component(G,p)):
         p = position(entiers=True)
         if p not in K:
             if effaceLesAretesBloquees(G,K):
                 draw_graph(G)
             K.add( p )
-        explore_random(G,K)
+        exploration_strategy(G,K)
 
 def explore_random(G,K):
     """ explores randomly, but selects unknown states if there are some"""
@@ -91,10 +96,29 @@ def explore_random(G,K):
 
     aller(x2,y2)
 
+def explore_shortestpath(G,K):
+    cx,cy = position(entiers=True)
+    _ , dist = nx.dijkstra_predecessor_and_distance( G,(cx,cy) )
+    dist = {ij:dist[ij] for ij in dist if ij not in K}
+    if dist:
+        closest, _ = min(dist.items(), key=itemgetter(1))
+        p = nx.shortest_path(G,(cx,cy),closest,weight='weight')
+        suivre_chemin(p,aller)
+
 if __name__ == '__main__':
     init('robot_obstacles_invisibles')
     frameskip(30) # affiche une image sur n pour acceler la simulation
+    print "Premiere strategie d'exploration: aleatoire guidee"
+    debut1 = time()
     G = init_graph(80,440,30)
     teleporte(80,80)
     draw_graph(G)
-    main_algorithm(G)
+    main_algorithm(G,explore_random)
+    print "Temps d'exploration = ",time()-debut1,"secondes\n"
+    print "deuxieme strategie d'exploration: shortest path"
+    debut2 = time()
+    G = init_graph(80,440,30)
+    teleporte(80,80)
+    draw_graph(G)
+    main_algorithm(G,explore_shortestpath)
+    print "Temps d'exploration = ",time()-debut2,"secondes\n"
