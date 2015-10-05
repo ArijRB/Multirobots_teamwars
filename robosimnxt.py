@@ -65,6 +65,12 @@ def init_nxt():
     nxt_rightboth = nxt.SynchronizedMotors(nxt_mD, nxt_mG, 100)
     return True
 
+def get_nxt():
+    """ renvoie un tuple contenant:
+    la brique, le moteur tourelle, le moteur gauche, le moteur droit, le capteur Ultrason
+    """
+    return (nxt_b,nxt_mT,nxt_mG,nxt_mD,nxt_ultrason)
+
 def init(_boardname=None):
     # did we import the nxt module ?
     if 'nxt' in globals():
