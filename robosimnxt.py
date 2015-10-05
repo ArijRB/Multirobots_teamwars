@@ -49,8 +49,8 @@ def init_nxt():
         try:
             nxt_b = nxt.find_one_brick()
         except nxt.locator.BrickNotFoundError:
-            print("la brique du NxT n'a pas ete trouvee")
-            exit()
+            print("Attention: la brique du NxT n'a pas ete trouvee")
+            return False
 
     nxt_mT = nxt.Motor(nxt_b, nxt_port_tourelle)
     nxt_mG = nxt.Motor(nxt_b, nxt_port_moteur_gauche)
@@ -60,7 +60,7 @@ def init_nxt():
     nxt_both = nxt.SynchronizedMotors(nxt_mG, nxt_mD, 0)
     nxt_leftboth = nxt.SynchronizedMotors(nxt_mG, nxt_mD, 100)
     nxt_rightboth = nxt.SynchronizedMotors(nxt_mD, nxt_mG, 100)
-
+    return True
 
 def init(_boardname=None):
     # did we import the nxt module ?
