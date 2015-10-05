@@ -113,8 +113,8 @@ def const_unicycle_nxt(degrees):
 
 
 def const_unicycle(degrees):
-    c,d = unicycle_sim(cm,degrees)
+    a = const_unicycle_sim(degrees)
     if 'nxt' in globals() and 'nxt_b' in globals():
-        return unicycle_nxt(cm,degrees)
+        return const_unicycle_nxt(degrees)
     else:
-        return c,d
+        return a
