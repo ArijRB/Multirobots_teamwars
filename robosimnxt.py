@@ -1,9 +1,12 @@
 from robosim import (
     rs,
     init as robosim_init,
+    tg as robosim_tg,
+    td as robosim_td,
     check_init_done,
     frameskip,
-    avance,
+    avance as robosim_avance,
+    av as robosim_av,
     obstacle,
     oriente,
     telemetre,
@@ -70,16 +73,21 @@ def init(_boardname=None):
     assert rs.game.screen.get_width() == rs.game.screen.get_height() ,"le terrain sur l'ecran devrait etre carre et non rectangulaire"
 
 def pix2cm(p): return p * taille_board_cm / rs.game.screen.get_width()
-def cm2pix(c): return rs.game.screen.get_width() * cm / taille_board_cm
-def randround(x): return floor(x) + (0 if random.random() > (x-floor(x)) else 1)
+def cm2pix(c): return rs.game.screen.get_width() * c / taille_board_cm
+def randround(x): return int(floor(x) + (0 if random.random() > (x-floor(x)) else 1))
 
 def unicycle(cm,degrees):
     # Command to the Turtle
     pix = cm2pix(cm)
     pix = randround(pix)
-    degrees = round( random.gauss(0,abs(degrees)/20.0) )
-    for i in range( pix ):
-        tg(degrees*1.0 / pix)
-        av()
+    degrees = int( degrees+ random.gauss(0,abs(degrees)/20.0) )
+    real_pix = 0.0
+    if pix == 0:
+        robosim_tg(degrees)
+    else:
+        for i in range( pix ):
+            robosim_td(degrees*1.0 / pix)
+            if robosim_av():
+                real_pix += 1.0
 
-    return pix2cm(pix),degrees
+    return pix2cm(real_pix),degrees
