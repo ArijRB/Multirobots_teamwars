@@ -26,7 +26,7 @@ class TurtleSpriteBuilder(SpriteBuilder):
 
 ###########################################
 
-class gw:
+class rs:
     pass
 
 def init(_boardname=None):
@@ -36,15 +36,14 @@ def init(_boardname=None):
     global player
     pygame.quit()
 
-    gw.name = 'robot_obstacles'
-    gw.pencolor = glo.RED
-    gw.usepen = False
-    gw.fps = 200  # frames per second
-    if _boardname: gw.name = _boardname
-    gw.game = Game('Cartes/' + gw.name + '.json', TurtleSpriteBuilder)
-    gw.game.mainiteration(gw.fps)
-    player = gw.game.player
-    gw.frame_skip = 0
+    rs.name = _boardname if _boardname else 'robot_obstacles'
+    rs.pencolor = glo.RED
+    rs.usepen = False
+    rs.fps = 200  # frames per second
+    rs.game = Game('Cartes/' + rs.name + '.json', TurtleSpriteBuilder)
+    rs.game.mainiteration(rs.fps)
+    player = rs.game.player
+    rs.frame_skip = 0
 
 
 def check_init_done(fun):
@@ -52,7 +51,7 @@ def check_init_done(fun):
     @wraps(fun  )
     def fun_checked(*args,**kwargs):
         try:
-            gw.game
+            rs.game
         except AttributeError:
             print("Erreur: appeler la fonction init() avant toute chose")
         else:
@@ -65,7 +64,7 @@ def frameskip(n):
     frameskip(n) n'affichera qu'une image sur n.
     frameskip(0) affiche tout, et donc c'est assez lent.
     """
-    gw.frame_skip = n
+    rs.frame_skip = n
 
 
 @check_init_done
@@ -80,9 +79,9 @@ def avance(s=1.0):
     """
     cx1,cy1 = player.get_centroid()
     player.forward(s)
-    gw.game.mainiteration(gw.fps,frameskip= gw.frame_skip)
+    rs.game.mainiteration(rs.fps,frameskip= rs.frame_skip)
     if player.position_changed():
-        if gw.usepen:
+        if rs.usepen:
             cx2,cy2 = player.get_centroid()
             line(cx1,cy1,cx2,cy2)
         return True
@@ -96,7 +95,7 @@ def obstacle(s=1.0):
     obstacle()  verifie la meme chose pour un deplacement de un pixel
     """
     player.forward(s)
-    gw.game.mask.handle_collision(gw.game.groupDict, player)
+    rs.game.mask.handle_collision(rs.game.groupDict, player)
 
     if player.resumed:
         return True
@@ -115,7 +114,7 @@ def oriente(a):
     Donc oriente(180) le fait se tourner vers l'Ouest
     """
     player.translate_sprite(player.x,player.y,a,relative=False)
-    gw.game.mainiteration(gw.fps,frameskip= gw.frame_skip)
+    rs.game.mainiteration(rs.fps,frameskip= rs.frame_skip)
 
 @check_init_done
 def tournegauche(a):
@@ -123,7 +122,7 @@ def tournegauche(a):
     tournegauche(a) pivote d'un angle donne, en degrees
     """
     player.translate_sprite(0,0,-a,relative=True)
-    gw.game.mainiteration(gw.fps,frameskip= gw.frame_skip)
+    rs.game.mainiteration(rs.fps,frameskip= rs.frame_skip)
 
 @check_init_done
 def tournedroite(a):
@@ -131,7 +130,7 @@ def tournedroite(a):
     tournedroite(a) pivote d'un angle a donne, en degrees
     """
     player.translate_sprite(0,0,a,relative=True)
-    gw.game.mainiteration(gw.fps,frameskip= gw.frame_skip)
+    rs.game.mainiteration(rs.fps,frameskip= rs.frame_skip)
 
 @check_init_done
 def telemetre():
@@ -140,8 +139,8 @@ def telemetre():
     la fonction renvoie le nombre de pixels parcourus par le rayon avant
     de rencontrer un obstacle
     """
-    rayon_hit = player.throw_ray(player.angle_degree*pi/180 , gw.game.mask,gw.game.groupDict)
-    gw.game.mainiteration(gw.fps,frameskip= gw.frame_skip)
+    rayon_hit = player.throw_ray(player.angle_degree*pi/180 , rs.game.mask,rs.game.groupDict)
+    rs.game.mainiteration(rs.fps,frameskip= rs.frame_skip)
     return player.dist(*rayon_hit)-(player.taille_geometrique//2)
 
 @check_init_done
@@ -152,8 +151,8 @@ def telemetre_coords(x,y,a):
     la fonction renvoie le nombre de pixels parcourus par le rayon avant
     de rencontrer un obstacle
     """
-    rx,ry = player.throw_ray(a*pi/180 , gw.game.mask,gw.game.groupDict,coords=(x,y))
-    gw.game.mainiteration(gw.fps,frameskip= gw.frame_skip)
+    rx,ry = player.throw_ray(a*pi/180 , rs.game.mask,rs.game.groupDict,coords=(x,y))
+    rs.game.mainiteration(rs.fps,frameskip= rs.frame_skip)
 
     return sqrt( (rx-x)**2 + (ry-y)**2 )
 
@@ -181,7 +180,7 @@ def set_position(x,y):
     Renvoie False si la teleportation a echouee, pour cause d'obstacle
     """
     player.set_centroid(x,y)
-    gw.game.mainiteration(gw.fps,frameskip= gw.frame_skip)
+    rs.game.mainiteration(rs.fps,frameskip= rs.frame_skip)
     return player.position_changed()
 
 @check_init_done
@@ -192,7 +191,7 @@ def obstacle_coords(x,y):
     renvoie True s'il y a un obstacle, False sinon
     """
     player.set_centroid(x,y)
-    gw.game.mask.handle_collision(gw.game.groupDict, player)
+    rs.game.mask.handle_collision(rs.game.groupDict, player)
 
     #if player.position_changed():
     if player.resumed:
@@ -208,10 +207,10 @@ def line(x1,y1,x2,y2,wait=False):
     si wait est True, alors la mise a jour de l'affichage est differe, ce qui
     accelere la fonction.
     """
-    gw.game.prepare_dessinable()
-    pygame.draw.aaline(gw.game.surfaceDessinable, gw.pencolor, (x1,y1), (x2,y2))
+    rs.game.prepare_dessinable()
+    pygame.draw.aaline(rs.game.surfaceDessinable, rs.pencolor, (x1,y1), (x2,y2))
     if not wait:
-        gw.game.mainiteration(gw.fps,frameskip= gw.frame_skip)
+        rs.game.mainiteration(rs.fps,frameskip= rs.frame_skip)
 
 @check_init_done
 def circle(x1,y1,r=10,wait=False):
@@ -220,18 +219,18 @@ def circle(x1,y1,r=10,wait=False):
     si wait est True, alors la mise a jour de l'affichage est differe, ce qui
     accelere la fonction.
     """
-    gw.game.prepare_dessinable()
-    pygame.draw.circle(gw.game.surfaceDessinable, gw.pencolor, (x1,y1), r)
+    rs.game.prepare_dessinable()
+    pygame.draw.circle(rs.game.surfaceDessinable, rs.pencolor, (x1,y1), r)
     if not wait:
-        gw.game.mainiteration(gw.fps,frameskip= gw.frame_skip)
+        rs.game.mainiteration(rs.fps,frameskip= rs.frame_skip)
 
 @check_init_done
 def efface():
     """
     efface() va effacer tous les dessins
     """
-    gw.game.kill_dessinable()
-    gw.game.mainiteration(gw.fps,frameskip= gw.frame_skip)
+    rs.game.kill_dessinable()
+    rs.game.mainiteration(rs.fps,frameskip= rs.frame_skip)
 
 
 @check_init_done
@@ -241,21 +240,22 @@ def color(c):
     par exemple, pour avoir du bleu, faire color((0,255,0))
     Attention, il y a un bug: la couleur bleue ne fonctionne pas
     """
-    gw.pencolor = c
+    rs.pencolor = c
 
 @check_init_done
 def pendown():
     """
     pendown() abaisse le stylo
     """
-    gw.usepen = True
+    rs.usepen = True
 
 @check_init_done
 def penup():
     """
     penup() releve le stylo
     """
-    gw.usepen = False
+    rs.usepen = False
 
 
 av, tele, setheading, tg, td, pos, teleporte  = avance, telemetre, oriente, tournegauche, tournedroite, position, set_position
+gw = rs
