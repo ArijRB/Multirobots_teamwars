@@ -25,7 +25,7 @@ from robosim import (
     )
 
 import thread, time
-from math import pi,floor
+from math import pi,floor,abs
 import random
 
 try:
@@ -76,18 +76,39 @@ def pix2cm(p): return p * taille_board_cm / rs.game.screen.get_width()
 def cm2pix(c): return rs.game.screen.get_width() * c / taille_board_cm
 def randround(x): return int(floor(x) + (0 if random.random() > (x-floor(x)) else 1))
 
-def unicycle(cm,degrees):
+def const_unicycle_sim(degrees):
     # Command to the Turtle
+    cm = 18
     pix = cm2pix(cm)
     pix = randround(pix)
     degrees = int( degrees+ random.gauss(0,abs(degrees)/20.0) )
     real_pix = 0.0
     if pix == 0:
-        robosim_tg(degrees)
+        robosim_td(degrees)
     else:
         for i in range( pix ):
             robosim_td(degrees*1.0 / pix)
             if robosim_av():
                 real_pix += 1.0
 
-    return pix2cm(real_pix),degrees
+    return degrees
+
+def const_unicycle_nxt(degrees):
+    #assert cm >= 10.0 , "avancer le nxt d'au moins 10 cm"
+    cm = 18.0
+
+    deg = int( abs(degrees) * 35.0/45 )
+    if degrees < 0:
+        both = nxt.SynchronizedMotors(nxt_port_moteur_gauche, nxt_port_moteur_droit, -degrees)
+    else:
+        both = nxt.SynchronizedMotors(nxt_port_moteur_droit,nxt_port_moteur_gauche, degrees)
+
+    both.turn(nxt_sens_moteurs*85, 360, False)
+
+
+def const_unicycle(degrees):
+    c,d = unicycle_sim(cm,degrees)
+    if 'nxt' in globals() and 'nxt_b' in globals():
+        return unicycle_nxt(cm,degrees)
+    else:
+        return c,d
