@@ -25,7 +25,7 @@ from robosim import (
     )
 
 import thread, time
-from math import pi,floor,abs
+from math import pi,floor
 import random
 
 try:
