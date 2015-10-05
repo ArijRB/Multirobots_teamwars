@@ -99,9 +99,9 @@ def const_unicycle_nxt(degrees):
 
     deg = int( abs(degrees) * 35.0/45 )
     if degrees < 0:
-        both = nxt.SynchronizedMotors(nxt_port_moteur_gauche, nxt_port_moteur_droit, -degrees)
+        both = nxt.SynchronizedMotors(nxt_mG, nxt_mD, -degrees)
     else:
-        both = nxt.SynchronizedMotors(nxt_port_moteur_droit,nxt_port_moteur_gauche, degrees)
+        both = nxt.SynchronizedMotors(nxt_mD,nxt_mG, degrees)
 
     both.turn(nxt_sens_moteurs*85, 360, False)
 
