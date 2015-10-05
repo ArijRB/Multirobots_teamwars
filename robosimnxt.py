@@ -67,7 +67,7 @@ def init(_boardname=None):
     if 'nxt' in globals():
         init_nxt()
     robosim_init(_boardname)
-    assert( rs.game.screen.get_width() = rs.game.screen.get_height() ),"le terrain sur l'ecran devrait etre carre et non rectangulaire"
+    assert rs.game.screen.get_width() == rs.game.screen.get_height() ,"le terrain sur l'ecran devrait etre carre et non rectangulaire"
 
 def pix2cm(p): return p * taille_board_cm / rs.game.screen.get_width()
 def cm2pix(c): return rs.game.screen.get_width() * cm / taille_board_cm
