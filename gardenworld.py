@@ -1,6 +1,7 @@
 from gameclass import Game
 from spritebuilder import SpriteBuilder
 from players import Player
+from sprite import MovingSprite
 from ontology import Ontology
 import pygame
 import glo
@@ -21,6 +22,9 @@ class GardenSpriteBuilder(SpriteBuilder):
             p = Player(layername, tileid, x, y, imglist)
             if tileid[0] in [10, 8, 9, 11]:
                 p.translate_sprite(0, 0, 90 * [10, 8, 9, 11].index(tileid[0]))
+            spritegroups[layername].add(p)
+        elif layername == "personnages":
+            p = MovingSprite(layername, tileid, x, y, [img])
             spritegroups[layername].add(p)
         else:
             SpriteBuilder.basicSpriteFactory(spritegroups, layername, tileid, x, y, img)
@@ -82,9 +86,10 @@ def ramasse():
 def obstacle():
     try:
         player.forward(player.rect.width)
-        c = gw.game.mask.check_box_collisions_single_player(gw.game.groupDict, player)
+        hors = self.out_of_screen(player)
+        coll = gw.game.mask.get_box_collision_list(gw.game.groupDict, player)
         player.resume_to_backup()
-        return c
+        return hors or coll
     except NameError:
         print("Erreur: appeler la fonction init() avant toute chose")
 

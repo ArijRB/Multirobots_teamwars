@@ -64,7 +64,8 @@ class Game:
     def draw(self):
         self.screen.blit(self.background, (0, 0), (0, 0, self.screen.get_width(), self.screen.get_height()))
         for layer in glo.NON_BG_LAYERS:
-            self.groupDict[layer].draw(self.screen)
+            if layer != "cache":
+                self.groupDict[layer].draw(self.screen)
 
         pygame.display.flip()
 
