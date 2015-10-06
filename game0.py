@@ -5,15 +5,15 @@ def avk(k):
         av()
 
 personnages = {
-    (4, 1):'Guldur',
-    (4, 5): 'Thomas',
+    (3, 1):'Guldur',
+    (3, 5): 'Thomas',
     (7, 3): 'Maruk',
     (15, 3): 'Milton',
-    (15, 13):'Pim',
-    (14, 15):'Pam',
-    (17,13):'Poum',
-    (7, 15):'Robin',
-    (12, 13):'Mmouarf',
+    (14, 15):'Pim',
+    (15, 13):'Pam',
+    (17,16):'Poum',
+    (7,15):'Robin',
+    (2, 13):'Mmouarf',
     (9,9):'Roi'
     }
 
@@ -24,11 +24,10 @@ def parle(texte=''):
     for j in coll:
         if j in gw.game.groupDict["personnages"]:
             row,col = j.y//32 , j.x // 32
-            nom = personnages.get((row,col),None)
+            nom = personnages.get((row,col),'personne')
             print ("vous parlez a "+nom)
             print("vous lui dites \'"+texte+"\'")
-            if texte == 'bonjour '+nom:
-                print 'votre texte=',texte,', et le nom=',nom
+            if texte.lower() == ('bonjour '+nom).lower():
                 ## tu as ete poli, le personnage te repond
                 if nom == 'Roi':
                     print("il vous repond:")
