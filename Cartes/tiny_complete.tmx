@@ -15,12 +15,12 @@
  </layer>
  <layer name="obstacles" width="19" height="19">
   <data encoding="base64" compression="zlib">
-   eJxjYBg4wAPEnEiYhwKzuAjwR81CBdwMkDBnhdLcFJg1CkbBKKAdAAANpQCx
+   eJxjYBg4wAPEnEiYhwKzuAjwR81CBdwMkDBngNLcFJg1CkbBKKAdAAD7YgCs
   </data>
  </layer>
  <layer name="actionnable" width="19" height="19">
   <data encoding="base64" compression="zlib">
-   eJxjYBhcwHCgHTAKRsEgAIID7YBBBBQH2gEDDABCUwBk
+   eJxjYBgFo2AUjIJRMFgBAAWkAAE=
   </data>
  </layer>
  <layer name="joueur" width="19" height="19">
@@ -33,7 +33,7 @@
    eJxjYBg+wIcRt5w0mpwUHrWjAAG4SQwnjgEOV/HReB10wBJPnEQRGV/4zBgsgFZuBAAG2gG7
   </data>
  </layer>
- <layer name="cache" width="19" height="19" visible="0">
+ <layer name="cache" width="19" height="19">
   <data encoding="base64" compression="zlib">
    eJxjYBg+IJWReLVhJKgdySCNxHCaOBquo4AEkERkeikdAulKkEZuBADF0gKi
   </data>

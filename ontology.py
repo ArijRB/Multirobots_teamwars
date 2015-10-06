@@ -12,7 +12,15 @@ class Ontology:
         self.cate = self.construit_categories()
 
     def names(self,sprt):
-        return None if sprt is None else self.onto[sprt.tileid]
+        if sprt is None:
+            return None
+        elif sprt.tileid in self.onto:
+            return self.onto[sprt.tileid]
+        else:
+            try:
+                return [sprt.nom]
+            except:
+                raise "erreur.. le sprite n'a pas de nom"
 
     def firstname(self,sprt):
         return None if sprt==None else self.names(sprt)[0]

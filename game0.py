@@ -24,15 +24,25 @@ def parle(texte=''):
     for j in coll:
         if j in gw.game.groupDict["personnages"]:
             row,col = j.y//32 , j.x // 32
-            print row,col
-            print ("vous parlez a "+personnages.get((row,col),'personne'))
-            print(" vous lui dites \'"+texte+"\'")
-            if texte == 'bonjour '+personnages.get((row,col),'personne'):
-                print "yes!!"
+            nom = personnages.get((row,col),None)
+            print ("vous parlez a "+nom)
+            print("vous lui dites \'"+texte+"\'")
+            if texte == 'bonjour '+nom:
+                print 'votre texte=',texte,', et le nom=',nom
+                ## tu as ete poli, le personnage te repond
+                if nom == 'Roi':
+                    print("il vous repond:")
+                    print("""Puisque tu es venue jusqu'a moi,je vais te reveler
+la position de chacun de mes guerriers. Cet appel a la fonction parle() renvoie la liste en question""")
+                    return [(i,j,personnages[(i,j)]) for i,j in personnages]
                 for r in gw.game.groupDict['cache']:
                     if r.rect.x//32 == col and r.rect.y//32 == row:
+                        print "il vous repond 'voici une potion en cadeau. je l'ai depose devant moi'"
                         r.rect.y+= 32
+                        r.nom = 'potion'
                         gw.game.groupDict['ramassable'].add(r)
+                        gw.game.mainiteration(gw.fps)
+
 
 
 #init('tiny_complete')
