@@ -1,6 +1,6 @@
 # Tests
 
-Pour lancer les tests, se positionner dans le repertoire pySpriteWorld.
+Avant de pouvoir lancer les tests, il faut se placer dans le repertoire pySpriteWorld.
 
 
 Pour lancer tous les tests:
