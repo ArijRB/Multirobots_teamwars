@@ -29,8 +29,8 @@ def parle(texte=''):
     coll = game.mask.get_box_collision_list(game.layers, game.player)
     game.player.resume_to_backup()
     for j in coll:
-        if j in game.layers["personnages"]:
-            row,col = j.y//32 , j.x // 32
+        if j in game.layers["personnage"]:
+            row,col = j.get_rowcol()
             nom = personnages.get((row,col), 'personne')
             print ("vous parlez à "+nom)
             print("vous lui dites \'"+texte+"\'")
@@ -49,10 +49,10 @@ def parle(texte=''):
                     #cool c'est un guerrier sympa on a un cadeau
                     print nom + " vous répond : « Bienvenue à toi ! Voici un cadeau. »."
                     for r in game.layers['cache']:
-                        if r.rect.x//32 == col and r.rect.y//32 == row:
-                            r.rect.y+= 32
+                        r_row,r_col= r.get_rowcol()
+                        if r_col == col and r_row == row:
+                            r.set_rowcol(r_row+1,r_col)
                             r.nom = 'potion'
-                            r.layername='ramassable'
                             game.layers['ramassable'].add(r)
                             print  "Il dépose une potion devant lui."
                             game.mainiteration(game.fps)

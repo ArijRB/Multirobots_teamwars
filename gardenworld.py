@@ -23,7 +23,7 @@ class GardenSpriteBuilder(SpriteBuilder):
             if tileid[0] in [10, 8, 9, 11]:
                 p.translate_sprite(0, 0, 90 * [10, 8, 9, 11].index(tileid[0]))
             spritegroups[layername].add(p)
-        elif layername == "personnages":
+        elif layername == "personnage":
             p = MovingSprite(layername, tileid, x, y, [img])
             spritegroups[layername].add(p)
         else:
@@ -71,7 +71,7 @@ def obstacle():
     hors = game.mask.out_of_screen(player)
     coll = game.mask.get_box_collision_list(game.layers, player)
     player.resume_to_backup()
-    return hors or coll
+    return hors or coll != []
 
 @check_init_game_done
 def depose(nom=None):

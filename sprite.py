@@ -128,3 +128,10 @@ class MovingSprite(MySprite):
 
     def forward(self,t):
         self.translate_sprite(t*cos(self.angle_degree * pi/180),t*sin(self.angle_degree * pi/180),0)
+
+    def get_rowcol(self):
+        assert int(self.x) % self.rect.w == 0 and int(self.y) % self.rect.h == 0, "sprite must not be accross tiles for this function"
+        return int(self.y) // self.rect.h , int(self.x) // self.rect.w
+
+    def set_rowcol(self,row,col):
+        self.translate_sprite(col*self.rect.w,row*self.rect.h,self.angle_degree,relative=False)
