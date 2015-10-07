@@ -26,10 +26,10 @@ guerriers_sympas = dict((k, personnages[k]) for k in personnages if personnages[
 
 def parle(texte=''):
     game.player.forward(game.player.rect.width)
-    coll = game.mask.get_box_collision_list(game.groupDict, game.player)
+    coll = game.mask.get_box_collision_list(game.layers, game.player)
     game.player.resume_to_backup()
     for j in coll:
-        if j in game.groupDict["personnages"]:
+        if j in game.layers["personnages"]:
             row,col = j.y//32 , j.x // 32
             nom = personnages.get((row,col), 'personne')
             print ("vous parlez à "+nom)
@@ -48,12 +48,12 @@ def parle(texte=''):
                 elif (row, col) in guerriers_sympas:
                     #cool c'est un guerrier sympa on a un cadeau
                     print nom + " vous répond : « Bienvenue à toi ! Voici un cadeau. »."
-                    for r in game.groupDict['cache']:
+                    for r in game.layers['cache']:
                         if r.rect.x//32 == col and r.rect.y//32 == row:
                             r.rect.y+= 32
                             r.nom = 'potion'
                             r.layername='ramassable'
-                            game.groupDict['ramassable'].add(r)
+                            game.layers['ramassable'].add(r)
                             print  "Il dépose une potion devant lui."
                             game.mainiteration(game.fps)
                 else:

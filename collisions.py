@@ -29,7 +29,7 @@ class CollisionHandler:
     def handle_collision(self, gDict, player):
         """ dispatches among all collision detection algorithms
         """
-        if len(gDict["joueur"] ) > 1 or gDict["personnages"]:
+        if len(gDict["joueur"] ) > 1 or gDict["personnage"]:
             self.handle_pixel_collisions_many_players(gDict)
         else:
             if CollisionHandler.pixel_perfect:
@@ -45,18 +45,18 @@ class CollisionHandler:
 
     def get_box_collision_list(self, gDict, player):
         """ attention, la fonction ne teste pas la sortie d'ecran """
-        l = pygame.sprite.spritecollide(player, gDict["obstacles"], False)
-        return l+pygame.sprite.spritecollide(player, gDict["personnages"], False)
+        l = pygame.sprite.spritecollide(player, gDict["obstacle"], False)
+        return l+pygame.sprite.spritecollide(player, gDict["personnage"], False)
 
 
     def handle_box_collisions_single_player(self, gDict, player):
-        block_hit_list = pygame.sprite.spritecollide(player, gDict["obstacles"], False)
+        block_hit_list = pygame.sprite.spritecollide(player, gDict["obstacle"], False)
         if block_hit_list or self.out_of_screen(player):
             player.resume_to_backup()
 
     def handle_pixel_collisions_single_player(self, gDict, player):
         # computes collisions mask of all obstacles (for pixel-based collisions)
-        self.fill_with_group(gDict["obstacles"])
+        self.fill_with_group(gDict["obstacle"])
 
         # send it to the player
         assert not self.collide_sprite(player, True), "sprite collision before any movement !!!"
@@ -68,10 +68,10 @@ class CollisionHandler:
             player.resume_to_backup()
 
     def handle_pixel_collisions_many_players(self, gDict):
-        persos = list(gDict["joueur"]) + list(gDict["personnages"])
+        persos = list(gDict["joueur"]) + list(gDict["personnage"])
         random.shuffle(persos)
 
-        self.fill_with_group(gDict["obstacles"])
+        self.fill_with_group(gDict["obstacle"])
 
         # test if sprites at backup position do not collide anything and draw them on the mask
         for j in persos:

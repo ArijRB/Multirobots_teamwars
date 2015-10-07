@@ -22,7 +22,7 @@ class TurtleSpriteBuilder(SpriteBuilder):
             spritegroups[layername].add( j )
             #j.build_dessin()
         else:
-            SpriteBuilder.basicSpriteFactory(spritegroups,layername,tileid,x,y,img)
+            SpriteBuilder.basicSpriteFactory(self,spritegroups,layername,tileid,x,y,img)
 
 ###########################################
 
@@ -85,7 +85,7 @@ def obstacle(s=1.0):
     obstacle()  verifie la meme chose pour un deplacement de un pixel
     """
     player.forward(s)
-    game.mask.handle_collision(game.groupDict, player)
+    game.mask.handle_collision(game.layers, player)
 
     if player.resumed:
         return True
@@ -129,7 +129,7 @@ def telemetre():
     la fonction renvoie le nombre de pixels parcourus par le rayon avant
     de rencontrer un obstacle
     """
-    rayon_hit = player.throw_ray(player.angle_degree*pi/180 , game.mask,game.groupDict)
+    rayon_hit = player.throw_ray(player.angle_degree*pi/180 , game.mask,game.layers)
     game.mainiteration(_frameskip= game.frame_skip)
     return player.dist(*rayon_hit)-(player.taille_geometrique//2)
 
@@ -141,7 +141,7 @@ def telemetre_coords(x,y,a):
     la fonction renvoie le nombre de pixels parcourus par le rayon avant
     de rencontrer un obstacle
     """
-    rx,ry = player.throw_ray(a*pi/180 , game.mask,game.groupDict,coords=(x,y))
+    rx,ry = player.throw_ray(a*pi/180 , game.mask,game.layers,coords=(x,y))
     game.mainiteration(_frameskip= game.frame_skip)
 
     return sqrt( (rx-x)**2 + (ry-y)**2 )
@@ -181,7 +181,7 @@ def obstacle_coords(x,y):
     renvoie True s'il y a un obstacle, False sinon
     """
     player.set_centroid(x,y)
-    game.mask.handle_collision(game.groupDict, player)
+    game.mask.handle_collision(game.layers, player)
 
     #if player.position_changed():
     if player.resumed:

@@ -60,17 +60,17 @@ class Game(object):
         self.spriteBuilder.prepareSprites()
 
         # cree un groupe de sprites pour chaque layer
-        self.groupDict = self.spriteBuilder.buildGroups()
+        self.layers = self.spriteBuilder.buildGroups()
         # cherche le premier sprite joueur
         try:
-            self.player = first(self.groupDict["joueur"])
+            self.player = first(self.layers["joueur"])
         except Exception:
             raise IndexError("Je ne trouve aucun joueur dans le fichier TMX")
 
         # prepare le bitmap 'background'
         self.background = pygame.Surface([self.screen.get_width(), self.screen.get_height()]).convert()
-        self.groupDict["bg1"].draw(self.background)
-        self.groupDict["bg2"].draw(self.background)
+        self.layers["bg1"].draw(self.background)
+        self.layers["bg2"].draw(self.background)
 
         # cree un masque de la taille de l'ecran, pour le calcul des collisions
         self.mask = CollisionHandler(self.screen)
@@ -80,31 +80,31 @@ class Game(object):
         self.framecount = 0
 
     def setup_keyboard_callbacks(self):
-        self.callbacks = self.player.gen_callbacks(self.player.rect.w, self.groupDict, self.mask)
+        self.callbacks = self.player.gen_callbacks(self.player.rect.w, self.layers, self.mask)
 
     def update(self):
-        self.mask.handle_collision(self.groupDict, self.player)
+        self.mask.handle_collision(self.layers, self.player)
 
         for layer in glo.NON_BG_LAYERS:
-            self.groupDict[layer].update()
+            self.layers[layer].update()
 
     def draw(self):
         self.screen.blit(self.background, (0, 0), (0, 0, self.screen.get_width(), self.screen.get_height()))
         for layer in glo.NON_BG_LAYERS:
             if layer != "cache":
-                self.groupDict[layer].draw(self.screen)
+                self.layers[layer].draw(self.screen)
 
         pygame.display.flip()
 
     def kill_dessinable(self):
-        while self.groupDict['dessinable']:
-            first(self.groupDict['dessinable']).kill()
+        while self.layers['dessinable']:
+            first(self.layers['dessinable']).kill()
 
     def prepare_dessinable(self):
-        if not self.groupDict['dessinable']:
+        if not self.layers['dessinable']:
             self.surfaceDessinable = pygame.Surface([self.screen.get_width(), self.screen.get_height()]).convert()
             self.surfaceDessinable.set_colorkey( (0,0,0) )
-            self.groupDict['dessinable'].add( MySprite('dessinable',None,0,0,[self.surfaceDessinable]) )
+            self.layers['dessinable'].add( MySprite('dessinable',None,0,0,[self.surfaceDessinable]) )
 
     def mainiteration(self, _fps=None, _frameskip = 0):
         if pygame.event.peek():

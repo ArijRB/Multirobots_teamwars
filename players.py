@@ -34,15 +34,15 @@ class Player(MovingSprite):
             pygame.K_RIGHT: partial(transl,x=  incr , y=0, a=0),
             pygame.K_UP:    partial(transl,x=  0    , y= -incr, a=0),
             pygame.K_DOWN:  partial(transl,x=  0    , y=  incr, a=0),
-            pygame.K_c:     partial(self.cherche_ramassable,groupDict=gDict,verb=True),
-            pygame.K_r:     partial(self.ramasse,groupDict=gDict,verb=True),
-            pygame.K_d:     partial(self.depose,groupDict=gDict,verb=True),
-            pygame.K_t:     partial(self.throw_ray,radian_angle=None,mask=mask,groupDict=gDict)
+            pygame.K_c:     partial(self.cherche_ramassable,layers=gDict,verb=True),
+            pygame.K_r:     partial(self.ramasse,layers=gDict,verb=True),
+            pygame.K_d:     partial(self.depose,layers=gDict,verb=True),
+            pygame.K_t:     partial(self.throw_ray,radian_angle=None,mask=mask,layers=gDict)
         }
 
 
-    def cherche_ramassable(self,groupDict,filtre = lambda x:True,verb=False):
-        for obj in groupDict["ramassable"]:
+    def cherche_ramassable(self,layers,filtre = lambda x:True,verb=False):
+        for obj in layers["ramassable"]:
             if filtre(obj):
                 if self.mask.overlap(obj.mask,(obj.rect.x - self.rect.x,obj.rect.y - self.rect.y)):
                     if verb: print ("j'en ai trouve un")
@@ -50,17 +50,17 @@ class Player(MovingSprite):
         if verb: print ("rien a ramasser")
         return None
 
-    def ramasse(self,groupDict,verb=False):
-        o = self.cherche_ramassable(groupDict)
+    def ramasse(self,layers,verb=False):
+        o = self.cherche_ramassable(layers)
         if o is None:
             if verb: print ("rien a ramasser")
             return None
         self.inventory.add( o )
-        o.remove( groupDict.values() )
+        o.remove( layers.values() )
         return o
 
 
-    def depose(self,groupDict,filtre = lambda x:True,verb=False):
+    def depose(self,layers,filtre = lambda x:True,verb=False):
         # remove object from existing groups displayed on the screen
         candidats = [o for o in self.inventory if filtre(o)]
 
@@ -70,18 +70,18 @@ class Player(MovingSprite):
         obj = candidats[0]
         self.inventory.remove( obj )
         obj.translate_sprite(self.x,self.y,0,False)
-        groupDict[obj.layername].add( obj )
+        layers['ramassable'].add( obj )
         return obj
 
-    def throw_ray(self,radian_angle,mask,groupDict,coords=None):
+    def throw_ray(self,radian_angle,mask,layers,coords=None):
         mask.erase_sprite( self )
         cx,cy = coords if coords else self.get_centroid()
         w,h = mask.mask.get_size()
         if radian_angle is None: radian_angle = random()*2*pi
         self.rayon_hit = rayon.rayon(mask.mask,cx,cy,radian_angle,w,h)
         mask.draw_sprite( self )
-        if self.rayon_hit and groupDict:
-            groupDict["eye_candy"].add( DrawOnceSprite( pygame.draw.line , [(255,0,0),(cx,cy),self.rayon_hit,4] ) )
+        if self.rayon_hit and layers:
+            layers["eye_candy"].add( DrawOnceSprite( pygame.draw.line , [(255,0,0),(cx,cy),self.rayon_hit,4] ) )
         return self.rayon_hit
 
 

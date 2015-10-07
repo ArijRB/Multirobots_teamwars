@@ -16,8 +16,7 @@ import glo
 class GardenSpriteBuilder(SpriteBuilder):
     """ classe permettant d'afficher le personnage sous 4 angles differents
     """
-
-    def basicSpriteFactory(self, spritegroups, layername, tileid, x, y, img):
+    def basicSpriteFactory(self,spritegroups, layername, tileid, x, y, img):
         if layername == "joueur":
             imglist = [self.sheet[i, j] for i, j in ((10, 0), (8, 0), (9, 0), (11, 0))]
             p = Player(layername, tileid, x, y, imglist)
@@ -28,7 +27,7 @@ class GardenSpriteBuilder(SpriteBuilder):
             p = MovingSprite(layername, tileid, x, y, [img])
             spritegroups[layername].add(p)
         else:
-            SpriteBuilder.basicSpriteFactory(spritegroups, layername, tileid, x, y, img)
+            SpriteBuilder.basicSpriteFactory(self,spritegroups, layername, tileid, x, y, img)
 
 
 #############################################################################
@@ -62,7 +61,7 @@ def avance():
 
 @check_init_game_done
 def ramasse():
-    o = game.player.ramasse(game.groupDict)
+    o = game.player.ramasse(game.layers)
     game.mainiteration()
     return game.O.firstname(o)
 
@@ -70,7 +69,7 @@ def ramasse():
 def obstacle():
     player.forward(player.rect.width)
     hors = game.mask.out_of_screen(player)
-    coll = game.mask.get_box_collision_list(game.groupDict, player)
+    coll = game.mask.get_box_collision_list(game.layers, player)
     player.resume_to_backup()
     return hors or coll
 
@@ -78,7 +77,7 @@ def obstacle():
 def depose(nom=None):
     def _filtre(o): return nom in game.O.names(o) + [None]
 
-    o = player.depose(game.groupDict, _filtre)
+    o = player.depose(game.layers, _filtre)
     game.mainiteration()
     return game.O.firstname(o)
 
@@ -86,7 +85,7 @@ def depose(nom=None):
 def cherche(nom=None):
     def _filtre(o): return nom in game.O.names(o) + [None]
 
-    o = player.cherche_ramassable(game.groupDict, _filtre)
+    o = player.cherche_ramassable(game.layers, _filtre)
     game.mainiteration()
     return game.O.firstname(o)
 

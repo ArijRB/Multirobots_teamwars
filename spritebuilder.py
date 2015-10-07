@@ -18,16 +18,18 @@ class SpriteBuilder(object):
     '''
 
 
-    carte    = None                 # json data from file
-    sheet    = None                 # SpriteSheet object
-    spritesize = 0                  # sprite size in pixels (assume its a square)
-    rowsize,colsize = None,None     # number of sprites in a row , column
 
 
     def __init__(self, file_name):
         ''' (1) charge le fichier TMX
             (2) charge le fichier image ou se trouvent les sprites dans l'objet sheet
         '''
+
+        self.carte    = None                 # json data from file
+        self.sheet    = None                 # SpriteSheet object
+        self.spritesize = 0                  # sprite size in pixels (assume its a square)
+        self.rowsize,self.colsize = None,None# number of sprites in a row , column
+
         dirname = os.path.dirname(os.path.abspath(__file__))
 
         with open(dirname + "/" + file_name, 'r') as f:
@@ -58,11 +60,18 @@ class SpriteBuilder(object):
 
         # build ordered dictionary - first add groups from glo.ALL_LAYERS, with correct order
         Grps = OrderedDict( [(gr,self.basicGroupFactory(gr)) for gr in glo.ALL_LAYERS])
-        Grps.update( {l["name"]:self.basicGroupFactory(l["name"]) for l in self.carte["layers"] if l["name"] not in Grps} )
+        for l in self.carte["layers"]:
+            n = l["name"].rstrip('s')
+            if n not in Grps:
+                Grps.update( {n:self.basicGroupFactory(n) } )
+        #Grps.update( {l["name"]:self.basicGroupFactory(l["name"]) for l in self.carte["layers"] if l["name"] not in Grps} )
 
 
         for l in self.carte["layers"]:
-            layername = l["name"]
+            layername = l["name"].rstrip('s')
+            if layername not in Grps:
+                Grps.update( {n:self.basicGroupFactory(layername) } )
+
             g = Grps[layername]
             dat = l["data"]
             if "compression" in l:
@@ -80,8 +89,7 @@ class SpriteBuilder(object):
         return Grps
 
     ##########  Methodes a surcharger pour adapter la classe ##########
-    @classmethod
-    def basicSpriteFactory(cls,spritegroups , layername,tileid,x,y,img):
+    def basicSpriteFactory(self,spritegroups , layername,tileid,x,y,img):
         if layername == "joueur":
             spritegroups[layername].add( Player(layername,tileid,x,y,[img]) )
 
@@ -90,8 +98,7 @@ class SpriteBuilder(object):
         else:
             spritegroups[layername].add( MySprite(layername,tileid,x,y,[img]) )
 
-    @classmethod
-    def basicGroupFactory(cls,layername):
+    def basicGroupFactory(self,layername):
         if layername in ["eye_candy","joueur"]:
             return RecursiveDrawGroup()
         else:

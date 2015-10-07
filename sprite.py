@@ -17,7 +17,6 @@ class MySprite(pygame.sprite.Sprite):
 
     def __init__(self,layername,tileid,x,y,imglist):
         pygame.sprite.Sprite.__init__(self)
-        self.layername = layername
         self.tileid = tileid # tileid identifie le sprite sur la spritesheet. Generalement, c'est le row/col dans le spritesheet
         self.imagelist = imglist
         self.masklist  = [pygame.mask.from_surface(im) for im in imglist]
