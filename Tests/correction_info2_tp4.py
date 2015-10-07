@@ -1,5 +1,5 @@
 from robosim import *
-from correction_info2_tp3 import init_graph,draw_graph, suivre_chemin
+from .correction_info2_tp3 import init_graph,draw_graph, suivre_chemin
 from math import cos,sin,pi,sqrt
 from operator import itemgetter
 import networkx as nx
@@ -108,20 +108,20 @@ def explore_shortestpath(G,K):
 def main():
     init('robot_obstacles_invisibles')
     frameskip(60) # affiche une image sur n pour acceler la simulation
-    print "Premiere strategie d'exploration: aleatoire guidee"
+    print ("Premiere strategie d'exploration: aleatoire guidee")
     debut1 = time()
     G = init_graph(80,440,30)
     teleporte(80,80)
     draw_graph(G)
     #main_algorithm(G,explore_random)
-    print "Temps d'exploration = ",time()-debut1,"secondes\n"
-    print "deuxieme strategie d'exploration: shortest path"
+    print ("Temps d'exploration = ",time()-debut1,"secondes\n")
+    print ("deuxieme strategie d'exploration: shortest path")
     debut2 = time()
     G = init_graph(80,440,30)
     teleporte(80,80)
     draw_graph(G)
     main_algorithm(G,explore_shortestpath)
-    print "Temps d'exploration = ",time()-debut2,"secondes\n"
+    print ("Temps d'exploration = ",time()-debut2,"secondes\n")
 
 if __name__ == '__main__':
     main()

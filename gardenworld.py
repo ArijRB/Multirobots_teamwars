@@ -1,3 +1,4 @@
+from __future__ import absolute_import, print_function, unicode_literals
 from gameclass import Game
 from spritebuilder import SpriteBuilder
 from players import Player

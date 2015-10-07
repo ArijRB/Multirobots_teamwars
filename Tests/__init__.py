@@ -10,7 +10,3 @@ while not dossier.endswith('pySpriteWorld'):
 dossier = os.path.dirname(dossier)
 if dossier not in sys.path:
     sys.path.append(dossier)
-
-__all__ = ['exercice_laitues','correction_info2_tp3',
-           'correction_info2_tp4','exercice_info2_1',
-           'exercice_robot_sim']

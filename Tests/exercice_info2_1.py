@@ -78,7 +78,7 @@ def main():
     gw.fps = 65
 
     panier = ramasse_tout()
-    print "J'ai ramasse: ", dict(Counter(panier))
+    print ("J'ai ramasse: ", dict(Counter(panier)))
     va_dans_jardin()
     plante_jardin()
 

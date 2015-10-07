@@ -2,14 +2,15 @@ import pygame
 from sprite import MySprite,MovingSprite,RecursiveDrawGroup,DrawOnceSprite
 from functools import partial
 from random import random
-from itertools import izip
 from math import pi,sqrt,cos,sin,floor
 import rayon
 import polygons
 import glo
 try:
     from pygame.gfxdraw import aacircle,filled_circle
-    def circle(surf,c,(x,y),r,w):
+    def circle(surf,c,coord,r,w):
+        x,y = coord
+        x,y,r = int(x),int(y),int(r)
         filled_circle(surf,x,y,r,(20,20,60))
         aacircle(surf,x,y,r,c)
         aacircle(surf,x,y,r-1,c)
@@ -92,7 +93,7 @@ class Turtle(Player):
     def build_Turtle_list_images(self,w,h):
         """ cree 360 images de tortues (une par degre)"""
         imglist = [pygame.Surface((w,h)).convert() for a in range(360)]
-        for a,img in izip(range(360),imglist):
+        for a,img in zip(range(360),imglist):
             img.set_colorkey( (0,0,0) )
             img.fill((0,0,0))
             circle(img, glo.WHITE, (w/2,h/2), self.taille_geometrique/2 - self.penwidth,self.penwidth)
