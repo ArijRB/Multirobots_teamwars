@@ -52,6 +52,7 @@ def parle(texte=''):
                         if r.rect.x//32 == col and r.rect.y//32 == row:
                             r.rect.y+= 32
                             r.nom = 'potion'
+                            r.layername='ramassable'
                             gw.game.groupDict['ramassable'].add(r)
                             print  "Il dépose une potion devant lui."
                             gw.game.mainiteration(gw.fps)
