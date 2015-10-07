@@ -86,7 +86,7 @@ def ramasse():
 def obstacle():
     try:
         player.forward(player.rect.width)
-        hors = self.out_of_screen(player)
+        hors = gw.game.mask.out_of_screen(player)
         coll = gw.game.mask.get_box_collision_list(gw.game.groupDict, player)
         player.resume_to_backup()
         return hors or coll
