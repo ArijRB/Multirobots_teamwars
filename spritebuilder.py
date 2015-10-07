@@ -85,7 +85,7 @@ class SpriteBuilder(object):
         if layername == "joueur":
             spritegroups[layername].add( Player(layername,tileid,x,y,[img]) )
 
-        elif layername == "ramassable":
+        elif layername == "ramassable" or layername == "cache":
             spritegroups[layername].add( MovingSprite(layername,tileid,x,y,[img]) )
         else:
             spritegroups[layername].add( MySprite(layername,tileid,x,y,[img]) )
