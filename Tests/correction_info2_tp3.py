@@ -77,15 +77,19 @@ def suivre_chemin(traj,aller_=aller):
         aller_(x,y)
 
 
-if __name__ == '__main__':
+def main():
     init('robot_obstacles_invisibles')
+    frameskip(5) # affiche une image sur n pour acceler la simulation
     g = init_graph(xstart,xstop,gap)
-    time.sleep(1)
+    time.sleep(0.3)
     draw_graph(g)
-    time.sleep(1)
+    time.sleep(0.3)
     prune_nodes(g)
     draw_graph(g)
-    time.sleep(1)
+    time.sleep(0.3)
 
     p = nx.shortest_path(g,(xstart,xstart),(xstop,xstop),weight='weight')
     suivre_chemin(p)
+
+if __name__ == '__main__':
+    main()

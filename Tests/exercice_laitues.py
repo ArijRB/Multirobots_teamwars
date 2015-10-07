@@ -1,8 +1,6 @@
 from gardenworld import *
 # le but de cet exercice est de programmer une tortue qui doit transferer 8 laitues dans l'enclos du chateau
 
-init()
-
 
 # quelques macros
 def fonce():
@@ -78,7 +76,13 @@ def repose_laitues():
         avance()
 
 
-aller_devant_laitues()
-ramasse_laitues()
-rentre_au_chateau()
-repose_laitues()
+def main():
+    init()
+    gw.fps = 100
+    aller_devant_laitues()
+    ramasse_laitues()
+    rentre_au_chateau()
+    repose_laitues()
+
+if __name__ == '__main__':
+    main()

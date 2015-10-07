@@ -1,3 +1,4 @@
+from __future__ import absolute_import, print_function, unicode_literals
 from spritebuilder import SpriteBuilder
 import glo
 import pygame
@@ -18,7 +19,6 @@ class Game:
     callbacks = {}
 
     def __init__(self, fichiercarte, _SpriteBuilder):
-
         pygame.init()
 
         # charge la carte et le spritesheet

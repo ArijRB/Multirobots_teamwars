@@ -1,9 +1,6 @@
 from gardenworld import *
 from collections import Counter
 
-init('info2_1')
-
-gw.fps = 25
 
 
 def avance_many(k):
@@ -76,7 +73,14 @@ def plante_jardin():
         plante_rangee(L)
 
 
-panier = ramasse_tout()
-print "J'ai ramasse: ", dict(Counter(panier))
-va_dans_jardin()
-plante_jardin()
+def main():
+    init('info2_1')
+    gw.fps = 65
+
+    panier = ramasse_tout()
+    print "J'ai ramasse: ", dict(Counter(panier))
+    va_dans_jardin()
+    plante_jardin()
+
+if __name__ == '__main__':
+    main()
