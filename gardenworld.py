@@ -1,5 +1,5 @@
 from __future__ import absolute_import, print_function, unicode_literals
-from gameclass import Game
+from gameclass import Game,check_init_game_done
 from spritebuilder import SpriteBuilder
 from players import Player
 from sprite import MovingSprite
@@ -44,72 +44,51 @@ def init(_boardname=None):
     game.mainiteration()
     player = game.player
 
-
+@check_init_game_done
 def tournegauche():
-    try:
-        player.translate_sprite(0, 0, -90)
-        game.mainiteration()
-    except NameError:
-        print("Erreur: appeler la fonction init() avant toute chose")
+    player.translate_sprite(0, 0, -90)
+    game.mainiteration()
 
+@check_init_game_done
 def tournedroite():
-    try:
-        player.translate_sprite(0, 0, 90)
-        game.mainiteration()
-    except NameError:
-        print("Erreur: appeler la fonction init() avant toute chose")
+    player.translate_sprite(0, 0, 90)
+    game.mainiteration()
 
-
+@check_init_game_done
 def avance():
-    try:
-        player.forward(player.rect.width)
-        game.mainiteration()
-        return player.position_changed()
-    except NameError:
-        print("Erreur: appeler la fonction init() avant toute chose")
+    player.forward(player.rect.width)
+    game.mainiteration()
+    return player.position_changed()
 
-
+@check_init_game_done
 def ramasse():
-    try:
-        o = game.player.ramasse(game.groupDict)
-        game.mainiteration()
-        return game.O.firstname(o)
-    except NameError:
-        print("Erreur: appeler la fonction init() avant toute chose")
+    o = game.player.ramasse(game.groupDict)
+    game.mainiteration()
+    return game.O.firstname(o)
 
-
+@check_init_game_done
 def obstacle():
-    try:
-        player.forward(player.rect.width)
-        hors = game.mask.out_of_screen(player)
-        coll = game.mask.get_box_collision_list(game.groupDict, player)
-        player.resume_to_backup()
-        return hors or coll
-    except NameError:
-        print("Erreur: appeler la fonction init() avant toute chose")
+    player.forward(player.rect.width)
+    hors = game.mask.out_of_screen(player)
+    coll = game.mask.get_box_collision_list(game.groupDict, player)
+    player.resume_to_backup()
+    return hors or coll
 
-
+@check_init_game_done
 def depose(nom=None):
-    try:
-        def _filtre(o): return nom in game.O.names(o) + [None]
+    def _filtre(o): return nom in game.O.names(o) + [None]
 
-        o = player.depose(game.groupDict, _filtre)
-        game.mainiteration()
-        return game.O.firstname(o)
-    except NameError:
-        print("Erreur: appeler la fonction init() avant toute chose")
+    o = player.depose(game.groupDict, _filtre)
+    game.mainiteration()
+    return game.O.firstname(o)
 
-
+@check_init_game_done
 def cherche(nom=None):
-    try:
-        def _filtre(o): return nom in game.O.names(o) + [None]
+    def _filtre(o): return nom in game.O.names(o) + [None]
 
-        o = player.cherche_ramassable(game.groupDict, _filtre)
-        game.mainiteration()
-        return game.O.firstname(o)
-    except NameError:
-        print("Erreur: appeler la fonction init() avant toute chose")
-
+    o = player.cherche_ramassable(game.groupDict, _filtre)
+    game.mainiteration()
+    return game.O.firstname(o)
 
 
 tg, td, av, ra, dp, ch, reset, ob = tournegauche, tournedroite, avance, ramasse, depose, cherche, init, obstacle
