@@ -78,7 +78,7 @@ def repose_laitues():
 
 def main():
     init()
-    gw.fps = 100
+    game.fps = 100
     aller_devant_laitues()
     ramasse_laitues()
     rentre_au_chateau()

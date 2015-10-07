@@ -6,8 +6,8 @@ import numpy as np
 
 
 def main():
-    rs.fps = 100
     init()
+    game.fps = 100
 
     for i in range(20):
         angles = np.random.randint(360, size=1)

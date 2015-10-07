@@ -33,35 +33,29 @@ class GardenSpriteBuilder(SpriteBuilder):
 
 #############################################################################
 
-class gw:
-    game = None
-    fps = None
-    O = None
-    name = 'gardenofdelight'
-
+game = Game()
 
 def init(_boardname=None):
-    global player
-    pygame.quit()
-    if _boardname: gw.name = _boardname
-    gw.fps = 4  # frames per second
-    gw.O = Ontology(True, 'SpriteSheet-32x32/tiny_spritesheet_ontology.csv')
-    gw.game = Game('Cartes/' + gw.name + '.json', GardenSpriteBuilder)
-    gw.game.mainiteration(60)
-    player = gw.game.player
+    global player,game
+    name = _boardname if _boardname is not None else 'gardenofdelight'
+    game = Game('Cartes/' + name + '.json', GardenSpriteBuilder)
+    game.O = Ontology(True, 'SpriteSheet-32x32/tiny_spritesheet_ontology.csv')
+    game.fps = 60  # frames per second
+    game.mainiteration()
+    player = game.player
 
 
 def tournegauche():
     try:
         player.translate_sprite(0, 0, -90)
-        gw.game.mainiteration(gw.fps)
+        game.mainiteration()
     except NameError:
         print("Erreur: appeler la fonction init() avant toute chose")
 
 def tournedroite():
     try:
         player.translate_sprite(0, 0, 90)
-        gw.game.mainiteration(gw.fps)
+        game.mainiteration()
     except NameError:
         print("Erreur: appeler la fonction init() avant toute chose")
 
@@ -69,7 +63,7 @@ def tournedroite():
 def avance():
     try:
         player.forward(player.rect.width)
-        gw.game.mainiteration(gw.fps)
+        game.mainiteration()
         return player.position_changed()
     except NameError:
         print("Erreur: appeler la fonction init() avant toute chose")
@@ -77,9 +71,9 @@ def avance():
 
 def ramasse():
     try:
-        o = gw.game.player.ramasse(gw.game.groupDict)
-        gw.game.mainiteration(gw.fps)
-        return gw.O.firstname(o)
+        o = game.player.ramasse(game.groupDict)
+        game.mainiteration()
+        return game.O.firstname(o)
     except NameError:
         print("Erreur: appeler la fonction init() avant toute chose")
 
@@ -87,8 +81,8 @@ def ramasse():
 def obstacle():
     try:
         player.forward(player.rect.width)
-        hors = gw.game.mask.out_of_screen(player)
-        coll = gw.game.mask.get_box_collision_list(gw.game.groupDict, player)
+        hors = game.mask.out_of_screen(player)
+        coll = game.mask.get_box_collision_list(game.groupDict, player)
         player.resume_to_backup()
         return hors or coll
     except NameError:
@@ -97,22 +91,22 @@ def obstacle():
 
 def depose(nom=None):
     try:
-        def _filtre(o): return nom in gw.O.names(o) + [None]
+        def _filtre(o): return nom in game.O.names(o) + [None]
 
-        o = player.depose(gw.game.groupDict, _filtre)
-        gw.game.mainiteration(gw.fps)
-        return gw.O.firstname(o)
+        o = player.depose(game.groupDict, _filtre)
+        game.mainiteration()
+        return game.O.firstname(o)
     except NameError:
         print("Erreur: appeler la fonction init() avant toute chose")
 
 
 def cherche(nom=None):
     try:
-        def _filtre(o): return nom in gw.O.names(o) + [None]
+        def _filtre(o): return nom in game.O.names(o) + [None]
 
-        o = player.cherche_ramassable(gw.game.groupDict, _filtre)
-        gw.game.mainiteration(gw.fps)
-        return gw.O.firstname(o)
+        o = player.cherche_ramassable(game.groupDict, _filtre)
+        game.mainiteration()
+        return game.O.firstname(o)
     except NameError:
         print("Erreur: appeler la fonction init() avant toute chose")
 

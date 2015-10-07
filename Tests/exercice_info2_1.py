@@ -75,7 +75,7 @@ def plante_jardin():
 
 def main():
     init('info2_1')
-    gw.fps = 65
+    game.fps = 65
 
     panier = ramasse_tout()
     print ("J'ai ramasse: ", dict(Counter(panier)))

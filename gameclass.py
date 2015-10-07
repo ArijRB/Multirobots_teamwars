@@ -5,6 +5,7 @@ import pygame
 from collections import OrderedDict
 import random
 from sprite import MySprite
+from functools import wraps
 
 try:
     from toolz import first
@@ -14,12 +15,37 @@ except:
 from collisions import CollisionHandler
 
 
-class Game:
-    # callbacks is a dictionary of functions to call depending on key pressed
-    callbacks = {}
+def check_init_game_done(fun):
+    """ decorator checking if init() has correctly been called before anything """
+    @wraps(fun  )
+    def fun_checked(*args,**kwargs):
+        if Game.single_instance == None:
+            raise("Erreur: appeler la fonction init() avant toute chose")
+        return fun(*args,**kwargs)
+    return fun_checked
 
-    def __init__(self, fichiercarte, _SpriteBuilder):
+
+class Game(object):
+
+    """ Design Pattern 'Singleton', so only one instance of game can exist """
+    single_instance = None
+    def __new__(cls, *args, **kwargs):
+        if not isinstance(cls.single_instance, cls):
+            cls.single_instance = object.__new__(cls, *args, **kwargs)
+        return cls.single_instance
+
+    """ initialization """
+    def __init__(self, fichiercarte=None, _SpriteBuilder=None):
+        # if no parameter is given, then __init__ will just create an empty Game object
+        if fichiercarte is None or _SpriteBuilder is None:
+            return
+
+        #reset pygame
+        pygame.quit()
         pygame.init()
+
+        # callbacks is a dictionary of functions to call depending on key pressed
+        self.callbacks = {}
 
         # charge la carte et le spritesheet
         self.spriteBuilder = _SpriteBuilder(fichiercarte)
@@ -29,6 +55,7 @@ class Game:
                                                self.spriteBuilder.spritesize * self.spriteBuilder.colsize])
         pygame.display.set_caption("pySpriteWorld Experiment")
 
+        self.fps = 60
         # converti les sprites meme format que l'ecran
         self.spriteBuilder.prepareSprites()
 
@@ -79,7 +106,7 @@ class Game:
             self.surfaceDessinable.set_colorkey( (0,0,0) )
             self.groupDict['dessinable'].add( MySprite('dessinable',None,0,0,[self.surfaceDessinable]) )
 
-    def mainiteration(self, fps=60, frameskip = 0):
+    def mainiteration(self, _fps=None, _frameskip = 0):
         if pygame.event.peek():
             for event in pygame.event.get():  # User did something
                 if event.type == pygame.QUIT:  # If user clicked close
@@ -93,10 +120,10 @@ class Game:
         self.update()
 
         # call self.draw() once every 'frameskip' iterations
-        self.framecount = (self.framecount+1) % (frameskip+1)
+        self.framecount = (self.framecount+1) % (_frameskip+1)
         if self.framecount==0:
             self.draw()
-            self.clock.tick(fps)
+            self.clock.tick(_fps if _fps is not None else self.fps)
 
 
     def mainloop(self):

@@ -25,11 +25,11 @@ personnages = dict(((y, x), personnages_tiled[x,y]) for (x, y) in personnages_ti
 guerriers_sympas = dict((k, personnages[k]) for k in personnages if personnages[k] not in ['Guldur', 'Pam', 'Maruk', 'Roi'])
 
 def parle(texte=''):
-    gw.game.player.forward(gw.game.player.rect.width)
-    coll = gw.game.mask.get_box_collision_list(gw.game.groupDict, gw.game.player)
-    gw.game.player.resume_to_backup()
+    game.player.forward(game.player.rect.width)
+    coll = game.mask.get_box_collision_list(game.groupDict, game.player)
+    game.player.resume_to_backup()
     for j in coll:
-        if j in gw.game.groupDict["personnages"]:
+        if j in game.groupDict["personnages"]:
             row,col = j.y//32 , j.x // 32
             nom = personnages.get((row,col), 'personne')
             print ("vous parlez à "+nom)
@@ -48,14 +48,14 @@ def parle(texte=''):
                 elif (row, col) in guerriers_sympas:
                     #cool c'est un guerrier sympa on a un cadeau
                     print nom + " vous répond : « Bienvenue à toi ! Voici un cadeau. »."
-                    for r in gw.game.groupDict['cache']:
+                    for r in game.groupDict['cache']:
                         if r.rect.x//32 == col and r.rect.y//32 == row:
                             r.rect.y+= 32
                             r.nom = 'potion'
                             r.layername='ramassable'
-                            gw.game.groupDict['ramassable'].add(r)
+                            game.groupDict['ramassable'].add(r)
                             print  "Il dépose une potion devant lui."
-                            gw.game.mainiteration(gw.fps)
+                            game.mainiteration(game.fps)
                 else:
                     #il y a quelqu'un de pas sympa ici
                     print("Il répond : « Grrr »")

@@ -1,9 +1,9 @@
 from robosim import (
-    rs,
+    game,
     init as robosim_init,
     tg as robosim_tg,
     td as robosim_td,
-    check_init_done,
+    check_init_game_done,
     frameskip,
     avance as robosim_avance,
     av as robosim_av,
@@ -76,10 +76,10 @@ def init(_boardname=None):
     if 'nxt' in globals():
         init_nxt()
     robosim_init(_boardname)
-    assert rs.game.screen.get_width() == rs.game.screen.get_height() ,"le terrain sur l'ecran devrait etre carre et non rectangulaire"
+    assert game.screen.get_width() == game.screen.get_height() ,"le terrain sur l'ecran devrait etre carre et non rectangulaire"
 
-def pix2cm(p): return p * taille_board_cm / rs.game.screen.get_width()
-def cm2pix(c): return rs.game.screen.get_width() * c / taille_board_cm
+def pix2cm(p): return p * taille_board_cm / game.screen.get_width()
+def cm2pix(c): return game.screen.get_width() * c / taille_board_cm
 def randround(x): return int(floor(x) + (0 if random.random() > (x-floor(x)) else 1))
 
 def const_unicycle_sim(degrees):
