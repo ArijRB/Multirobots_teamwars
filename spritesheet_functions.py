@@ -7,20 +7,23 @@ import glo
 
 class SpriteSheet(object):
     """ Class used to grab images out of a sprite sheet. """
-    # This points to our sprite sheet image
-    sprite_sheet    = None
-    # size of a sprite (nb of columns or nb of rows)
-    spritesize      = None
-    # number of sprites in a row , column
-    rowsize,colsize = None,None
-    # list of sprite images of type pygame.surface (in a bottom to down and left to right order)
-    sprite_images   = []
-
 
 
     def __init__(self, file_name,_spritesize):
         """ Constructor. Pass in the file name of the sprite sheet. """
         # Load the sprite sheet and set some variables
+
+
+        # This points to our sprite sheet image
+        self.sprite_sheet    = None
+        # size of a sprite (nb of columns or nb of rows)
+        self.spritesize      = None
+        # number of sprites in a row , column
+        self.rowsize,self.colsize = None,None
+        # list of sprite images of type pygame.surface (in a bottom to down and left to right order)
+        self.sprite_images   = []
+
+
         self.sprite_sheet = pygame.image.load(file_name)
         self.spritesize   = _spritesize
         w , h             = self.sprite_sheet.get_width() , self.sprite_sheet.get_height()

@@ -16,11 +16,12 @@ print("""=[ Pour l'aide, tapez help(fonction) ]=\n""")
 
 
 class TurtleSpriteBuilder(SpriteBuilder):
-    def basicSpriteFactory(self,spritegroups , layername,tileid,x,y,img):
+    def basicSpriteFactory(self,spritegroups , layername,tileid,x,y,img=None):
+        if img is None: img = self.sheet[tileid]
+
         if layername == "joueur":
             j = Turtle(layername,x,y,*img.get_size())
             spritegroups[layername].add( j )
-            #j.build_dessin()
         else:
             SpriteBuilder.basicSpriteFactory(self,spritegroups,layername,tileid,x,y,img)
 
@@ -54,7 +55,7 @@ def frameskip(n):
     frameskip(n) n'affichera qu'une image sur n.
     frameskip(0) affiche tout, et donc c'est assez lent.
     """
-    game.frame_skip = n
+    game.frameskip = n
 
 
 @check_init_game_done
@@ -69,7 +70,7 @@ def avance(s=1.0):
     """
     cx1,cy1 = player.get_centroid()
     player.forward(s)
-    game.mainiteration(_frameskip= game.frame_skip)
+    game.mainiteration()
     if player.position_changed():
         if game.usepen:
             cx2,cy2 = player.get_centroid()
@@ -104,7 +105,7 @@ def oriente(a):
     Donc oriente(180) le fait se tourner vers l'Ouest
     """
     player.translate_sprite(player.x,player.y,a,relative=False)
-    game.mainiteration(_frameskip= game.frame_skip)
+    game.mainiteration()
 
 @check_init_game_done
 def tournegauche(a):
@@ -112,7 +113,7 @@ def tournegauche(a):
     tournegauche(a) pivote d'un angle donne, en degrees
     """
     player.translate_sprite(0,0,-a,relative=True)
-    game.mainiteration(_frameskip= game.frame_skip)
+    game.mainiteration()
 
 @check_init_game_done
 def tournedroite(a):
@@ -120,7 +121,7 @@ def tournedroite(a):
     tournedroite(a) pivote d'un angle a donne, en degrees
     """
     player.translate_sprite(0,0,a,relative=True)
-    game.mainiteration(_frameskip= game.frame_skip)
+    game.mainiteration()
 
 @check_init_game_done
 def telemetre():
@@ -130,7 +131,7 @@ def telemetre():
     de rencontrer un obstacle
     """
     rayon_hit = player.throw_ray(player.angle_degree*pi/180 , game.mask,game.layers)
-    game.mainiteration(_frameskip= game.frame_skip)
+    game.mainiteration()
     return player.dist(*rayon_hit)-(player.taille_geometrique//2)
 
 @check_init_game_done
@@ -142,7 +143,7 @@ def telemetre_coords(x,y,a):
     de rencontrer un obstacle
     """
     rx,ry = player.throw_ray(a*pi/180 , game.mask,game.layers,coords=(x,y))
-    game.mainiteration(_frameskip= game.frame_skip)
+    game.mainiteration()
 
     return sqrt( (rx-x)**2 + (ry-y)**2 )
 
@@ -170,7 +171,7 @@ def set_position(x,y):
     Renvoie False si la teleportation a echouee, pour cause d'obstacle
     """
     player.set_centroid(x,y)
-    game.mainiteration(_frameskip= game.frame_skip)
+    game.mainiteration()
     return player.position_changed()
 
 @check_init_game_done
@@ -200,7 +201,7 @@ def line(x1,y1,x2,y2,wait=False):
     game.prepare_dessinable()
     pygame.draw.aaline(game.surfaceDessinable, game.pencolor, (x1,y1), (x2,y2))
     if not wait:
-        game.mainiteration(_frameskip= game.frame_skip)
+        game.mainiteration()
 
 @check_init_game_done
 def circle(x1,y1,r=10,wait=False):
@@ -212,7 +213,7 @@ def circle(x1,y1,r=10,wait=False):
     game.prepare_dessinable()
     pygame.draw.circle(game.surfaceDessinable, game.pencolor, (x1,y1), r)
     if not wait:
-        game.mainiteration(_frameskip= game.frame_skip)
+        game.mainiteration()
 
 @check_init_game_done
 def efface():
@@ -220,7 +221,7 @@ def efface():
     efface() va effacer tous les dessins
     """
     game.kill_dessinable()
-    game.mainiteration(_frameskip= game.frame_skip)
+    game.mainiteration()
 
 
 @check_init_game_done

@@ -59,18 +59,13 @@ class SpriteBuilder(object):
         """ builds one group of sprites for each layer """
 
         # build ordered dictionary - first add groups from glo.ALL_LAYERS, with correct order
-        Grps = OrderedDict( [(gr,self.basicGroupFactory(gr)) for gr in glo.ALL_LAYERS])
-        for l in self.carte["layers"]:
-            n = l["name"].rstrip('s')
-            if n not in Grps:
-                Grps.update( {n:self.basicGroupFactory(n) } )
-        #Grps.update( {l["name"]:self.basicGroupFactory(l["name"]) for l in self.carte["layers"] if l["name"] not in Grps} )
 
+        Grps = OrderedDict( [(gr,self.basicGroupFactory(gr)) for gr in glo.ALL_LAYERS])
 
         for l in self.carte["layers"]:
             layername = l["name"].rstrip('s')
             if layername not in Grps:
-                Grps.update( {n:self.basicGroupFactory(layername) } )
+                Grps.update( {layername:self.basicGroupFactory(layername) } )
 
             g = Grps[layername]
             dat = l["data"]
@@ -88,15 +83,20 @@ class SpriteBuilder(object):
 
         return Grps
 
+    def build_sprite(self,Grps , layername, tile_row_col, x, y):
+        self.basicSpriteFactory( Grps, layername, tile_row_col , x,y , self.sheet[tile_row_col])
+
     ##########  Methodes a surcharger pour adapter la classe ##########
-    def basicSpriteFactory(self,spritegroups , layername,tileid,x,y,img):
+    def basicSpriteFactory(self,spritegroups , layername,tileid,x,y,img=None):
+        imglist = [self.sheet[tileid]] if img is None else [img]
+
         if layername == "joueur":
-            spritegroups[layername].add( Player(layername,tileid,x,y,[img]) )
+            spritegroups[layername].add( Player(layername,tileid,x,y,imglist) )
 
         elif layername == "ramassable" or layername == "cache":
-            spritegroups[layername].add( MovingSprite(layername,tileid,x,y,[img]) )
+            spritegroups[layername].add( MovingSprite(layername,tileid,x,y,imglist) )
         else:
-            spritegroups[layername].add( MySprite(layername,tileid,x,y,[img]) )
+            spritegroups[layername].add( MySprite(layername,tileid,x,y,imglist) )
 
     def basicGroupFactory(self,layername):
         if layername in ["eye_candy","joueur"]:

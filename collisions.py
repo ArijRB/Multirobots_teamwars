@@ -1,6 +1,6 @@
 import pygame
 import random
-
+from itertools import chain
 
 class CollisionHandler:
     pixel_perfect = True  # calls pixel_collision otherwise box_collision
@@ -43,20 +43,15 @@ class CollisionHandler:
         h -= player.rect.h
         return player.rect.x > w or player.rect.x < 0 or player.rect.y > h or player.rect.y < 0
 
-    def get_box_collision_list(self, gDict, player):
-        """ attention, la fonction ne teste pas la sortie d'ecran """
-        l = pygame.sprite.spritecollide(player, gDict["obstacle"], False)
-        return l+pygame.sprite.spritecollide(player, gDict["personnage"], False)
-
 
     def handle_box_collisions_single_player(self, gDict, player):
-        block_hit_list = pygame.sprite.spritecollide(player, gDict["obstacle"], False)
+        block_hit_list =  pygame.sprite.spritecollide(player, chain(gDict["obstacle"] , gDict["personnage"]), False)
         if block_hit_list or self.out_of_screen(player):
             player.resume_to_backup()
 
     def handle_pixel_collisions_single_player(self, gDict, player):
         # computes collisions mask of all obstacles (for pixel-based collisions)
-        self.fill_with_group(gDict["obstacle"])
+        self.fill_with_group( chain(gDict["obstacle"] , gDict["personnage"]) )
 
         # send it to the player
         assert not self.collide_sprite(player, True), "sprite collision before any movement !!!"
@@ -68,7 +63,7 @@ class CollisionHandler:
             player.resume_to_backup()
 
     def handle_pixel_collisions_many_players(self, gDict):
-        persos = list(gDict["joueur"]) + list(gDict["personnage"])
+        persos = list(gDict["joueur"])+list(gDict["personnage"])
         random.shuffle(persos)
 
         self.fill_with_group(gDict["obstacle"])
@@ -84,3 +79,8 @@ class CollisionHandler:
             if self.collide_sprite(j) or self.out_of_screen(j):
                 j.resume_to_backup()
             self.draw_sprite(j)
+
+
+    def get_box_collision_list(self, groupe, player):
+        """ attention, la fonction ne teste pas la sortie d'ecran """
+        return pygame.sprite.spritecollide(player, groupe, False)

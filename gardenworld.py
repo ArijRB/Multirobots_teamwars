@@ -4,6 +4,7 @@ from spritebuilder import SpriteBuilder
 from players import Player
 from sprite import MovingSprite
 from ontology import Ontology
+from itertools import chain
 import pygame
 import glo
 
@@ -16,7 +17,8 @@ import glo
 class GardenSpriteBuilder(SpriteBuilder):
     """ classe permettant d'afficher le personnage sous 4 angles differents
     """
-    def basicSpriteFactory(self,spritegroups, layername, tileid, x, y, img):
+    def basicSpriteFactory(self,spritegroups, layername, tileid, x, y, img=None):
+        if img is None: img = self.sheet[tileid]
         if layername == "joueur":
             imglist = [self.sheet[i, j] for i, j in ((10, 0), (8, 0), (9, 0), (11, 0))]
             p = Player(layername, tileid, x, y, imglist)
@@ -24,6 +26,7 @@ class GardenSpriteBuilder(SpriteBuilder):
                 p.translate_sprite(0, 0, 90 * [10, 8, 9, 11].index(tileid[0]))
             spritegroups[layername].add(p)
         elif layername == "personnage":
+
             p = MovingSprite(layername, tileid, x, y, [img])
             spritegroups[layername].add(p)
         else:
@@ -42,6 +45,8 @@ def init(_boardname=None):
     game.fps = 60  # frames per second
     game.mainiteration()
     player = game.player
+
+
 
 @check_init_game_done
 def tournegauche():
@@ -69,7 +74,7 @@ def ramasse():
 def obstacle():
     player.forward(player.rect.width)
     hors = game.mask.out_of_screen(player)
-    coll = game.mask.get_box_collision_list(game.layers, player)
+    coll = game.mask.get_box_collision_list(chain(game.layers['obstacle'],game.layers['personnage']), player)
     player.resume_to_backup()
     return hors or coll != []
 

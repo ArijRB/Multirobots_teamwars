@@ -17,7 +17,7 @@ from collisions import CollisionHandler
 
 def check_init_game_done(fun):
     """ decorator checking if init() has correctly been called before anything """
-    @wraps(fun  )
+    @wraps(fun)
     def fun_checked(*args,**kwargs):
         if Game.single_instance == None:
             raise("Erreur: appeler la fonction init() avant toute chose")
@@ -30,9 +30,11 @@ class Game(object):
     """ Design Pattern 'Singleton', so only one instance of game can exist """
     single_instance = None
     def __new__(cls, *args, **kwargs):
-        if not isinstance(cls.single_instance, cls):
+        if cls.single_instance is None:
             cls.single_instance = object.__new__(cls, *args, **kwargs)
+
         return cls.single_instance
+
 
     """ initialization """
     def __init__(self, fichiercarte=None, _SpriteBuilder=None):
@@ -54,13 +56,16 @@ class Game(object):
         self.screen = pygame.display.set_mode([self.spriteBuilder.spritesize * self.spriteBuilder.rowsize,
                                                self.spriteBuilder.spritesize * self.spriteBuilder.colsize])
         pygame.display.set_caption("pySpriteWorld Experiment")
+        self.spriteBuilder.screen = self.screen
 
         self.fps = 60
+        self.frameskip = 0
         # converti les sprites meme format que l'ecran
         self.spriteBuilder.prepareSprites()
 
         # cree un groupe de sprites pour chaque layer
         self.layers = self.spriteBuilder.buildGroups()
+        pass
         # cherche le premier sprite joueur
         try:
             self.player = first(self.layers["joueur"])
@@ -106,7 +111,7 @@ class Game(object):
             self.surfaceDessinable.set_colorkey( (0,0,0) )
             self.layers['dessinable'].add( MySprite('dessinable',None,0,0,[self.surfaceDessinable]) )
 
-    def mainiteration(self, _fps=None, _frameskip = 0):
+    def mainiteration(self, _fps=None, _frameskip = None):
         if pygame.event.peek():
             for event in pygame.event.get():  # User did something
                 if event.type == pygame.QUIT:  # If user clicked close
@@ -120,7 +125,8 @@ class Game(object):
         self.update()
 
         # call self.draw() once every 'frameskip' iterations
-        self.framecount = (self.framecount+1) % (_frameskip+1)
+        fs = _frameskip if _frameskip is not None else self.frameskip
+        self.framecount = (self.framecount+1) % (fs+1)
         if self.framecount==0:
             self.draw()
             self.clock.tick(_fps if _fps is not None else self.fps)
