@@ -4,6 +4,20 @@ import sys
 #import cytoolz # pip install cytoolz
 from collections import defaultdict
 import os
+import itertools
+
+noms_d_affreux = """
+Nuzak,Lystis, Mefeero, Sazai, Ross, Azok,
+Bron, Turok, Garaddon, Hruon, Jeddek,
+Grom, Thrum, Drog, Gorrum, Harg, Thrug, Karg,
+Roberick, Magan, Danforth, Lansire,
+Merander, Gyram, Darrick, Herby,
+Grobnick, Kazbo,
+Ceres,Demeter,Fichtelite,Haniyas,Jarn,Lando,Laterite,
+Maa,Madd,Mu,Nog,Reki,Topo,Uralite,Ziemia,
+Cyprian,Danorum,Logia,Malleus,Neaniskos,Papyri,Utpala
+"""
+
 
 class Ontology:
 
@@ -14,16 +28,20 @@ class Ontology:
     def names(self,sprt):
         if sprt is None:
             return None
-        elif sprt.tileid in self.onto:
-            return self.onto[sprt.tileid]
-        else:
-            try:
-                return [sprt.nom]
-            except:
+        try:
+            # si le sprite a un nom en propre, le renvoyer
+            return [sprt.nom]
+        except AttributeError:
+            if sprt.tileid in self.onto:
+                return self.onto[sprt.tileid]
+            else:
                 raise "erreur.. le sprite n'a pas de nom"
 
     def firstname(self,sprt):
         return None if sprt==None else self.names(sprt)[0]
+
+    def secondname(self,sprt):
+        return None if sprt==None else self.names(sprt)[1]
 
     @staticmethod
     def construit_ontologie(pairs,filename):
@@ -56,6 +74,14 @@ class Ontology:
                     l.append(summary)
                 ontology[(i,j) if pairs else i*len(row)+j] = l
         f.close()
+
+        # les guerriers sont de la case (16,6) jusqu'a (21,12)
+        noms_guerriers = [st.strip() for st in noms_d_affreux.split(',')]
+        idx_nom = itertools.count().next
+        for i in range(16,22):
+            for j in range(6,13):
+                ontology[(i,j)] = ['guerrier',noms_guerriers[idx_nom()]]
+
         return ontology
 
 
