@@ -27,6 +27,9 @@ from robosim import (
 import thread, time
 from math import pi,floor
 import random
+import pygame
+import glo
+from sprite import *
 
 try:
     import nxt
@@ -96,6 +99,17 @@ def init(_boardname=None):
         init_nxt()
     robosim_init(_boardname)
     assert game.screen.get_width() == game.screen.get_height() ,"le terrain sur l'ecran devrait etre carre et non rectangulaire"
+
+    if _boardname== 'vide':
+        big_obstacle = pygame.Surface([game.screen.get_width(), game.screen.get_height()]).convert()
+        big_obstacle.set_colorkey( (0,0,0) )
+        larg,haut=cm2pix(39),cm2pix(30)
+        px , py  =cm2pix(20),cm2pix(20)
+        r = pygame.Rect(512-px-larg,512-py-haut,larg,haut)
+        pygame.draw.rect( big_obstacle,glo.BLUE, r)
+        game.layers['obstacle'].add( MySprite('obstacle',None,0,0,[big_obstacle]) )
+        set_position(cm2pix(32),512-cm2pix(40)) # 60 cm du bord, au milieu
+        av(1)
 
 def pix2cm(p): return p * taille_board_cm / game.screen.get_width()
 def cm2pix(c): return game.screen.get_width() * c / taille_board_cm
