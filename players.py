@@ -73,16 +73,16 @@ class Player(MovingSprite):
         layers['ramassable'].add( obj )
         return obj
 
-    def throw_ray(self,radian_angle,mask,layers,coords=None):
+    def throw_rays(self,radian_angle_list,mask,layers,coords=None,show_rays=False):
         mask.erase_sprite( self )
         cx,cy = coords if coords else self.get_centroid()
         w,h = mask.mask.get_size()
-        if radian_angle is None: radian_angle = random()*2*pi
-        self.rayon_hit = rayon.rayon(mask.mask,cx,cy,radian_angle,w,h)
+        r = [rayon.rayon(mask.mask,cx,cy,a,w,h) for a in radian_angle_list]
         mask.draw_sprite( self )
-        if self.rayon_hit and layers:
-            layers["eye_candy"].add( DrawOnceSprite( pygame.draw.line , [(255,0,0),(cx,cy),self.rayon_hit,4] ) )
-        return self.rayon_hit
+        if layers and show_rays:
+            for h in r:
+                layers["eye_candy"].add( DrawOnceSprite( pygame.draw.line , [(255,0,0),(cx,cy),h,4] ) )
+        return r
 
 
 class Turtle(Player):

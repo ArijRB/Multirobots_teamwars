@@ -41,11 +41,12 @@ class MySprite(pygame.sprite.Sprite):
 class DrawOnceSprite(pygame.sprite.Sprite):
     """ DrawOnceSprite est un sprite qui va s'afficher pendant quelques frames, puis s'autodetruire
     """
+    lifespan = 4
     def __init__(self,drawfun,arglist):
         pygame.sprite.Sprite.__init__(self)
         self.drawfun = drawfun
         self.arglist = arglist
-        self.lifespan = 1
+        self.lifespan = DrawOnceSprite.lifespan
 
     def draw(self,surf):
         self.drawfun(surf,*self.arglist)

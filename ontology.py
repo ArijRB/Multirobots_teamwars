@@ -35,7 +35,8 @@ class Ontology:
             if sprt.tileid in self.onto:
                 return self.onto[sprt.tileid]
             else:
-                raise "erreur.. le sprite n'a pas de nom"
+                return ['']
+                #raise "erreur.. le sprite n'a pas de nom"
 
     def firstname(self,sprt):
         return None if sprt==None else self.names(sprt)[0]
@@ -80,7 +81,7 @@ class Ontology:
         idx_nom = itertools.count().next
         for i in range(16,22):
             for j in range(6,13):
-                ontology[(i,j)] = ['guerrier',noms_guerriers[idx_nom()]]
+                ontology[(i,j)] = [noms_guerriers[idx_nom()],'guerrier']
 
         return ontology
 

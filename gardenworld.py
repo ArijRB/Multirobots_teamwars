@@ -17,20 +17,18 @@ import glo
 class GardenSpriteBuilder(SpriteBuilder):
     """ classe permettant d'afficher le personnage sous 4 angles differents
     """
-    def basicSpriteFactory(self,spritegroups, layername, tileid, x, y, img=None):
+    def basicSpriteFactory(self, layername, tileid, x, y, img=None):
         if img is None: img = self.sheet[tileid]
         if layername == "joueur":
             imglist = [self.sheet[i, j] for i, j in ((10, 0), (8, 0), (9, 0), (11, 0))]
             p = Player(layername, tileid, x, y, imglist)
             if tileid[0] in [10, 8, 9, 11]:
                 p.translate_sprite(0, 0, 90 * [10, 8, 9, 11].index(tileid[0]))
-            spritegroups[layername].add(p)
+            return p
         elif layername == "personnage":
-
-            p = MovingSprite(layername, tileid, x, y, [img])
-            spritegroups[layername].add(p)
+            return MovingSprite(layername, tileid, x, y, [img])
         else:
-            SpriteBuilder.basicSpriteFactory(self,spritegroups, layername, tileid, x, y, img)
+            return SpriteBuilder.basicSpriteFactory(self, layername, tileid, x, y, img)
 
 
 #############################################################################
@@ -42,6 +40,7 @@ def init(_boardname=None):
     name = _boardname if _boardname is not None else 'gardenofdelight'
     game = Game('Cartes/' + name + '.json', GardenSpriteBuilder)
     game.O = Ontology(True, 'SpriteSheet-32x32/tiny_spritesheet_ontology.csv')
+    game.populate_sprite_names(game.O)
     game.fps = 60  # frames per second
     game.mainiteration()
     player = game.player

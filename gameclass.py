@@ -19,8 +19,10 @@ def check_init_game_done(fun):
     """ decorator checking if init() has correctly been called before anything """
     @wraps(fun)
     def fun_checked(*args,**kwargs):
-        if Game.single_instance == None:
-            raise("Erreur: appeler la fonction init() avant toute chose")
+        try:
+            Game.single_instance.screen
+        except:
+            raise Exception('Vous devez appeler la fonction init() avant toute chose')
         return fun(*args,**kwargs)
     return fun_checked
 
@@ -104,6 +106,8 @@ class Game(object):
     def kill_dessinable(self):
         while self.layers['dessinable']:
             first(self.layers['dessinable']).kill()
+        while self.layers['eye_candy']:
+            first(self.layers['eye_candy']).kill()
 
     def prepare_dessinable(self):
         if not self.layers['dessinable']:
@@ -135,3 +139,9 @@ class Game(object):
     def mainloop(self):
         while True:
             self.mainiteration()
+
+
+    def populate_sprite_names(self,ontology):
+        for layer in self.layers.values():
+            for s in layer:
+                s.firstname = ontology.firstname(s)

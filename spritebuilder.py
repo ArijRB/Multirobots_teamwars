@@ -79,24 +79,21 @@ class SpriteBuilder(object):
             for idx,e in enumerate(dat):
                 y,x = (idx // self.rowsize)*self.spritesize , (idx % self.rowsize)*self.spritesize
                 if e > 0:
-                    self.basicSpriteFactory( Grps , layername , self.sheet.get_row_col(e-1) , x,y , self.sheet[e-1])
-
+                    s = self.basicSpriteFactory( layername , self.sheet.get_row_col(e-1) , x,y , self.sheet[e-1])
+                    Grps[layername].add(s)
         return Grps
 
-    def build_sprite(self,Grps , layername, tile_row_col, x, y):
-        self.basicSpriteFactory( Grps, layername, tile_row_col , x,y , self.sheet[tile_row_col])
-
     ##########  Methodes a surcharger pour adapter la classe ##########
-    def basicSpriteFactory(self,spritegroups , layername,tileid,x,y,img=None):
+    def basicSpriteFactory(self , layername,tileid,x,y,img=None):
         imglist = [self.sheet[tileid]] if img is None else [img]
 
         if layername == "joueur":
-            spritegroups[layername].add( Player(layername,tileid,x,y,imglist) )
+            return Player(layername,tileid,x,y,imglist)
 
         elif layername == "ramassable" or layername == "cache":
-            spritegroups[layername].add( MovingSprite(layername,tileid,x,y,imglist) )
+            return MovingSprite(layername,tileid,x,y,imglist)
         else:
-            spritegroups[layername].add( MySprite(layername,tileid,x,y,imglist) )
+            return MySprite(layername,tileid,x,y,imglist)
 
     def basicGroupFactory(self,layername):
         if layername in ["eye_candy","joueur"]:

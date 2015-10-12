@@ -11,19 +11,18 @@ import pygame.draw
 
 
 print("""\n---==[ Fonction disponibles ]==---""")
-print("""init,avance,obstacle,oriente,\ntournegauche,tournedroite,telemetre,\ntelemetre_coords,position,orientation\nset_position,obstacle_coords\nline,circle,efface\npenup,pendown,color,frame_skip""")
+print("""init,avance,obstacle,oriente,\ntournegauche,tournedroite,telemetre,\ntelemetre_coords,position,orientation,diametre_robot,taille_terrain\nset_position,obstacle_coords\nline,circle,efface\npenup,pendown,color,frame_skip""")
 print("""=[ Pour l'aide, tapez help(fonction) ]=\n""")
 
 
 class TurtleSpriteBuilder(SpriteBuilder):
-    def basicSpriteFactory(self,spritegroups , layername,tileid,x,y,img=None):
+    def basicSpriteFactory(self , layername,tileid,x,y,img=None):
         if img is None: img = self.sheet[tileid]
 
         if layername == "joueur":
-            j = Turtle(layername,x,y,*img.get_size())
-            spritegroups[layername].add( j )
+            return Turtle(layername,x,y,*img.get_size())
         else:
-            SpriteBuilder.basicSpriteFactory(self,spritegroups,layername,tileid,x,y,img)
+            return SpriteBuilder.basicSpriteFactory(self,layername,tileid,x,y,img)
 
 ###########################################
 
@@ -124,28 +123,38 @@ def tournedroite(a):
     game.mainiteration()
 
 @check_init_game_done
-def telemetre():
+def telemetre(from_center=False,rel_angle=0):
     """
-    telemetre() tire un rayon laser dans la direction courante.
-    la fonction renvoie le nombre de pixels parcourus par le rayon avant
+    telemetre(from_center=False,rel_angle=0)
+
+    telemetre() tire un rayon laser dans la direction du robot
+    la fonction renvoie le nombre de pixels que le robot peut parcourir avant
+    de rencontrer un obstacle.
+    telemetre(from_center=True) compte le nombre de pixels depuis le centre du robot (et non pas le bord)
+    telemetre(rel_angle) tire le rayon avec l'angle rel_angle (relativement a l'orientation du robot)
+    """
+    rayon_hit = player.throw_rays([player.angle_degree*pi/180] , game.mask,game.layers,show_rays=True)[0]
+    game.mainiteration()
+    d = player.dist(*rayon_hit)
+    return d if from_center else d-(diametre_robot()//2)
+
+@check_init_game_done
+def telemetre_coords_list(x,y,angle_list,show_rays=True):
+    """
+    telemetre_coords_list(x,y,angle_list,show_rays=True)
+    tire un rayon laser depuis x,y avec les angles angle_list
+    la fonction renvoie une liste contenant les nombres de pixels parcourus par le rayon avant
     de rencontrer un obstacle
     """
-    rayon_hit = player.throw_ray(player.angle_degree*pi/180 , game.mask,game.layers)
+    x,y = int(x),int(y)
+    hitlist = player.throw_rays([a*pi/180 for a in angle_list] , game.mask,game.layers,coords=(x,y),show_rays=show_rays)
     game.mainiteration()
-    return player.dist(*rayon_hit)-(player.taille_geometrique//2)
+    return [sqrt( (rx-x)**2 + (ry-y)**2 ) for rx,ry in hitlist]
 
 @check_init_game_done
 def telemetre_coords(x,y,a):
-    """
-    telemetre_coords(x,y,a,display=True)
-    tire un rayon laser depuis x,y avec l'angle a
-    la fonction renvoie le nombre de pixels parcourus par le rayon avant
-    de rencontrer un obstacle
-    """
-    rx,ry = player.throw_ray(a*pi/180 , game.mask,game.layers,coords=(x,y))
-    game.mainiteration()
-
-    return sqrt( (rx-x)**2 + (ry-y)**2 )
+    """ voir telemetre_coords_list """
+    return telemetre_coords_list(x,y,[a])[0]
 
 @check_init_game_done
 def position(entiers=False):
@@ -156,6 +165,14 @@ def position(entiers=False):
     """
     cx,cy = player.get_centroid()
     return (int(cx),int(cy)) if entiers else (cx,cy)
+
+@check_init_game_done
+def diametre_robot():
+    return game.player.taille_geometrique
+
+@check_init_game_done
+def taille_terrain():
+    return game.screen.get_width(),game.screen.get_height()
 
 @check_init_game_done
 def orientation():
@@ -199,7 +216,7 @@ def line(x1,y1,x2,y2,wait=False):
     accelere la fonction.
     """
     game.prepare_dessinable()
-    pygame.draw.aaline(game.surfaceDessinable, game.pencolor, (x1,y1), (x2,y2))
+    pygame.draw.aaline(game.surfaceDessinable, game.pencolor, (int(x1),int(y1)), (int(x2),int(y2)))
     if not wait:
         game.mainiteration()
 
@@ -211,7 +228,7 @@ def circle(x1,y1,r=10,wait=False):
     accelere la fonction.
     """
     game.prepare_dessinable()
-    pygame.draw.circle(game.surfaceDessinable, game.pencolor, (x1,y1), r)
+    pygame.draw.circle(game.surfaceDessinable, game.pencolor, (int(x1),int(y1)), r)
     if not wait:
         game.mainiteration()
 

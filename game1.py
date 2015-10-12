@@ -18,11 +18,10 @@ def avk(k):
 
 def init(s):
     global personnages_tiled,personnages,guerriers_sympas
-    print("new init")
     gardenworld.init(s)
-    personnages_tiled = {perso.get_rowcol():game.O.secondname(perso) for perso in game.layers['personnage'] }
+    personnages_tiled = {perso.get_rowcol():perso.firstname for perso in game.layers['personnage'] }
     personnages = dict(((y, x), personnages_tiled[y,x]) for (y, x) in personnages_tiled)
-    guerriers_sympas = dict((k, personnages[k]) for k in personnages if personnages[k] ['Guldur', 'Pam', 'Maruk', 'Roi'])
+    guerriers_sympas = dict((k, personnages[k]) for k in personnages if personnages[k] in ['Guldur', 'Pam', 'Maruk', 'Roi'])
     print personnages_tiled
     print personnages
 
