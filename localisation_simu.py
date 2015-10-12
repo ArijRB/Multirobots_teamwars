@@ -55,5 +55,5 @@ def generate_sorted_coords(n):
 #print(min(comp_list))
 from robosim import position
 #print(telemetre_coords_list(300,250,angle_list=[8+i for i in range(angle_start,angle_stop+1,angle_step)],show_rays=True))
-print(telemetre_coords_list(*position(),angle_list=[0+i for i in range(angle_start,angle_stop+1,angle_step)],show_rays=True))
+print(telemetre_coords_list(*position(),angle_list=[0   +i for i in range(angle_start,angle_stop+1,angle_step)],show_rays=True))
 raw_input()
