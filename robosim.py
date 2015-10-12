@@ -133,7 +133,7 @@ def telemetre(from_center=False,rel_angle=0):
     telemetre(from_center=True) compte le nombre de pixels depuis le centre du robot (et non pas le bord)
     telemetre(rel_angle) tire le rayon avec l'angle rel_angle (relativement a l'orientation du robot)
     """
-    rayon_hit = player.throw_rays([player.angle_degree*pi/180] , game.mask,game.layers,show_rays=True)[0]
+    rayon_hit = player.throw_rays([(player.angle_degree+rel_angle)*pi/180] , game.mask,game.layers,show_rays=True)[0]
     game.mainiteration()
     d = player.dist(*rayon_hit)
     return d if from_center else d-(diametre_robot()//2)
