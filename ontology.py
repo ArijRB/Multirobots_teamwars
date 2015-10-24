@@ -78,10 +78,10 @@ class Ontology:
 
         # les guerriers sont de la case (16,6) jusqu'a (21,12)
         noms_guerriers = [st.strip() for st in noms_d_affreux.split(',')]
-        idx_nom = itertools.count().next
+        idx_nom = itertools.count()
         for i in range(16,22):
             for j in range(6,13):
-                ontology[(i,j)] = [noms_guerriers[idx_nom()],'guerrier']
+                ontology[(i,j)] = [noms_guerriers[ next(idx_nom) ],'guerrier']
 
         return ontology
 

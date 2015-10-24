@@ -10,7 +10,7 @@ from functools import wraps
 try:
     from toolz import first
 except:
-    def first(g): return iter(g).next()
+    def first(g): return next(iter(g))
 
 from collisions import CollisionHandler
 
