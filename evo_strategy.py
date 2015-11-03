@@ -1,3 +1,4 @@
+from robosim import *
 import numpy as np
 import math
 
@@ -7,7 +8,7 @@ def f(theta):
     return 1.0-abs(theta[0]-0.2)-abs(theta[1]-0.7)
 
 
-def optim(N,f,niter=100,verb=False):
+def optim(N,f,niter=100,verb=False,draw=False):
     best_theta = np.array([0.5]*N)
     f_best_theta = f(best_theta)
 
@@ -17,7 +18,11 @@ def optim(N,f,niter=100,verb=False):
 
         if f_theta > f_best_theta:
             best_theta = theta
-            f_best_theta = f_theta
+            if draw:
+                efface()
+                pendown()
+            f_best_theta = f(theta)
+            if draw: penup()
             if verb:
                 print "iteration ",i," , f(",best_theta,") = ",f_best_theta
     return best_theta

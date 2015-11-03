@@ -68,7 +68,7 @@ def evalueTheta(theta):
 
 def optimise_theta():
     frameskip(100)
-    best_theta = optim(N=2,f=evalueTheta,niter=2000,verb=True)
+    best_theta = optim(N=2,f=evalueTheta,niter=2000,verb=True,draw=True)
     frameskip(0)
     print "meilleur theta = ",best_theta
     print "appuyez sur une touche pour voir la trajectoire"
