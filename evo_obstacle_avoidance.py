@@ -75,7 +75,7 @@ def optimise_theta():
     raw_input()
     evalueTheta(best_theta)
 
-#optimise_theta()
+optimise_theta()
 evalueTheta([ 0.5,0.5])
 raw_input()
 evalueTheta([ 0.02649329 , 1.25210125])
