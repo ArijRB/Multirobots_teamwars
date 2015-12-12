@@ -6,6 +6,7 @@ from collections import OrderedDict
 import random
 from sprite import MySprite
 from functools import wraps
+import copy
 
 try:
     from toolz import first
@@ -145,3 +146,7 @@ class Game(object):
         for layer in self.layers.values():
             for s in layer:
                 s.firstname = ontology.firstname(s)
+
+    def clone_player(self,x,y,player=None,tiled=True):
+        if player is None: player = self.layers['joueur']
+        p2 = copy.copy(player)

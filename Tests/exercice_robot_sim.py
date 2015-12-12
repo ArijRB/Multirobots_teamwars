@@ -15,7 +15,11 @@ def main():
 
         for a in angles:
             oriente(a)
-            distances.append(telemetre())
+            if i % 2:
+                distances.append(telemetre()) # testing function telemetre
+            else:
+                cx,cy = game.player.get_centroid()
+                distances.append( telemetre_coords(cx,cy,a) ) # testing function telemetre_coords
 
         best = np.argmax(distances)
         oriente(angles[best])

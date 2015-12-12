@@ -1,3 +1,7 @@
+"""
+Robosim Module
+"""
+
 from __future__ import absolute_import, print_function, unicode_literals
 from gameclass import Game,check_init_game_done
 from sprite import MySprite,MovingSprite
@@ -16,19 +20,14 @@ print("""=[ Pour l'aide, tapez help(fonction) ]=\n""")
 
 
 class TurtleSpriteBuilder(SpriteBuilder):
-    def basicSpriteFactory(self , layername,tileid,x,y,img=None):
-        if img is None: img = self.sheet[tileid]
-
-        if layername == "joueur":
-            return Turtle(layername,x,y,*img.get_size())
-        else:
-            return SpriteBuilder.basicSpriteFactory(self,layername,tileid,x,y,img)
+    def basicPlayerFactory(self,tileid=None,x=0.0,y=0.0,img=None):
+        return Turtle("joueur",x,y,*img.get_size())
 
 ###########################################
 
 game = Game()
 
-def init(_boardname=None):
+def init(_boardname=None,_spriteBuilder=TurtleSpriteBuilder):
     """
     Reinitialise la carte et l'ensemble des parametres
     """
@@ -36,7 +35,7 @@ def init(_boardname=None):
     pygame.quit()
 
     name = _boardname if _boardname else 'robot_obstacles'
-    game = Game('Cartes/' + name + '.json', TurtleSpriteBuilder)
+    game = Game('Cartes/' + name + '.json', _spriteBuilder)
 
     game.fps = 200  # frames per second
     game.mainiteration()
@@ -58,7 +57,7 @@ def frameskip(n):
 
 
 @check_init_game_done
-def avance(s=1.0):
+def avance(s=1.0,p=None):
     """
     avance() deplace robot d'un pixel dans sa direction courante
     avance(x) le deplace de x pixels
@@ -67,34 +66,36 @@ def avance(s=1.0):
     et le robot reste a sa position courante et la fonction renvoie False.
     S'il n'y a pas d'obstacle la fonction renvoie True
     """
-    cx1,cy1 = player.get_centroid()
-    player.forward(s)
+    p = player if p is None else p
+    cx1,cy1 = p.get_centroid()
+    p.forward(s)
     game.mainiteration()
-    if player.position_changed():
+    if p.position_changed():
         if game.usepen:
-            cx2,cy2 = player.get_centroid()
+            cx2,cy2 = p.get_centroid()
             line(cx1,cy1,cx2,cy2)
         return True
     else:
         return False
 
 @check_init_game_done
-def obstacle(s=1.0):
+def obstacle(s=1.0,p=None):
     """
     obstacle(x) verifie si un obstacle empeche le deplacement du robot de x pixel dans sa direction courante
     obstacle()  verifie la meme chose pour un deplacement de un pixel
     """
-    player.forward(s)
-    game.mask.handle_collision(game.layers, player)
+    p = player if p is None else p
+    p.forward(s)
+    game.mask.handle_collision(game.layers, p)
 
-    if player.resumed:
+    if p.resumed:
         return True
     else:
-        player.resume_to_backup()
+        p.resume_to_backup()
         return False
 
 @check_init_game_done
-def oriente(a):
+def oriente(a,p=None):
     """
     oriente(a) fait pivoter le robot afin qu'il forme un angle de a degrees
     par rapport a l'horizontal.
@@ -103,27 +104,30 @@ def oriente(a):
     Donc oriente(-90) le fait se tourner vers le Nord
     Donc oriente(180) le fait se tourner vers l'Ouest
     """
-    player.translate_sprite(player.x,player.y,a,relative=False)
+    p = player if p is None else p
+    p.translate_sprite(p.x,p.y,a,relative=False)
     game.mainiteration()
 
 @check_init_game_done
-def tournegauche(a):
+def tournegauche(a,p=None):
     """
     tournegauche(a) pivote d'un angle donne, en degrees
     """
-    player.translate_sprite(0,0,-a,relative=True)
+    p = player if p is None else p
+    p.translate_sprite(0,0,-a,relative=True)
     game.mainiteration()
 
 @check_init_game_done
-def tournedroite(a):
+def tournedroite(a,p=None):
     """
     tournedroite(a) pivote d'un angle a donne, en degrees
     """
-    player.translate_sprite(0,0,a,relative=True)
+    p = player if p is None else p
+    p.translate_sprite(0,0,a,relative=True)
     game.mainiteration()
 
 @check_init_game_done
-def telemetre(from_center=False,rel_angle=0):
+def telemetre(from_center=False,rel_angle=0,p=None):
     """
     telemetre(from_center=False,rel_angle=0)
 
@@ -133,21 +137,23 @@ def telemetre(from_center=False,rel_angle=0):
     telemetre(from_center=True) compte le nombre de pixels depuis le centre du robot (et non pas le bord)
     telemetre(rel_angle) tire le rayon avec l'angle rel_angle (relativement a l'orientation du robot)
     """
-    rayon_hit = player.throw_rays([(player.angle_degree+rel_angle)*pi/180] , game.mask,game.layers,show_rays=True)[0]
+    p = player if p is None else p
+    rayon_hit = p.throw_rays([(p.angle_degree+rel_angle)*pi/180] , game.mask,game.layers,show_rays=True)[0]
     game.mainiteration()
-    d = player.dist(*rayon_hit)
+    d = p.dist(*rayon_hit)
     return d if from_center else d-(diametre_robot()//2)
 
 @check_init_game_done
-def telemetre_coords_list(x,y,angle_list,show_rays=True):
+def telemetre_coords_list(x,y,angle_list,show_rays=True,p=None):
     """
     telemetre_coords_list(x,y,angle_list,show_rays=True)
     tire un rayon laser depuis x,y avec les angles angle_list
     la fonction renvoie une liste contenant les nombres de pixels parcourus par le rayon avant
     de rencontrer un obstacle
     """
+    p = player if p is None else p
     x,y = int(x),int(y)
-    hitlist = player.throw_rays([a*pi/180 for a in angle_list] , game.mask,game.layers,coords=(x,y),show_rays=show_rays)
+    hitlist = p.throw_rays([a*pi/180 for a in angle_list] , game.mask,game.layers,coords=(x,y),show_rays=show_rays)
     game.mainiteration()
     return [sqrt( (rx-x)**2 + (ry-y)**2 ) for rx,ry in hitlist]
 
@@ -157,55 +163,60 @@ def telemetre_coords(x,y,a):
     return telemetre_coords_list(x,y,[a])[0]
 
 @check_init_game_done
-def position(entiers=False):
+def position(entiers=False,p=None):
     """
     position() renvoie un couple (x,y) representant les coordonnees du robot
                ces coordonnees peuvent etre des flottants
     position(entiers=True) renvoie un couple de coordonnees entieres
     """
-    cx,cy = player.get_centroid()
+    p = player if p is None else p
+    cx,cy = p.get_centroid()
     return (int(cx),int(cy)) if entiers else (cx,cy)
 
 @check_init_game_done
-def diametre_robot():
-    return game.player.taille_geometrique
+def diametre_robot(p=None):
+    p = player if p is None else p
+    return p.taille_geometrique
 
 @check_init_game_done
 def taille_terrain():
     return game.screen.get_width(),game.screen.get_height()
 
 @check_init_game_done
-def orientation():
+def orientation(p=None):
     """
     orientation() renvoie l'angle en degres
     """
-    return player.angle_degree
+    p = player if p is None else p
+    return p.angle_degree
 
 @check_init_game_done
-def set_position(x,y):
+def set_position(x,y,p=None):
     """
     set_position(x,y) tente une teleportation du robot aux coordonnees x,y
     Renvoie False si la teleportation a echouee, pour cause d'obstacle
     """
-    player.set_centroid(x,y)
+    p = player if p is None else p
+    p.set_centroid(x,y)
     game.mainiteration()
-    return player.position_changed()
+    return p.position_changed()
 
 @check_init_game_done
-def obstacle_coords(x,y):
+def obstacle_coords(x,y,p=None):
     """
     obstacle_coords(x,y) verifie si aux coordonnees x,y il y a un
     obstacle qui empecherait le robot d'y etre
     renvoie True s'il y a un obstacle, False sinon
     """
-    player.set_centroid(x,y)
-    game.mask.handle_collision(game.layers, player)
+    p = player if p is None else p
+    p.set_centroid(x,y)
+    game.mask.handle_collision(game.layers, p)
 
     #if player.position_changed():
-    if player.resumed:
+    if p.resumed:
         return True
     else:
-        player.resume_to_backup()
+        p.resume_to_backup()
         return False
 
 @check_init_game_done

@@ -84,16 +84,21 @@ class SpriteBuilder(object):
         return Grps
 
     ##########  Methodes a surcharger pour adapter la classe ##########
+    def basicPlayerFactory(self,tileid=None,x=0.0,y=0.0,img=None):
+            assert not img is None
+            return Player("joueur",layername,tileid,x,y,[img])
+
     def basicSpriteFactory(self , layername,tileid,x,y,img=None):
-        imglist = [self.sheet[tileid]] if img is None else [img]
+        if img is None: img = self.sheet[tileid]
 
         if layername == "joueur":
-            return Player(layername,tileid,x,y,imglist)
+            return self.basicPlayerFactory(tileid,x,y,img)
 
-        elif layername == "ramassable" or layername == "cache":
-            return MovingSprite(layername,tileid,x,y,imglist)
+        elif layername in ["ramassable","cache","personnage"]:
+            return MovingSprite(layername,tileid,x,y,[img])
+
         else:
-            return MySprite(layername,tileid,x,y,imglist)
+            return MySprite(layername,tileid,x,y,[img])
 
     def basicGroupFactory(self,layername):
         if layername in ["eye_candy","joueur"]:

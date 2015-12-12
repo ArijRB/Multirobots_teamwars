@@ -1,7 +1,7 @@
 import pygame
 from math import pi,sqrt,cos,sin,floor
 import polygons
-
+import copy
 
 class RecursiveDrawGroup(pygame.sprite.Group):
     """ Standard pygame.sprite.Group classes draw sprites by calling 'blit' on sprite images.
