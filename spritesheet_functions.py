@@ -23,7 +23,6 @@ class SpriteSheet(object):
         # list of sprite images of type pygame.surface (in a bottom to down and left to right order)
         self.sprite_images   = []
 
-
         self.sprite_sheet = pygame.image.load(file_name)
         self.spritesize   = _spritesize
         w , h             = self.sprite_sheet.get_width() , self.sprite_sheet.get_height()

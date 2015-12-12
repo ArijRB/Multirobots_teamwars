@@ -148,7 +148,22 @@ class Game(object):
                 s.firstname = ontology.firstname(s)
 
     def add_player(self,x,y,player=None,tiled=True):
+        """
+            tries to add a new player at position x,y
+            if the new player incurs a collision, then adds nothing and returns False
+        """
         # if player != None, then the function copies the player object
         # but not coded yet
-        pnew = self.spriteBuilder.basicPlayerFactory(tileid=None,x=x,y=y,img=game.player.img)
-        self.layers['joueur'].add( pnew )
+        if tiled:
+            x *= self.spriteBuilder.spritesize
+            y *= self.spriteBuilder.spritesize
+
+        pnew = self.spriteBuilder.basicPlayerFactory(tileid=None,x=x,y=y,img=self.player.image)
+
+        if self.mask.handle_pixel_collisions_single_player(self.layers,pnew,_safe_collision=False):
+            self.layers['joueur'].add( pnew )
+            self.mainiteration()
+            return pnew
+        else:
+            self.mainiteration()
+            return False

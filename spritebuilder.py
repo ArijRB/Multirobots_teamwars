@@ -78,6 +78,7 @@ class SpriteBuilder(object):
 
             for idx,e in enumerate(dat):
                 y,x = (idx // self.rowsize)*self.spritesize , (idx % self.rowsize)*self.spritesize
+                #if (e > 0 and  64<=x<=200 and 64<=y<=200) or (layername=='joueur' and e > 0):
                 if e > 0:
                     s = self.basicSpriteFactory( layername , self.sheet.get_row_col(e-1) , x,y , self.sheet[e-1])
                     Grps[layername].add(s)

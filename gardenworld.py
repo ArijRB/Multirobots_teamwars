@@ -20,7 +20,7 @@ class GardenSpriteBuilder(SpriteBuilder):
     def basicPlayerFactory(self,tileid=None,x=0.0,y=0.0,img=None):
         imglist = [self.sheet[i, j] for i, j in ((10, 0), (8, 0), (9, 0), (11, 0))]
         p = Player("joueur", tileid, x, y, imglist)
-        if tileid[0] in [10, 8, 9, 11]:
+        if tileid is not None and tileid[0] in [10, 8, 9, 11]:
             p.translate_sprite(0, 0, 90 * [10, 8, 9, 11].index(tileid[0]))
         return p
 
