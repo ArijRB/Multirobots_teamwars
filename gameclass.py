@@ -147,6 +147,8 @@ class Game(object):
             for s in layer:
                 s.firstname = ontology.firstname(s)
 
-    def clone_player(self,x,y,player=None,tiled=True):
-        if player is None: player = self.layers['joueur']
-        p2 = copy.copy(player)
+    def add_player(self,x,y,player=None,tiled=True):
+        # if player != None, then the function copies the player object
+        # but not coded yet
+        pnew = self.spriteBuilder.basicPlayerFactory(tileid=None,x=x,y=y,img=game.player.img)
+        self.layers['joueur'].add( pnew )
