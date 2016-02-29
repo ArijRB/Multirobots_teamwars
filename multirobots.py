@@ -4,9 +4,9 @@ from random import random
 
 init('vide')
 # Make 30 agents
-for i in range(200):
+for i in range(20):
     while True:
-        p = game.add_player( random()*500 , random()*500 , game.player , tiled=False,draw_now=False)
+        p = game.add_players( (random()*500 , random()*500) , game.player , tiled=False,draw_now=True)
         if p:
             p.rotate( random()*360 )
             break
