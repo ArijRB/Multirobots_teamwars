@@ -97,7 +97,6 @@ class SpriteBuilder(object):
 
         elif layername in ["ramassable","cache","personnage"]:
             return MovingSprite(layername,tileid,x,y,[img])
-
         else:
             return MySprite(layername,tileid,x,y,[img])
 

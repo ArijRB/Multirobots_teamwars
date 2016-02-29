@@ -127,6 +127,9 @@ class MovingSprite(MySprite):
         #print "x=",self.x," , w=",self.rect.w
         return self.x+self.rect.w//2,self.y+self.rect.h//2
 
+    def rotate(self,deg):
+        self.translate_sprite(0,0, deg ,relative=True)
+
     def forward(self,t):
         dx,dy = cos(self.angle_degree * pi/180), sin(self.angle_degree * pi/180)
         if self.angle_degree % 90 == 0:
