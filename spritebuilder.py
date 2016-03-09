@@ -87,7 +87,7 @@ class SpriteBuilder(object):
     ##########  Methodes a surcharger pour adapter la classe ##########
     def basicPlayerFactory(self,tileid=None,x=0.0,y=0.0,img=None):
             assert not img is None
-            return Player("joueur",layername,tileid,x,y,[img])
+            return Player("joueur",tileid,x,y,[img])
 
     def basicSpriteFactory(self , layername,tileid,x,y,img=None):
         if img is None: img = self.sheet[tileid]

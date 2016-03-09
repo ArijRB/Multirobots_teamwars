@@ -6,6 +6,7 @@ from math import pi,sqrt,cos,sin,floor
 import rayon
 import polygons
 import glo
+
 try:
     from pygame.gfxdraw import aacircle,filled_circle
     def circle(surf,c,coord,r,w):
@@ -86,17 +87,24 @@ class Player(MovingSprite):
 
 
 class Turtle(Player):
+    static_imglist = None
+    w,h = None,None
+    taille_geometrique, penwidth = 22, 1
+
     def __init__(self,layername,x,y,w,h):
-        self.taille_geometrique, self.penwidth = 22, 1
+        assert Turtle.w is None or (Turtle.w == w and Turtle.h ==h),'all turtles sprites must have same size'
+        Turtle.w,Turtle.h = w,h
         Player.__init__(self,layername,tileid=None,x=x,y=y,imglist=self.build_Turtle_list_images(w,h))
 
     def build_Turtle_list_images(self,w,h):
         """ cree 360 images de tortues (une par degre)"""
-        imglist = [pygame.Surface((w,h)).convert() for a in range(360)]
-        for a,img in zip(range(360),imglist):
-            img.set_colorkey( (0,0,0) )
-            img.fill((0,0,0))
-            circle(img, glo.WHITE, (w/2,h/2), self.taille_geometrique/2 - self.penwidth,self.penwidth)
-            polygons.draw_arrow(img,w/2,h/2,a * pi/180,r=self.taille_geometrique-14,clr=glo.WHITE)
-            #pygame.gfxdraw.aacircle(self.image, w/2,h/2, self.taille_geometrique/2 - self.penwidth,glo.WHITE)
-        return imglist
+        if Turtle.static_imglist is None:
+            Turtle.static_imglist = [pygame.Surface((w,h)).convert() for a in range(360)]
+            for a,img in zip(range(360),Turtle.static_imglist):
+                img.set_colorkey( (0,0,0) )
+                img.fill((0,0,0))
+                circle(img, glo.WHITE, (w/2,h/2), Turtle.taille_geometrique/2 - Turtle.penwidth,Turtle.penwidth)
+                polygons.draw_arrow(img,w/2,h/2,a * pi/180,r=Turtle.taille_geometrique-14,clr=glo.WHITE)
+                #pygame.gfxdraw.aacircle(self.image, w/2,h/2, self.taille_geometrique/2 - self.penwidth,glo.WHITE)
+        return Turtle.static_imglist
+

@@ -45,8 +45,7 @@ class Game(object):
             return
 
         #reset pygame
-        pygame.quit()
-        pygame.init()
+        pygame.quit() ; pygame.init()
 
         # callbacks is a dictionary of functions to call depending on key pressed
         self.callbacks = {}
