@@ -3,22 +3,12 @@ import random
 from itertools import chain
 
 class CollisionHandler:
-    pixel_perfect = True      # calls pixel_collision otherwise box_collision
+    pixel_perfect = True             # calls pixel_collision otherwise box_collision
+    forbid_overlaping_players = True
 
     def __init__(self, screen):
         self.mask = pygame.mask.from_surface(screen)
         self.mask.clear()
-        self._collision_lock = None # if not None, then cannot call 'handle_collision'
-                                    # allows external functions to use self.mask,
-                                    # without risking this mask to be modified by handle_collision
-
-    def capture_lock(self,name):
-        assert self._collision_lock is None
-        self._collision_lock = name
-
-    def release_lock(self,name):
-        assert self._collision_lock == name
-        self._collision_lock = None
 
     def draw_sprite(self, spr, backup=False):
         self.mask.draw(spr.mask, spr.get_pos(backup))
@@ -41,7 +31,6 @@ class CollisionHandler:
     def handle_collision(self, gDict, player):
         """ dispatches among all collision detection algorithms
         """
-        self.capture_lock('handle_collision')
 
         if len(gDict["joueur"] ) > 1 or gDict["personnage"]:
             self.handle_pixel_collisions_many_players(gDict)
@@ -50,8 +39,6 @@ class CollisionHandler:
                 self.handle_pixel_collisions_single_player(gDict, player)
             else:
                 self.handle_box_collisions_single_player(gDict, player)
-
-        self.release_lock('handle_collision')
 
     def out_of_screen(self, player):
         w, h = self.mask.get_size()
@@ -107,3 +94,24 @@ class CollisionHandler:
     def get_box_collision_list(self, groupe, player):
         """ attention, la fonction ne teste pas la sortie d'ecran """
         return pygame.sprite.spritecollide(player, groupe, False)
+
+
+
+''' UNUSED CODE :
+
+    self._collision_lock = None # if not None, then cannot call 'handle_collision'
+                                # allows external functions to use self.mask,
+                                # without risking this mask to be modified by handle_collision
+
+    def capture_lock(self,name):
+        assert self._collision_lock is None
+        self._collision_lock = name
+
+    def release_lock(self,name):
+        assert self._collision_lock == name
+        self._collision_lock = None
+
+    self.capture_lock('handle_collision')
+    self.release_lock('handle_collision')
+
+'''

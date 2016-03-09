@@ -24,7 +24,7 @@ except:
 
 
 # bresenham algorithm cropped in the window (0,0,w,h)
-def rayon(m,x,y,angle,w,h):
+def rayon(m1,m2,x,y,angle,w,h):
     """
         cette fonction lance un rayon, avec l'algo de bresenham
         le rayon part de (x,y) et suit un angle donne jusqu'au bord
@@ -32,7 +32,9 @@ def rayon(m,x,y,angle,w,h):
         la fonction renvoie les coordonnees du premier point du masque qui soit a 1.
     """
     _cython_compiled = cython_compiled
-    if _cython_compiled:    bm = cyGetBitmask(m)
+    if _cython_compiled:
+        bm1 = cyGetBitmask(m1)
+        bm2 = cyGetBitmask(m2)
 
     x2 = x + int( cos(angle)*(w+h) )
     y2 = y + int( sin(angle)*(w+h) )
@@ -64,18 +66,18 @@ def rayon(m,x,y,angle,w,h):
         if steep:
             #print y,x
             if _cython_compiled:
-                if cyBitmaskGetbit(bm,y,x):
+                if cyBitmaskGetbit(bm1,y,x) or cyBitmaskGetbit(bm2,y,x):
                     return (y,x)
             else:
-                if m.get_at((y,x)):
+                if m1.get_at((y,x)) or m2.get_at((y,x)):
                     return (y,x)
         else:
             #print x,y
             if _cython_compiled:
-                if cyBitmaskGetbit(bm,x,y):
+                if cyBitmaskGetbit(bm1,x,y) or cyBitmaskGetbit(bm2,x,y):
                     return (x,y)
             else:
-                if m.get_at((x,y)):
+                if m1.get_at((x,y)) or m2.get_at((x,y)):
                     return (x,y)
 
         while d >= 0:
@@ -110,7 +112,7 @@ def test_rayon():
 
     T = np.zeros((w,h))
     for angle in np.linspace(0,2*pi-0.1,50):
-        T[ rayon(m,w/2,h/2,angle,w,h) ] = 1
+        T[ rayon(m,m,w/2,h/2,angle,w,h) ] = 1
 
     plt.imshow(T,cmap='gist_ncar')
     plt.savefig('carre.png')

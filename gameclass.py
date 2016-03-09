@@ -14,7 +14,7 @@ try:
 except:
     def first(g): return next(iter(g))
 
-from collisions import CollisionHandler
+from collisions2 import CollisionHandler2
 
 
 def check_init_game_done(fun):
@@ -81,7 +81,7 @@ class Game(object):
         self.layers["bg2"].draw(self.background)
 
         # cree un masque de la taille de l'ecran, pour le calcul des collisions
-        self.mask = CollisionHandler(self.screen)
+        self.mask = CollisionHandler2(self.screen,self.spriteBuilder.spritesize)
 
         # click clock
         self.clock = pygame.time.Clock()
@@ -102,17 +102,6 @@ class Game(object):
             if layer != "cache":
                 self.layers[layer].draw(self.screen)
 
-
-        if True:#os.environ.get("SDL_VIDEODRIVER") == 'dummy':
-            tempoimg = pygame.Surface([self.screen.get_width(), self.screen.get_height()], pygame.SRCALPHA, 32)
-            pygame.draw.rect(tempoimg, (0,0,0), (0, 0, self.screen.get_width(), self.screen.get_height()), 0)
-
-            tempoimg.blit(self.background, (0, 0), (0, 0, self.screen.get_width(), self.screen.get_height()))
-            for layer in glo.NON_BG_LAYERS:
-                if layer != "cache":
-                    self.layers[layer].draw(tempoimg)
-            pygame.image.save( tempoimg , '/tmp/img.jpg')
-            pygame.image.save( self.player.image , '/tmp/play.jpg' )
 
         pygame.display.flip()
 
@@ -161,14 +150,6 @@ class Game(object):
             for s in layer:
                 s.firstname = ontology.firstname(s)
 
-    def begin_add_players(self):
-        """ captures the lock """
-        pass
-
-    def end_add_players(self):
-        """ releases the lock """
-        pass
-
 
     def add_players(self,xy,player=None,tiled=True,draw_now=True):
         """
@@ -191,9 +172,14 @@ class Game(object):
         if tiled:
             x,y = x*self.spriteBuilder.spritesize,y*self.spriteBuilder.spritesize
 
+        try:
+            tileid = player.tileid
+        except:
+            tileid = None
 
-        img  = None if player is None else self.player.image
-        pnew = self.spriteBuilder.basicPlayerFactory(tileid=None,x=x,y=y,img=img)
+        pnew = self.spriteBuilder.basicPlayerFactory(tileid,x=x,y=y)
+
+        #def handle_collision(self, gDict,_safe_collision=True):
 
         if self.mask.handle_pixel_collisions_single_player(self.layers,pnew,_safe_collision=False):
             self.layers['joueur'].add( pnew )

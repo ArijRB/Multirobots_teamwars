@@ -17,14 +17,16 @@ class MySprite(pygame.sprite.Sprite):
 
     def __init__(self,layername,tileid,x,y,imglist):
         pygame.sprite.Sprite.__init__(self)
+        self.layername = layername
         self.tileid = tileid # tileid identifie le sprite sur la spritesheet. Generalement, c'est le row/col dans le spritesheet
         self.imagelist = imglist
         self.masklist  = [pygame.mask.from_surface(im) for im in imglist]
+
         self.image = imglist[0]
-        self.mask = self.masklist[0]
-        self.rect = self.image.get_rect()
+        self.mask  = self.masklist[0]
+        self.rect  = self.image.get_rect()
         self.rect.x , self.rect.y = x,y
-        #print("layername=",layername,"id = ",self.tileid)
+
     def dist(self,x,y):
         cx,cy = self.get_centroid()
         return sqrt( (cx-x)**2 + (cy-y)**2 )
@@ -35,6 +37,20 @@ class MySprite(pygame.sprite.Sprite):
 
     def draw(self,surf):
         surf.blit(self.image,self.rect)
+
+
+
+class PointSprite(MySprite):
+    ''' just a point... can be useful !
+    '''
+    def __init__(self,layername=None,x=0,y=0):
+        img = pygame.Surface((1,1)).convert()
+        img.set_colorkey( (0,0,0) )
+        img.fill((255,255,255))
+        MySprite.__init__(self,layername,tileid=None,x=x,y=y,imglist=[img])
+
+
+
 
 
 
@@ -70,6 +86,15 @@ class MovingSprite(MySprite):
         self.x , self.y = self.rect.x , self.rect.y
         self.angle_degree  = 0
         self.backup()
+        self.auto_rotate_image = True
+        self.translated = 0 #nb of times sprite was translated
+
+    def set_new_image(self,img):
+        self.image = img
+        self.mask = pygame.mask.from_surface(img)
+        self.rect = self.image.get_rect()
+        self.rect.x , self.rect.y = int(self.x),int(self.y)
+
 
     def backup(self):
         self.backup_x , self.backup_y = self.x , self.y
@@ -103,10 +128,7 @@ class MovingSprite(MySprite):
     def translate_sprite(self,x,y,a,relative=True):
         # Attention, backup() est indispensable,
         # car la gestion des collision doit pouvoir revenir en arriere
-        try:
-            self.compteur +=1
-        except:
-            self.compteur = 0
+        self.translated +=1
 
         self.backup()
         if relative:
@@ -116,7 +138,9 @@ class MovingSprite(MySprite):
         else:
             self.x , self.y , self.angle_degree = x , y , a
 
-        self.rotate_image(self.angle_degree)
+        if self.auto_rotate_image:
+            self.rotate_image(self.angle_degree)
+
         self.rect.x , self.rect.y = int(self.x) , int(self.y)
 
 

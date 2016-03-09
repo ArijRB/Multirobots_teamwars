@@ -17,7 +17,7 @@ import glo
 class GardenSpriteBuilder(SpriteBuilder):
     """ classe permettant d'afficher le personnage sous 4 angles differents
     """
-    def basicPlayerFactory(self,tileid=None,x=0.0,y=0.0,img=None):
+    def basicPlayerFactory(self,tileid,x=0.0,y=0.0):
         imglist = [self.sheet[i, j] for i, j in ((10, 0), (8, 0), (9, 0), (11, 0))]
         p = Player("joueur", tileid, x, y, imglist)
         if tileid is not None and tileid[0] in [10, 8, 9, 11]:
@@ -71,7 +71,8 @@ def obstacle(p=None):
     p = player if p is None else p
     p.forward(p.rect.width)
     hors = game.mask.out_of_screen(p)
-    coll = game.mask.get_box_collision_list(chain(game.layers['obstacle'],game.layers['personnage']), p)
+    blockinglayers = {'obstacle','personnage'} if game.mask.allow_overlaping_players else {'obstacle','personnage','joueur'}
+    coll = game.mask.collision_list(p , blockinglayers)
     p.resume_to_backup()
     return hors or coll != []
 

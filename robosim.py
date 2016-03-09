@@ -20,8 +20,8 @@ print("""=[ Pour l'aide, tapez help(fonction) ]=\n""")
 
 
 class TurtleSpriteBuilder(SpriteBuilder):
-    def basicPlayerFactory(self,tileid=None,x=0.0,y=0.0,img=None):
-        return Turtle("joueur",x,y,*img.get_size())
+    def basicPlayerFactory(self,tileid=None,x=0.0,y=0.0):
+        return Turtle("joueur",x,y,32,32)
 
 ###########################################
 

@@ -80,20 +80,19 @@ class SpriteBuilder(object):
                 y,x = (idx // self.rowsize)*self.spritesize , (idx % self.rowsize)*self.spritesize
                 #if (e > 0 and  64<=x<=200 and 64<=y<=200) or (layername=='joueur' and e > 0):
                 if e > 0:
-                    s = self.basicSpriteFactory( layername , self.sheet.get_row_col(e-1) , x,y , self.sheet[e-1])
+                    s = self.basicSpriteFactory( layername , self.sheet.get_row_col(e-1) , x,y)
                     Grps[layername].add(s)
         return Grps
 
     ##########  Methodes a surcharger pour adapter la classe ##########
-    def basicPlayerFactory(self,tileid=None,x=0.0,y=0.0,img=None):
-            assert not img is None
-            return Player("joueur",tileid,x,y,[img])
+    def basicPlayerFactory(self,tileid,x=0.0,y=0.0):
+            return Player("joueur",tileid,x,y,[self.sheet[tileid]])
 
-    def basicSpriteFactory(self , layername,tileid,x,y,img=None):
-        if img is None: img = self.sheet[tileid]
+    def basicSpriteFactory(self, layername,tileid,x,y):
+        img = self.sheet[tileid]
 
         if layername == "joueur":
-            return self.basicPlayerFactory(tileid,x,y,img)
+            return self.basicPlayerFactory(tileid,x,y)
 
         elif layername in ["ramassable","cache","personnage"]:
             return MovingSprite(layername,tileid,x,y,[img])

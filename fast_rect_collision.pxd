@@ -40,8 +40,8 @@ cdef class FastGroupCollide:
     @cython.locals(ref=cython.dict,id_s=cython.long,l=cython.list,k=cython.int,last=cyRectSprite)
     cpdef remove_sprite(self,s)
 
-    @cython.locals(old_l=cython.list,new_l=cython.list,cys=cyRectSprite)
-    cpdef update_sprite(self,s)
+    @cython.locals(old_l=cython.list,new_l=cython.list,cys=cyRectSprite,id_s=cython.long)
+    cpdef update_sprite(self,s,backup=*)
 
     @cython.locals(l=cython.int,t=cython.int,r=cython.int,b=cython.int,     \
                     i=cython.int,j=cython.int,id_s=cython.long,di=cython.int,dj=cython.int, \
@@ -52,3 +52,5 @@ cdef class FastGroupCollide:
 
     @cython.locals(x=cython.int,y=cython.int)
     cpdef compute_collision_with_point(self,x,y)
+
+    cpdef get_all_sprites_on_tile(self,i,j)

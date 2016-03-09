@@ -28,7 +28,7 @@ def parle(texte=''):
     j = game.player
 
     j.forward(j.rect.width)
-    coll_boxes = game.mask.get_box_collision_list( game.layers['personnage'], j)
+    coll_boxes = game.mask.collision_list( j , {'personnage'})
     j.resume_to_backup()
 
     for p in coll_boxes:

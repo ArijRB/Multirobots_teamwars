@@ -58,25 +58,41 @@ except:
 
 
 
-
-
+'''
+ATTENTION !!!
+DANS PYGAME, LES RECTANGLES
+ont des coordonnees top,left,right,bottom,
+mais on considere que le cote bas (bottom) et droite (right) sont à un pixel de moins.
+Donc un carre 32x32 commencant en 0,0 aura les champs:
+top=0
+left=0
+right=32  (et non pas 31)
+bottom=32 (idem)
+'''
 
 class cyRectSprite:
 	'''
 	structure to store sprite location and access it fast, through cython (if available)
 	'''
-	def __init__(self,s):
-		self.top=s.rect.top
-		self.left=s.rect.left
-		self.right=s.rect.right
-		self.bottom=s.rect.bottom
+	def __init__(self,s,backup=False):
 		self.sprite=s
 		self.spriteid = id(s)
+
+		if backup:
+			self.top   = int(s.backup_y)
+			self.left  = int(s.backup_x)
+			self.right = self.left + s.rect.w
+			self.bottom= self.top  + s.rect.h
+		else:
+			self.top=s.rect.top
+			self.left=s.rect.left
+			self.right=s.rect.right
+			self.bottom=s.rect.bottom
 
 	def size(self):
 		h = self.bottom - self.top
 		w = self.right - self.left
-		return 1 + (h if h > w else w)
+		return h if h > w else w
 
 	def well_formed(self,maxspritesize,screensize):
 		'''
@@ -92,7 +108,7 @@ class cyRectSprite:
 			   self.bottom > self.top and \
 			   self.size() <= maxspritesize and \
 			   self.left >= 0 and self.top >= 0 and \
-			   self.right < screensize and self.bottom < screensize
+			   self.right <= screensize and self.bottom <= screensize
 
 
 
@@ -135,6 +151,7 @@ class FastGroupCollide:
 			l.append( cys )
 
 	def _add_cyRectSprite(self,cys,l=None):
+
 			assert  cys.well_formed(self.max_interval,self.display_size), \
 					'error: sprite rect is not consistent. Probably sprite bigger than declared'
 			assert cys.spriteid not in self.ref, 'error: trying to add sprite already in set'
@@ -167,13 +184,16 @@ class FastGroupCollide:
 		except AttributeError:
 			raise AttributeError('trying to remove sprite absent from list')
 
-	def update_sprite(self,s):
-		cys = cyRectSprite(s)
-		old_l = self.ref[id(s)][0]
+	def update_sprite(self,s,backup=False):
+		cys = cyRectSprite(s,backup)
+		id_s = id(s)
 		new_l = self._get_list(cys)
-		if id(old_l) != id(new_l):
+		if id_s in self.ref:
+			old_l = self.ref[id_s][0]
+			if id(old_l) == id(new_l):
+				return
 			self.remove_sprite(s)
-			self._add_cyRectSprite(cys,new_l)
+		self._add_cyRectSprite(cys,new_l)
 
 
 	def _compute_collision_list(self,l,t,r,b,s=None,collision_callback=None):
@@ -192,7 +212,7 @@ class FastGroupCollide:
 				if di >= 0 and dj >= 0 and di < self.array_size and dj < self.array_size:
 					lst2 = self.array[di,dj]
 					for s2 in lst2:
-						if s2.right < l or s2.left > r or s2.top > b or s2.bottom < t:
+						if s2.right <= l or s2.left >= r or s2.top >= b or s2.bottom <= t:
 							continue
 
 						if s2.spriteid != id_s:
@@ -207,8 +227,9 @@ class FastGroupCollide:
 		return self._compute_collision_list(l,t,r,b,s,collision_callback)
 
 	def compute_collision_with_point(self,x,y):
-		return self._compute_collision_list(x,y,x,y)
+		return self._compute_collision_list(x,y,x+1,y+1)
 
 
-
+	def get_all_sprites_on_tile(self,i,j):
+		return [cys.sprite for cys in self.array[i,j] ]
 

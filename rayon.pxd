@@ -37,5 +37,5 @@ cdef inline int cyBitmaskGetbit(bitmaskptr_t bm,int i,int j) nogil:
 @cython.locals(x=cython.int,y=cython.int,x2=cython.int,y2=cython.int,\
                w=cython.int,h=cython.int,steep=cython.int,i=cython.int,\
                sx=cython.int,sy=cython.int,d=cython.int,dx=cython.int,dy=cython.int,\
-               _cython_compiled=cython.bint)
-cpdef rayon(m,x,y,angle,w,h)
+               _cython_compiled=cython.bint,bm1=bitmaskptr_t,bm2=bitmaskptr_t)
+cpdef rayon(m1,m2,x,y,angle,w,h)

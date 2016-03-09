@@ -75,11 +75,11 @@ class Player(MovingSprite):
         return obj
 
     def throw_rays(self,radian_angle_list,mask,layers,coords=None,show_rays=False):
-        mask.erase_sprite( self )
+        mask.erase_player_mask( self )
         cx,cy = coords if coords else self.get_centroid()
-        w,h = mask.mask.get_size()
-        r = [rayon.rayon(mask.mask,cx,cy,a,w,h) for a in radian_angle_list]
-        mask.draw_sprite( self )
+        w,h = mask.mask_players.get_size()
+        r = [rayon.rayon(mask.mask_players,mask.mask_obstacles,cx,cy,a,w,h) for a in radian_angle_list]
+        mask.draw_player_mask( self )
         if layers and show_rays:
             for h in r:
                 layers["eye_candy"].add( DrawOnceSprite( pygame.draw.line , [(255,0,0),(cx,cy),h,4] ) )
