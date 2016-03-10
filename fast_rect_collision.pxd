@@ -34,14 +34,11 @@ cdef class FastGroupCollide:
     @cython.locals(cys=cyRectSprite,l=cython.list)
     cdef _add_cyRectSprite(self,cys,l=*)
 
-    @cython.locals(l=cython.list)
-    cpdef add_sprite(self,s,l=*)
-
     @cython.locals(ref=cython.dict,id_s=cython.long,l=cython.list,k=cython.int,last=cyRectSprite)
     cpdef remove_sprite(self,s)
 
     @cython.locals(old_l=cython.list,new_l=cython.list,cys=cyRectSprite,id_s=cython.long)
-    cpdef update_sprite(self,s,backup=*)
+    cpdef add_or_update_sprite(self,s,backup=*)
 
     @cython.locals(l=cython.int,t=cython.int,r=cython.int,b=cython.int,     \
                     i=cython.int,j=cython.int,id_s=cython.long,di=cython.int,dj=cython.int, \

@@ -79,6 +79,8 @@ class MovingSprite(MySprite):
         mais dans self.x,self.y sous forme de flottant.
     """
 
+    up_to_date = False # is set to False when all collision are not uptodate
+
     # vecteur vitesse requis. Si collision, alors il ne se realisera pas
 
     def __init__(self,*args,**kwargs):
@@ -88,13 +90,14 @@ class MovingSprite(MySprite):
         self.backup()
         self.auto_rotate_image = True
         self.translated = 0 #nb of times sprite was translated
+        MovingSprite.up_to_date = False
 
     def set_new_image(self,img):
         self.image = img
         self.mask = pygame.mask.from_surface(img)
         self.rect = self.image.get_rect()
         self.rect.x , self.rect.y = int(self.x),int(self.y)
-
+        MovingSprite.up_to_date = False
 
     def backup(self):
         self.backup_x , self.backup_y = self.x , self.y
@@ -108,6 +111,7 @@ class MovingSprite(MySprite):
         self.angle_degree = self.backup_angle_degree
         self.image = self.backup_image
         self.resumed = True
+        MovingSprite.up_to_date = False
 
 
 
@@ -124,6 +128,7 @@ class MovingSprite(MySprite):
         i = int(floor( a*l/360 + 0.5 )) % l
         self.image = self.imagelist[ i ]
         self.mask =  self.masklist [ i ]
+        MovingSprite.up_to_date = False
 
     def translate_sprite(self,x,y,a,relative=True):
         # Attention, backup() est indispensable,
@@ -142,6 +147,7 @@ class MovingSprite(MySprite):
             self.rotate_image(self.angle_degree)
 
         self.rect.x , self.rect.y = int(self.x) , int(self.y)
+        MovingSprite.up_to_date = False
 
 
     def set_centroid(self,x,y):

@@ -3,7 +3,7 @@ import pygame.sprite
 import random
 from itertools import chain
 import fast_rect_collision
-
+from sprite import MovingSprite
 
 class CollisionHandler2:
     pixel_perfect = True             # calls pixel_collision otherwise box_collision
@@ -43,7 +43,7 @@ class CollisionHandler2:
         return [s for s in lst if (layernames is None or s.layername in layernames)]
 
     def add_or_update_sprite(self,spr):
-        self.fastGroupCollide.update_sprite(spr)
+        self.fastGroupCollide.add_or_update_sprite(spr)
 
     def remove_sprite(self,spr):
         self.fastGroupCollide.remove_sprite(spr)
@@ -56,7 +56,11 @@ class CollisionHandler2:
         l = self.fastGroupCollide.compute_collision_list(s,pygame.sprite.collide_mask)
         return self._filter_by_layername(l,group_filter)
 
-    def collision_with_point(self,x,y,group_filter=None):
+    def collision_blocking_player(self,s):
+        blockinglayers = {'obstacle'} if self.allow_overlaping_players else {'obstacle','joueur'}
+        return self.collision_list(s,blockinglayers)
+
+    def collision_with_point(self,x,y,group_filter):
         s = PointSprite(x=x,y=y)
         return self.collision_list(s,group_filter)
 
@@ -66,8 +70,8 @@ class CollisionHandler2:
 
         persos = list(gDict["joueur"])
 
-        multi_player = len(persos)>1
         allow_overlap = CollisionHandler2.allow_overlaping_players
+        multi_player_and_not_allow_overlap = len(persos)>1 and not allow_overlap
 
         random.shuffle(persos)
 
@@ -78,16 +82,19 @@ class CollisionHandler2:
         for j in persos:
             if _safe_collision:
                 assert not self.collide_player_w_obstacles(j, backup=True), "sprite collision with obstacles before any movement !!!"
-                if multi_player and not allow_overlap:
+                if multi_player_and_not_allow_overlap:
                     assert not self.collide_player_w_players(j, backup=True), "sprite collision before any movement !!!"
                     self.draw_player_mask(j, backup=True)
 
-        if multi_player and not allow_overlap: self.mask_players.clear()
         # try their new position one by one
 
         for j in persos:
+
+            if multi_player_and_not_allow_overlap: self.erase_player_mask(j, backup=True)
+
             c1 = self.collide_player_w_obstacles(j)
             c2 = self.collide_player_w_players(j)
+
 
             if c1 or (c2 and not allow_overlap) or self.out_of_screen(j):
                 j.resume_to_backup()
@@ -98,8 +105,9 @@ class CollisionHandler2:
         good_layernames = set(gDict) - {'bg1','bg2','dessinable','eye_candy'}
         for layername in good_layernames:
             for spr in gDict[layername]:
-                self.fastGroupCollide.update_sprite(spr)
+                self.fastGroupCollide.add_or_update_sprite(spr)
 
+        MovingSprite.up_to_date = True
 
 
     def out_of_screen(self, player):

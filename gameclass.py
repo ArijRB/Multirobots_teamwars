@@ -4,7 +4,7 @@ import glo
 import pygame
 from collections import OrderedDict
 import random
-from sprite import MySprite
+from sprite import MySprite,MovingSprite
 from functools import wraps
 import copy
 import os, sys
@@ -177,13 +177,15 @@ class Game(object):
         except:
             tileid = None
 
+        if not MovingSprite.up_to_date:
+            self.mask.handle_collision(self.layers)
+
         pnew = self.spriteBuilder.basicPlayerFactory(tileid,x=x,y=y)
 
-        #def handle_collision(self, gDict,_safe_collision=True):
-
-        if self.mask.handle_pixel_collisions_single_player(self.layers,pnew,_safe_collision=False):
+        if self.mask.collision_blocking_player(pnew) == []:
             self.layers['joueur'].add( pnew )
-            self.mask.draw_sprite( pnew )
+            self.mask.draw_player_mask( pnew )
+            self.mask.add_or_update_sprite( pnew )
             if draw_now: self.mainiteration()
             return pnew
         else:

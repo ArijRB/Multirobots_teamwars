@@ -71,8 +71,7 @@ def obstacle(p=None):
     p = player if p is None else p
     p.forward(p.rect.width)
     hors = game.mask.out_of_screen(p)
-    blockinglayers = {'obstacle','personnage'} if game.mask.allow_overlaping_players else {'obstacle','personnage','joueur'}
-    coll = game.mask.collision_list(p , blockinglayers)
+    coll = game.mask.collision_blocking_player(p)
     p.resume_to_backup()
     return hors or coll != []
 
