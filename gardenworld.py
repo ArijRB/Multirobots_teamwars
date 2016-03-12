@@ -33,11 +33,15 @@ def init(_boardname=None):
     name = _boardname if _boardname is not None else 'gardenofdelight'
     game = Game('Cartes/' + name + '.json', GardenSpriteBuilder)
     game.O = Ontology(True, 'SpriteSheet-32x32/tiny_spritesheet_ontology.csv')
-    game.populate_sprite_names(game.O)
+    populate_sprite_names(game.O)
     game.fps = 60  # frames per second
     game.mainiteration()
     player = game.player
 
+def populate_sprite_names(ontology):
+    for layer in game.layers.values():
+        for s in layer:
+            s.firstname = ontology.firstname(s)
 
 
 @check_init_game_done
@@ -55,7 +59,7 @@ def tournedroite(p=None):
 @check_init_game_done
 def avance(p=None):
     p = player if p is None else p
-    p.forward(p.rect.width)
+    p.forward(p.rect.width,check_collision_and_update=game.mask.check_collision_and_update)
     game.mainiteration()
     return p.position_changed()
 

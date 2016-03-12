@@ -9,7 +9,7 @@ BLUE  = (0, 0, 255)
 RED   = (255, 0, 0)
 GREEN = (0, 255, 0)
 
-ALL_LAYERS = ["bg1", "bg2", "cache", "obstacle", "ramassable", "actionnable", "dessinable","eye_candy", "joueur", "personnage", "en_hauteur"]
+ALL_LAYERS = ["bg1", "bg2", "cache", "obstacle", "dessinable","ramassable", "actionnable", "personnage", "joueur"  ]
 assert all(s[-1]!='s' for s in ALL_LAYERS),"layername should not end with an s"
 
 ALL_LAYERS_SET = set(ALL_LAYERS)

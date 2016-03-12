@@ -21,11 +21,7 @@ class MySprite(pygame.sprite.Sprite):
         self.tileid = tileid # tileid identifie le sprite sur la spritesheet. Generalement, c'est le row/col dans le spritesheet
         self.imagelist = imglist
         self.masklist  = [pygame.mask.from_surface(im) for im in imglist]
-
-        self.image = imglist[0]
-        self.mask  = self.masklist[0]
-        self.rect  = self.image.get_rect()
-        self.rect.x , self.rect.y = x,y
+        self.set_new_image(imglist[0],x,y)
 
     def dist(self,x,y):
         cx,cy = self.get_centroid()
@@ -38,24 +34,35 @@ class MySprite(pygame.sprite.Sprite):
     def draw(self,surf):
         surf.blit(self.image,self.rect)
 
+    def set_new_image(self,img,x=None,y=None):
+        self.image = img
+        self.mask = pygame.mask.from_surface(img)
+        if x is None or y is None:
+            x,y = self.rect.x,self.rect.y
+        self.rect = self.image.get_rect()
+        self.rect.x , self.rect.y = x,y
 
 
-class PointSprite(MySprite):
-    ''' just a point... can be useful !
-    '''
-    def __init__(self,layername=None,x=0,y=0):
-        img = pygame.Surface((1,1)).convert()
+
+
+class SurfaceViergeSprite(MySprite):
+    def __init__(self,layername,x,y,w,h,couleur=(0,0,0)):
+        img = pygame.Surface((w,h)).convert()
         img.set_colorkey( (0,0,0) )
-        img.fill((255,255,255))
+        img.fill(couleur)
         MySprite.__init__(self,layername,tileid=None,x=x,y=y,imglist=[img])
 
-
+class PointSprite(SurfaceViergeSprite):
+    ''' just a point... can be useful ! '''
+    def __init__(self,layername,x=0,y=0):
+        SurfaceViergeSprite.__init__(self,layername,x=x,y=y,w=1,h=1,couleur=(255,255,255))
 
 
 
 
 class DrawOnceSprite(pygame.sprite.Sprite):
     """ DrawOnceSprite est un sprite qui va s'afficher pendant quelques frames, puis s'autodetruire
+        must be inside a RecursiveDrawGroup
     """
     lifespan = 4
     def __init__(self,drawfun,arglist):
@@ -79,30 +86,29 @@ class MovingSprite(MySprite):
         mais dans self.x,self.y sous forme de flottant.
     """
 
-    up_to_date = False # is set to False when all collision are not uptodate
-
-    # vecteur vitesse requis. Si collision, alors il ne se realisera pas
+    up_to_date = False # - is set to False each time a sprite changes (translation, rotation)
+                       # - is set to True when the collision system has validated all changes
+                       #   and when the backup and the current data coincide
+                       #
+                       #   Note: up_to_date is used only in synchronous mode
 
     def __init__(self,*args,**kwargs):
+
         MySprite.__init__(self,*args,**kwargs)
+
         self.x , self.y = self.rect.x , self.rect.y
         self.angle_degree  = 0
-        self.backup()
         self.auto_rotate_image = True
-        self.translated = 0 #nb of times sprite was translated
+
+        self.backup()
         MovingSprite.up_to_date = False
 
-    def set_new_image(self,img):
-        self.image = img
-        self.mask = pygame.mask.from_surface(img)
-        self.rect = self.image.get_rect()
-        self.rect.x , self.rect.y = int(self.x),int(self.y)
-        MovingSprite.up_to_date = False
 
     def backup(self):
         self.backup_x , self.backup_y = self.x , self.y
         self.backup_angle_degree = self.angle_degree
         self.backup_image = self.image
+        self.backup_mask  = self.mask
         self.resumed = False
 
     def resume_to_backup(self):
@@ -110,8 +116,8 @@ class MovingSprite(MySprite):
         self.rect.x , self.rect.y = int(self.x) , int(self.y)
         self.angle_degree = self.backup_angle_degree
         self.image = self.backup_image
+        self.mask  = self.backup_mask
         self.resumed = True
-        MovingSprite.up_to_date = False
 
 
 
@@ -120,7 +126,7 @@ class MovingSprite(MySprite):
 
     def position_changed(self): return (self.backup_x,self.backup_y) != (self.x,self.y)
 
-    def rotate_image(self,a):
+    def _rotate_image(self,a):
         """ this function computes new image based on angle a in degree
             because images are stored in imagelist, it simply selects the appropriate one
         """
@@ -128,13 +134,25 @@ class MovingSprite(MySprite):
         i = int(floor( a*l/360 + 0.5 )) % l
         self.image = self.imagelist[ i ]
         self.mask =  self.masklist [ i ]
-        MovingSprite.up_to_date = False
 
-    def translate_sprite(self,x,y,a,relative=True):
-        # Attention, backup() est indispensable,
-        # car la gestion des collision doit pouvoir revenir en arriere
-        self.translated +=1
 
+    def translate_sprite(self,x,y,a,relative=True,check_collision_and_update=None):
+        '''
+        Attempts to translate and rotate a sprite.
+        A collision test can be done with check_and_validate_collision.
+        If test fails, then the translation+rotation backtracks
+
+        :param x: unit in pixels
+        :param y: unit in pixel
+        :param a: angle in degree
+        :param relative: boolean (if True then x,y,a parameters are relative to current position/orientation)
+        :param check_collision_and_update:   This function checks if the new position/orientation yields a collision.
+                                             If collision, then the function returns False
+                                             If no collision, update collision data structure and return True
+
+        :return: if collision test is done, it returns True of False depending on success or failure of test.
+                 Otherwise returns None
+        '''
         self.backup()
         if relative:
             self.x += x
@@ -144,31 +162,45 @@ class MovingSprite(MySprite):
             self.x , self.y , self.angle_degree = x , y , a
 
         if self.auto_rotate_image:
-            self.rotate_image(self.angle_degree)
+            self._rotate_image(self.angle_degree)
 
         self.rect.x , self.rect.y = int(self.x) , int(self.y)
-        MovingSprite.up_to_date = False
 
 
-    def set_centroid(self,x,y):
-        self.translate_sprite(x-self.rect.w//2,y-self.rect.h//2,self.angle_degree,relative=False)
+        if check_collision_and_update is None:
+            MovingSprite.up_to_date = False     # this means collisions will be dealt with latter
+
+        elif check_collision_and_update(self):
+            self.resume_to_backup()
+            #check_collision_and_update(self)
+            return False
+
+        else:
+            return True
+
+
+
+    def set_centroid(self,x,y,check_collision_and_update=None):
+        self.translate_sprite(x-self.rect.w//2,y-self.rect.h//2,self.angle_degree,relative=False,check_collision_and_update=check_collision_and_update)
 
     def get_centroid(self):
         #print "x=",self.x," , w=",self.rect.w
         return self.x+self.rect.w//2,self.y+self.rect.h//2
 
-    def rotate(self,deg):
-        self.translate_sprite(0,0, deg ,relative=True)
+    def rotate(self,deg,check_collision_and_update=None):
+        return self.translate_sprite(0,0, deg ,relative=True,check_collision_and_update=check_collision_and_update)
 
-    def forward(self,t):
+    def forward(self,t,check_collision_and_update=None):
         dx,dy = cos(self.angle_degree * pi/180), sin(self.angle_degree * pi/180)
         if self.angle_degree % 90 == 0:
             dx,dy = round(dx),round(dy)
-        self.translate_sprite(t*dx,t*dy,0)
+        return self.translate_sprite(t*dx,t*dy,0,check_collision_and_update=check_collision_and_update)
 
     def get_rowcol(self):
         assert int(self.x) % self.rect.w == 0 and int(self.y) % self.rect.h == 0, "sprite must not be accross tiles for this function"
         return int(self.y) // self.rect.h , int(self.x) // self.rect.w
 
-    def set_rowcol(self,row,col):
-        self.translate_sprite(col*self.rect.w,row*self.rect.h,self.angle_degree,relative=False)
+    def set_rowcol(self,row,col,check_collision_and_update=None):
+        self.translate_sprite(col*self.rect.w,row*self.rect.h,self.angle_degree,relative=False,check_collision_and_update=check_collision_and_update)
+
+

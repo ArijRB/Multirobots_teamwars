@@ -74,20 +74,13 @@ class cyRectSprite:
     '''
     structure to store sprite location and access it fast, through cython (if available)
     '''
-    def __init__(self,s,backup=False):
+    def __init__(self,s):
         self.sprite=s
         self.spriteid = id(s)
-
-        if backup:
-            self.top   = int(s.backup_y)
-            self.left  = int(s.backup_x)
-            self.right = self.left + s.rect.w
-            self.bottom= self.top  + s.rect.h
-        else:
-            self.top=s.rect.top
-            self.left=s.rect.left
-            self.right=s.rect.right
-            self.bottom=s.rect.bottom
+        self.top=s.rect.top
+        self.left=s.rect.left
+        self.right=s.rect.right
+        self.bottom=s.rect.bottom
 
     def size(self):
         h = self.bottom - self.top
@@ -135,6 +128,19 @@ class FastGroupCollide:
 
         self.ref = {}
         for s in group: self.add_or_update_sprite(s)
+
+
+    def _consistency_check(self,cys):
+        s2r = cys.sprite.rect.right
+        s2l = cys.sprite.rect.left
+        s2t = cys.sprite.rect.top
+        s2b = cys.sprite.rect.bottom
+        if cys.right != s2r or cys.left != s2l or cys.top != s2t or cys.bottom != s2b:
+            print('inconsistency!!!')
+            print('cys=         ',cys.left,cys.top,cys.right,cys.bottom)
+            print('cys.sprite = ',s2l,s2t,s2r,s2b)
+            print('backup     = ',int(cys.sprite.backup_x),int(cys.sprite.backup_y))
+            print()
 
 
     def _get_list(self,cys):
@@ -185,13 +191,15 @@ class FastGroupCollide:
         except AttributeError:
             raise AttributeError('trying to remove sprite absent from list')
 
-    def add_or_update_sprite(self,s,backup=False):
-        cys = cyRectSprite(s,backup)
+    def add_or_update_sprite(self,s):
+        cys = cyRectSprite(s)
         id_s = id(s)
         new_l = self._get_list(cys)
+
         if id_s in self.ref:
-            old_l = self.ref[id_s][0]
+            old_l,k = self.ref[id_s]
             if id(old_l) == id(new_l):
+                old_l[k] = cys
                 return
             self.remove_sprite(s)
         if new_l is not None:
@@ -214,8 +222,16 @@ class FastGroupCollide:
                 if di >= 0 and dj >= 0 and di < self.array_size and dj < self.array_size:
                     lst2 = self.array[di,dj]
                     for s2 in lst2:
-                        if s2.right <= l or s2.left >= r or s2.top >= b or s2.bottom <= t:
-                            continue
+
+                        #self._consistency_check(s2)
+                        # BUG!!! inconsistency...
+
+                        #if collision_callback(s,s2.sprite) and test:
+                        #    print('spr=',l,t,r,b)
+                        #    print('s2= ',s2.left,s2.top,s2.right,s2.bottom)
+
+                        #if s2.right <= l or s2.left >= r or s2.top >= b or s2.bottom <= t:
+                        #    continue
 
                         if s2.spriteid != id_s:
                             if (collision_callback is None) or (s is None) or collision_callback(s,s2.sprite):

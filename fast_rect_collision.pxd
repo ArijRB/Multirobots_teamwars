@@ -38,7 +38,7 @@ cdef class FastGroupCollide:
     cpdef remove_sprite(self,s)
 
     @cython.locals(old_l=cython.list,new_l=cython.list,cys=cyRectSprite,id_s=cython.long)
-    cpdef add_or_update_sprite(self,s,backup=*)
+    cpdef add_or_update_sprite(self,s)
 
     @cython.locals(l=cython.int,t=cython.int,r=cython.int,b=cython.int,     \
                     i=cython.int,j=cython.int,id_s=cython.long,di=cython.int,dj=cython.int, \

@@ -89,18 +89,17 @@ class SpriteBuilder(object):
             return Player("joueur",tileid,x,y,[self.sheet[tileid]])
 
     def basicSpriteFactory(self, layername,tileid,x,y):
-        img = self.sheet[tileid]
 
         if layername == "joueur":
             return self.basicPlayerFactory(tileid,x,y)
 
         elif layername in ["ramassable","cache","personnage"]:
-            return MovingSprite(layername,tileid,x,y,[img])
+            return MovingSprite(layername,tileid,x,y,[ self.sheet[tileid] ])
         else:
-            return MySprite(layername,tileid,x,y,[img])
+            return MySprite(layername,tileid,x,y,[ self.sheet[tileid] ])
 
     def basicGroupFactory(self,layername):
-        if layername in ["eye_candy","joueur"]:
+        if layername in ['joueur','dessinable']:
             return RecursiveDrawGroup()
         else:
             return pygame.sprite.Group()

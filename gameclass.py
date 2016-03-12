@@ -7,6 +7,7 @@ import random
 from sprite import MySprite,MovingSprite
 from functools import wraps
 import copy
+import time
 import os, sys
 
 try:
@@ -61,8 +62,8 @@ class Game(object):
         pygame.display.set_caption("pySpriteWorld Experiment")
         self.spriteBuilder.screen = self.screen
 
-        self.fps = 60
-        self.frameskip = 0
+        self.fps = 10
+        #self.frameskip = 0
         # converti les sprites meme format que l'ecran
         self.spriteBuilder.prepareSprites()
 
@@ -80,19 +81,17 @@ class Game(object):
         self.layers["bg1"].draw(self.background)
         self.layers["bg2"].draw(self.background)
 
-        # cree un masque de la taille de l'ecran, pour le calcul des collisions
-        self.mask = CollisionHandler2(self.screen,self.spriteBuilder.spritesize)
+        # cree un masque de la taille de l'ecran, et calcule les collisions
+        self.mask = CollisionHandler2(self.screen,self.spriteBuilder.spritesize,self)
+        self.mask.update_fastCollider(self.layers)
 
         # click clock
-        self.clock = pygame.time.Clock()
+        self.clock = 0
         self.framecount = 0
 
-    def setup_keyboard_callbacks(self):
-        self.callbacks = self.player.gen_callbacks(self.player.rect.w, self.layers, self.mask)
+
 
     def update(self):
-        self.mask.handle_collision(self.layers, self.player)
-
         for layer in glo.NON_BG_LAYERS:
             self.layers[layer].update()
 
@@ -102,23 +101,16 @@ class Game(object):
             if layer != "cache":
                 self.layers[layer].draw(self.screen)
 
-
         pygame.display.flip()
 
 
-    def kill_dessinable(self):
-        while self.layers['dessinable']:
-            first(self.layers['dessinable']).kill()
-        while self.layers['eye_candy']:
-            first(self.layers['eye_candy']).kill()
-
     def prepare_dessinable(self):
-        if not self.layers['dessinable']:
-            self.surfaceDessinable = pygame.Surface([self.screen.get_width(), self.screen.get_height()]).convert()
-            self.surfaceDessinable.set_colorkey( (0,0,0) )
-            self.layers['dessinable'].add( MySprite('dessinable',None,0,0,[self.surfaceDessinable]) )
+        s = SurfaceViergeSprite('dessinable',0,0,self.screen.get_width(), self.screen.get_height())
+        self.layers['dessinable'].add( s )
+        self.surfaceDessinable = s.img
 
-    def mainiteration(self, _fps=None, _frameskip = None):
+
+    def mainiteration(self):
         if os.environ.get("SDL_VIDEODRIVER") != 'dummy': # if there is a real x-server
             if pygame.event.peek():
                 for event in pygame.event.get():  # User did something
@@ -126,18 +118,20 @@ class Game(object):
                         pygame.quit()
                         quit()
 
-                    if event.type == pygame.KEYDOWN:
-                        if event.key in self.callbacks:
-                            self.callbacks[event.key]()
+                    #if event.type == pygame.KEYDOWN:
+                    #    if event.key in self.callbacks:
+                    #        self.callbacks[event.key]()
 
         self.update()
 
         # call self.draw() once every 'frameskip' iterations
-        fs = _frameskip if _frameskip is not None else self.frameskip
-        self.framecount = (self.framecount+1) % (fs+1)
-        if self.framecount==0:
+        #fs = _frameskip if _frameskip is not None else self.frameskip
+        #self.framecount = (self.framecount+1) % (fs+1)
+        t = time.time()
+        if t - self.clock > 1.0/self.fps:
+            self.clock = t
             self.draw()
-            self.clock.tick(_fps if _fps is not None else self.fps)
+            #self.clock.tick(_fps if _fps is not None else self.fps)
 
 
     def mainloop(self):
@@ -145,13 +139,44 @@ class Game(object):
             self.mainiteration()
 
 
-    def populate_sprite_names(self,ontology):
-        for layer in self.layers.values():
-            for s in layer:
-                s.firstname = ontology.firstname(s)
+
+    ############## MANAGE SPRITES ################
+
+    def del_sprite(self,s):
+        ''' delete sprite '''
+        s.kill()
+        self.mask.remove_sprite(s)
+
+    def del_all_sprites(self,layername):
+        ''' delete all sprites
+            for example, call del_all_sprites('dessinable') '''
+        while self.layers['layername']:
+            s = first(self.layers['layername'])
+            self.del_sprite(s)
+
+    def add_sprite_to_layer(self,s,layername):
+        if layername == 'joueur' and self.mask.check_collision_and_update(s):
+            return False
+        else:
+            self.layers[layername].add(s)
+            return True
 
 
-    def add_players(self,xy,player=None,tiled=True,draw_now=True):
+    def add_new_sprite(self,layername,tileid,xy,tiled=False):
+        assert type(xy) is tuple
+        x,y = xy
+
+        if tiled:
+            x,y = x*self.spriteBuilder.spritesize,y*self.spriteBuilder.spritesize
+
+        s = self.spriteBuilder.basicSpriteFactory(layername,tileid,x,y)
+        if self.add_sprite_to_layer(s,layername):
+            return s
+        else:
+            return False
+
+
+    def add_players(self,xy,player=None,tiled=False):
         """
             Attemps to add one or many new players at position x,y
             Fails if the new player is colliding something, and then return False
@@ -166,28 +191,14 @@ class Game(object):
             >>> game.add_players( (2,3) , game.player )
             []
         """
-        assert type(xy) is tuple
-        x,y = xy
-
-        if tiled:
-            x,y = x*self.spriteBuilder.spritesize,y*self.spriteBuilder.spritesize
-
         try:
             tileid = player.tileid
         except:
             tileid = None
 
-        if not MovingSprite.up_to_date:
-            self.mask.handle_collision(self.layers)
+        return self.add_new_sprite('joueur',tileid,xy,tiled)
 
-        pnew = self.spriteBuilder.basicPlayerFactory(tileid,x=x,y=y)
 
-        if self.mask.collision_blocking_player(pnew) == []:
-            self.layers['joueur'].add( pnew )
-            self.mask.draw_player_mask( pnew )
-            self.mask.add_or_update_sprite( pnew )
-            if draw_now: self.mainiteration()
-            return pnew
-        else:
-            if draw_now: self.mainiteration()
-            return False
+#
+#    def setup_keyboard_callbacks(self):
+#        self.callbacks = self.player.gen_callbacks(self.player.rect.w, self.layers, self.mask)

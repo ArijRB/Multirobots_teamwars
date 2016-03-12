@@ -1,17 +1,26 @@
 from robosim import *
-from random import random
-
+from random import random,choice
+import time
 
 init('vide')
+game.fps = 40
 # Make 30 agents
-for i in range(30):
-        p = game.add_players( (100+random()*150 , 100+random()*150) , game.player , tiled=False,draw_now=True)
-        if p:
-            p.rotate( random()*360 )
+def test():
+    for i in range(80):
+            p = game.add_players( (100+random()*250 , 100+random()*250) , game.player , tiled=False)
+            if p:
+                tournegauche( random()*360 ,p)
+
+    time.sleep(2.5)
+    joueurs = list(game.layers['joueur'])
+    for i in range(200000):
+        for p in game.layers['joueur']:
+            p = choice(joueurs)
+            tournegauche( random()*22-11, p)
+            avance(1,p)
+            game.mask.add_or_update_sprite(p)
+            #time.sleep(0.001)
+            break
 
 
-for i in range(1000):
-    for p in game.layers['joueur']:
-        p.rotate( random()*6 )
-        p.forward(1)
-    game.mainiteration()
+test()

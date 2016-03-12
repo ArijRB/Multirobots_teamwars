@@ -37,7 +37,7 @@ def init(_boardname=None,_spriteBuilder=TurtleSpriteBuilder):
     name = _boardname if _boardname else 'robot_obstacles'
     game = Game('Cartes/' + name + '.json', _spriteBuilder)
 
-    game.fps = 200  # frames per second
+    game.fps = 20  # frames per second
     game.mainiteration()
     player = game.player
 
@@ -68,15 +68,9 @@ def avance(s=1.0,p=None):
     """
     p = player if p is None else p
     cx1,cy1 = p.get_centroid()
-    p.forward(s)
+    r = p.forward(s,game.mask.check_collision_and_update)
     game.mainiteration()
-    if p.position_changed():
-        if game.usepen:
-            cx2,cy2 = p.get_centroid()
-            line(cx1,cy1,cx2,cy2)
-        return True
-    else:
-        return False
+    return r
 
 @check_init_game_done
 def obstacle(s=1.0,p=None):
@@ -85,14 +79,11 @@ def obstacle(s=1.0,p=None):
     obstacle()  verifie la meme chose pour un deplacement de un pixel
     """
     p = player if p is None else p
-    p.forward(s)
-    game.mask.handle_collision(game.layers, p)
+    p.forward(30)
+    coll = game.mask.check_collision_and_update(p)
+    p.resume_to_backup()
+    return coll
 
-    if p.resumed:
-        return True
-    else:
-        p.resume_to_backup()
-        return False
 
 @check_init_game_done
 def oriente(a,p=None):
@@ -105,8 +96,9 @@ def oriente(a,p=None):
     Donc oriente(180) le fait se tourner vers l'Ouest
     """
     p = player if p is None else p
-    p.translate_sprite(p.x,p.y,a,relative=False)
+    r = p.translate_sprite(p.x,p.y,a,relative=False,check_collision_and_update=game.mask.check_collision_and_update)
     game.mainiteration()
+    return r
 
 @check_init_game_done
 def tournegauche(a,p=None):
@@ -114,17 +106,16 @@ def tournegauche(a,p=None):
     tournegauche(a) pivote d'un angle donne, en degrees
     """
     p = player if p is None else p
-    p.translate_sprite(0,0,-a,relative=True)
+    r = p.translate_sprite(0,0,-a,relative=True,check_collision_and_update=game.mask.check_collision_and_update)
     game.mainiteration()
+    return r
 
 @check_init_game_done
 def tournedroite(a,p=None):
     """
     tournedroite(a) pivote d'un angle a donne, en degrees
     """
-    p = player if p is None else p
-    p.translate_sprite(0,0,a,relative=True)
-    game.mainiteration()
+    return tournegauche(-a,p)
 
 @check_init_game_done
 def telemetre(from_center=False,rel_angle=0,p=None):
@@ -197,9 +188,9 @@ def set_position(x,y,p=None):
     Renvoie False si la teleportation a echouee, pour cause d'obstacle
     """
     p = player if p is None else p
-    p.set_centroid(x,y)
+    r = p.set_centroid(x,y,check_collision_and_update=game.mask.check_collision_and_update)
     game.mainiteration()
-    return p.position_changed()
+    return r
 
 @check_init_game_done
 def obstacle_coords(x,y,p=None):
@@ -209,15 +200,15 @@ def obstacle_coords(x,y,p=None):
     renvoie True s'il y a un obstacle, False sinon
     """
     p = player if p is None else p
-    p.set_centroid(x,y)
-    game.mask.handle_collision(game.layers, p)
+    return p.set_centroid(x,y,game.mask.check_collision_and_update)
+    #game.mask.handle_collision(game.layers, p)
 
     #if player.position_changed():
-    if p.resumed:
-        return True
-    else:
-        p.resume_to_backup()
-        return False
+    #if p.resumed:
+    #    return True
+    #else:
+    #    p.resume_to_backup()
+    #    return False
 
 @check_init_game_done
 def line(x1,y1,x2,y2,wait=False):
