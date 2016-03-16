@@ -6,6 +6,8 @@ import numpy as np
 
 
 def main():
+    Turtle.set_turtle_size(18)
+
     init()
     game.fps = 100
 

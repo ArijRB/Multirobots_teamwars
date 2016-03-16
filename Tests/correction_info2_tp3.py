@@ -79,7 +79,7 @@ def suivre_chemin(traj,aller_=aller):
 
 def main():
     init('robot_obstacles_invisibles')
-    frameskip(5) # affiche une image sur n pour acceler la simulation
+    #frameskip(5) # affiche une image sur n pour acceler la simulation
     g = init_graph(xstart,xstop,gap)
     time.sleep(0.3)
     draw_graph(g)
