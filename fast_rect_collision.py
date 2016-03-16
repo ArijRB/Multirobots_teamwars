@@ -172,27 +172,25 @@ class FastGroupCollide:
 
 
     def remove_sprite(self,s):
+        # removal will still work even if sprite has changed coords
+        # because old coords have been store in self.ref
+        #
+        # To remove a sprite s:
+        # 	- First remove it from the list l=self.d[ij]
+        # 	  To achieve this quickly, let k be the position in the list of the sprite
+        # 	  copy the last element to l[k] and pop the last element
+        # 	- Finally, remove this sprite from self.ref
+        ref = self.ref
+        id_s = id(s)
         try:
-            # removal will still work even if sprite has changed coords
-            # because old coords have been store in self.ref
-            #
-            # To remove a sprite s:
-            # 	- First remove it from the list l=self.d[ij]
-            # 	  To achieve this quickly, let k be the position in the list of the sprite
-            # 	  copy the last element to l[k] and pop the last element
-            # 	- Finally, remove this sprite from self.ref
-            ref = self.ref
-            id_s = id(s)
             l,k = ref[id_s]
             last = l[-1]
-            #print('%%%%%%%% l[k],last=',l[k].spriteid,last.spriteid)
-            #print('%%%%%%%% id_s=',id_s)
-            l[k] = last
-            l.pop()
             ref[last.spriteid][1] = k
-            del ref[id_s]
-        except AttributeError:
-            raise AttributeError('trying to remove sprite absent from list')
+        except KeyError:
+            raise KeyError('trying to remove sprite absent from list')
+        l[k] = last
+        l.pop()
+        del ref[id_s]
 
     def add_or_update_sprite(self,s):
         #print ('updating sprite ',id(s), ' with new position ',(s.rect.left,s.rect.top))

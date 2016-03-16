@@ -75,6 +75,10 @@ class Player(MovingSprite):
         return obj
 
     def throw_rays(self,radian_angle_list,mask,layers,coords=None,show_rays=False):
+        """
+        attention. avant l'appel de cette fonction, le masque doit etre mis a jour avec
+                   game.mask.update_bitmasks(game.layers)
+        """
         mask._erase_player_mask( self )
         cx,cy = coords if coords else self.get_centroid()
         w,h = mask.mask_players.get_size()
@@ -89,22 +93,29 @@ class Player(MovingSprite):
 class Turtle(Player):
     static_imglist = None
     w,h = None,None
-    taille_geometrique, penwidth = 22, 1
+    diametre, penwidth = 22, 1
 
-    def __init__(self,layername,x,y,w,h):
-        assert Turtle.w is None or (Turtle.w == w and Turtle.h ==h),'all turtles sprites must have same size'
-        Turtle.w,Turtle.h = w,h
-        Player.__init__(self,layername,tileid=None,x=x,y=y,imglist=self.build_Turtle_list_images(w,h))
+    @classmethod
+    def set_turtle_size(cls,diametre):
+        Turtle.diametre = diametre
 
-    def build_Turtle_list_images(self,w,h):
+    @classmethod
+    def build_Turtle_list_images(cls):
         """ cree 360 images de tortues (une par degre)"""
-        if Turtle.static_imglist is None:
-            Turtle.static_imglist = [pygame.Surface((w,h)).convert() for a in range(360)]
-            for a,img in zip(range(360),Turtle.static_imglist):
-                img.set_colorkey( (0,0,0) )
-                img.fill((0,0,0))
-                circle(img, glo.WHITE, (w/2,h/2), Turtle.taille_geometrique/2 - Turtle.penwidth,Turtle.penwidth)
-                polygons.draw_arrow(img,w/2,h/2,a * pi/180,r=Turtle.taille_geometrique-14,clr=glo.WHITE)
-                #pygame.gfxdraw.aacircle(self.image, w/2,h/2, self.taille_geometrique/2 - self.penwidth,glo.WHITE)
+        w = Turtle.diametre + Turtle.penwidth*2
+        Turtle.static_imglist = [pygame.Surface((w,w)).convert() for a in range(360)]
+        for a,img in zip(range(360),Turtle.static_imglist):
+            img.set_colorkey( (0,0,0) )
+            img.fill((0,0,0))
+            circle(img, glo.WHITE, (w/2,w/2), Turtle.diametre/2 - Turtle.penwidth,Turtle.penwidth)
+            polygons.draw_arrow(img,w/2,w/2,a * pi/180,r=Turtle.diametre-14,clr=glo.WHITE)
+            #pygame.gfxdraw.aacircle(self.image, w/2,h/2, self.taille_geometrique/2 - self.penwidth,glo.WHITE)
         return Turtle.static_imglist
+
+
+    def __init__(self,layername,x,y):
+        if Turtle.static_imglist is None:
+            Turtle.build_Turtle_list_images()
+        Player.__init__(self,layername,tileid=None,x=x,y=y,imglist=Turtle.build_Turtle_list_images())
+
 

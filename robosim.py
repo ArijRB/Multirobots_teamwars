@@ -21,7 +21,7 @@ print("""=[ Pour l'aide, tapez help(fonction) ]=\n""")
 
 class TurtleSpriteBuilder(SpriteBuilder):
     def basicPlayerFactory(self,tileid=None,x=0.0,y=0.0):
-        return Turtle("joueur",x,y,32,32)
+        return Turtle("joueur",x,y)
 
 ###########################################
 
@@ -79,7 +79,7 @@ def obstacle(s=1.0,p=None):
     obstacle()  verifie la meme chose pour un deplacement de un pixel
     """
     p = player if p is None else p
-    p.forward(30)
+    p.forward(s)
     coll = game.mask.check_collision_and_update(p)
     p.resume_to_backup()
     return coll
@@ -128,6 +128,7 @@ def telemetre(from_center=False,rel_angle=0,p=None):
     telemetre(from_center=True) compte le nombre de pixels depuis le centre du robot (et non pas le bord)
     telemetre(rel_angle) tire le rayon avec l'angle rel_angle (relativement a l'orientation du robot)
     """
+    game.mask.update_bitmasks(game.layers)
     p = player if p is None else p
     rayon_hit = p.throw_rays([(p.angle_degree+rel_angle)*pi/180] , game.mask,game.layers,show_rays=True)[0]
     game.mainiteration()
@@ -142,6 +143,7 @@ def telemetre_coords_list(x,y,angle_list,show_rays=True,p=None):
     la fonction renvoie une liste contenant les nombres de pixels parcourus par le rayon avant
     de rencontrer un obstacle
     """
+    game.mask.update_bitmasks(game.layers)
     p = player if p is None else p
     x,y = int(x),int(y)
     hitlist = p.throw_rays([a*pi/180 for a in angle_list] , game.mask,game.layers,coords=(x,y),show_rays=show_rays)
@@ -167,7 +169,7 @@ def position(entiers=False,p=None):
 @check_init_game_done
 def diametre_robot(p=None):
     p = player if p is None else p
-    return p.taille_geometrique
+    return p.diametre
 
 @check_init_game_done
 def taille_terrain():
@@ -239,7 +241,8 @@ def efface():
     """
     efface() va effacer tous les dessins
     """
-    game.kill_dessinable()
+    game.del_all_sprites('dessinable')
+    game.prepare_dessinable()
     game.mainiteration()
 
 

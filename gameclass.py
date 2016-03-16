@@ -4,7 +4,7 @@ import glo
 import pygame
 from collections import OrderedDict
 import random
-from sprite import MySprite,MovingSprite
+from sprite import MySprite,MovingSprite,SurfaceViergeSprite
 from functools import wraps
 import copy
 import time
@@ -107,7 +107,7 @@ class Game(object):
     def prepare_dessinable(self):
         s = SurfaceViergeSprite('dessinable',0,0,self.screen.get_width(), self.screen.get_height())
         self.layers['dessinable'].add( s )
-        self.surfaceDessinable = s.img
+        self.surfaceDessinable = s.image
 
 
     def mainiteration(self):
@@ -145,13 +145,16 @@ class Game(object):
     def del_sprite(self,s):
         ''' delete sprite '''
         s.kill()
-        self.mask.remove_sprite(s)
+        try:
+            self.mask.remove_sprite(s)
+        except:
+            pass
 
     def del_all_sprites(self,layername):
         ''' delete all sprites
             for example, call del_all_sprites('dessinable') '''
-        while self.layers['layername']:
-            s = first(self.layers['layername'])
+        while self.layers[layername]:
+            s = first(self.layers[layername])
             self.del_sprite(s)
 
     def add_sprite_to_layer(self,s,layername):
