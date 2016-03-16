@@ -9,6 +9,7 @@ cdef class cyRectSprite:
     cdef int top,left,right,bottom
     cdef long spriteid
     cdef object sprite
+    cdef object layername
 
     @cython.locals(h=cython.int,w=cython.int)
     cdef int size(self)
@@ -42,12 +43,12 @@ cdef class FastGroupCollide:
 
     @cython.locals(l=cython.int,t=cython.int,r=cython.int,b=cython.int,     \
                     i=cython.int,j=cython.int,id_s=cython.long,di=cython.int,dj=cython.int, \
-                    lst2=cython.list,s2=cyRectSprite,candidates=cython.list)
-    cdef _compute_collision_list(self,l,t,r,b,s=*,collision_callback=*)
+                    lst2=cython.list,s2=cyRectSprite,candidates=cython.list,gFilter=cython.set)
+    cdef _compute_collision_list(self,l,t,r,b,s=*,collision_callback=*,gFilter=*)
 
-    cpdef compute_collision_list(self,s,collision_callback=*)
+    cpdef compute_collision_list(self,s,collision_callback=*,gFilter=*)
 
-    @cython.locals(x=cython.int,y=cython.int)
-    cpdef compute_collision_with_point(self,x,y)
+#    @cython.locals(x=cython.int,y=cython.int)
+#    cpdef compute_collision_with_point(self,x,y,gFilter=*)
 
     cpdef get_all_sprites_on_tile(self,i,j)

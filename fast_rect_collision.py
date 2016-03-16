@@ -10,6 +10,8 @@ import numpy as np
 """
 
 TODO:
+- lorsqu'on accede a array[i,j] faire i % array_size et j % array_size pour que ca reboucle comme un tore
+
 - spécifier dans les sprites la liste des layers qui constituent des obstacles pour eux
 
 
@@ -81,6 +83,7 @@ class cyRectSprite:
         self.left=s.rect.left
         self.right=s.rect.right
         self.bottom=s.rect.bottom
+        self.layername = s.layername
 
     def size(self):
         h = self.bottom - self.top
@@ -136,7 +139,7 @@ class FastGroupCollide:
         s2t = cys.sprite.rect.top
         s2b = cys.sprite.rect.bottom
         if cys.right != s2r or cys.left != s2l or cys.top != s2t or cys.bottom != s2b:
-            print('inconsistency!!!')
+            print('inconsistency with sprite ',cys.spriteid,' !!!')
             print('cys=         ',cys.left,cys.top,cys.right,cys.bottom)
             print('cys.sprite = ',s2l,s2t,s2r,s2b)
             print('backup     = ',int(cys.sprite.backup_x),int(cys.sprite.backup_y))
@@ -192,6 +195,8 @@ class FastGroupCollide:
             raise AttributeError('trying to remove sprite absent from list')
 
     def add_or_update_sprite(self,s):
+        #print ('updating sprite ',id(s), ' with new position ',(s.rect.left,s.rect.top))
+
         cys = cyRectSprite(s)
         id_s = id(s)
         new_l = self._get_list(cys)
@@ -206,7 +211,7 @@ class FastGroupCollide:
             self._add_cyRectSprite(cys,new_l)
 
 
-    def _compute_collision_list(self,l,t,r,b,s=None,collision_callback=None):
+    def _compute_collision_list(self,l,t,r,b,s=None,collision_callback=None,gFilter = None):
         '''
         params:
         left,top,right,bottom (of a rectanble), sprite,callback
@@ -220,32 +225,24 @@ class FastGroupCollide:
         for di in range(i-1,i+2):
             for dj in range(j-1,j+2):
                 if di >= 0 and dj >= 0 and di < self.array_size and dj < self.array_size:
-                    lst2 = self.array[di,dj]
-                    for s2 in lst2:
-
-                        #self._consistency_check(s2)
-                        # BUG!!! inconsistency...
-
-                        #if collision_callback(s,s2.sprite) and test:
-                        #    print('spr=',l,t,r,b)
-                        #    print('s2= ',s2.left,s2.top,s2.right,s2.bottom)
-
-                        #if s2.right <= l or s2.left >= r or s2.top >= b or s2.bottom <= t:
-                        #    continue
+                    for s2 in self.array[di,dj]:
 
                         if s2.spriteid != id_s:
+
+                            if s2.right <= l or s2.left >= r or s2.top >= b or s2.bottom <= t:
+                                continue
+
                             if (collision_callback is None) or (s is None) or collision_callback(s,s2.sprite):
-                                candidates.append( s2.sprite )
+                                if gFilter is None or s2.layername in gFilter:
+                                    candidates.append( s2.sprite )
+
         return candidates
 
 
-    def compute_collision_list(self,s,collision_callback=None):
+    def compute_collision_list(self,s,collision_callback=None,gFilter = None):
         rec = s.rect
         l,t,r,b = rec.left,rec.top,rec.right,rec.bottom
-        return self._compute_collision_list(l,t,r,b,s,collision_callback)
-
-    def compute_collision_with_point(self,x,y):
-        return self._compute_collision_list(x,y,x+1,y+1)
+        return self._compute_collision_list(l,t,r,b,s,collision_callback,gFilter)
 
 
     def get_all_sprites_on_tile(self,i,j):

@@ -159,6 +159,7 @@ class Game(object):
             return False
         else:
             self.layers[layername].add(s)
+            self.mask.add_or_update_sprite(s)
             return True
 
 

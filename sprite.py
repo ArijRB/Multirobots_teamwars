@@ -54,7 +54,7 @@ class SurfaceViergeSprite(MySprite):
 
 class PointSprite(SurfaceViergeSprite):
     ''' just a point... can be useful ! '''
-    def __init__(self,layername,x=0,y=0):
+    def __init__(self,layername=None,x=0,y=0):
         SurfaceViergeSprite.__init__(self,layername,x=x,y=y,w=1,h=1,couleur=(255,255,255))
 
 
@@ -165,17 +165,19 @@ class MovingSprite(MySprite):
             self._rotate_image(self.angle_degree)
 
         self.rect.x , self.rect.y = int(self.x) , int(self.y)
-
+        #print('attempting to move sprite ',id(self),' to ',(self.rect.x , self.rect.y))
 
         if check_collision_and_update is None:
             MovingSprite.up_to_date = False     # this means collisions will be dealt with latter
 
         elif check_collision_and_update(self):
             self.resume_to_backup()
+            #print ('resuming to backup sprite ',id(self))
             #check_collision_and_update(self)
             return False
 
         else:
+            #print('attempt succeeded')
             return True
 
 
