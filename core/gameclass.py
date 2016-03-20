@@ -1,10 +1,10 @@
 from __future__ import absolute_import, print_function, unicode_literals
-from spritebuilder import SpriteBuilder
-import glo
+from core.spritebuilder import SpriteBuilder
+from core import glo
 import pygame
 from collections import OrderedDict
 import random
-from sprite import MySprite,MovingSprite,SurfaceViergeSprite
+from core.sprite import MySprite,MovingSprite,SurfaceViergeSprite
 from functools import wraps
 import copy
 import time
@@ -15,7 +15,7 @@ try:
 except:
     def first(g): return next(iter(g))
 
-from collisions2 import CollisionHandler2
+from core.collisions2 import CollisionHandler2
 
 
 def check_init_game_done(fun):
@@ -62,8 +62,8 @@ class Game(object):
         pygame.display.set_caption("pySpriteWorld Experiment")
         self.spriteBuilder.screen = self.screen
 
-        self.fps = 10
-        #self.frameskip = 0
+        #self.fps = 10
+        self.frameskip = 0
         # converti les sprites meme format que l'ecran
         self.spriteBuilder.prepareSprites()
 
@@ -88,7 +88,7 @@ class Game(object):
         # click clock
         self.clock = 0
         self.framecount = 0
-
+        self.surfaceDessinable = None
 
 
     def update(self):
@@ -105,10 +105,10 @@ class Game(object):
 
 
     def prepare_dessinable(self):
-        s = SurfaceViergeSprite('dessinable',0,0,self.screen.get_width(), self.screen.get_height())
-        self.layers['dessinable'].add( s )
-        self.surfaceDessinable = s.image
-
+        if self.surfaceDessinable is None:
+            s = SurfaceViergeSprite('dessinable',0,0,self.screen.get_width(), self.screen.get_height())
+            self.layers['dessinable'].add( s )
+            self.surfaceDessinable = s.image
 
     def mainiteration(self):
         if os.environ.get("SDL_VIDEODRIVER") != 'dummy': # if there is a real x-server
@@ -125,22 +125,30 @@ class Game(object):
         self.update()
 
         # call self.draw() once every 'frameskip' iterations
-        #fs = _frameskip if _frameskip is not None else self.frameskip
-        #self.framecount = (self.framecount+1) % (fs+1)
-        t = time.time()
-        if t - self.clock > 1.0/self.fps:
-            self.clock = t
+        self.framecount += 1
+        if self.framecount > self.frameskip:
+            self.framecount = 0
             self.draw()
-            #self.clock.tick(_fps if _fps is not None else self.fps)
+
+
+        #t = time.time()
+        #if t - self.clock > 1.0/self.fps:
+        #    self.clock = t
+        #    #self.clock.tick(_fps if _fps is not None else self.fps)
 
 
     def mainloop(self):
         while True:
             self.mainiteration()
 
+    ############## MANAGE SPRITES (RAYS) ################
 
 
-    ############## MANAGE SPRITES ################
+    def throw_rays(self,sprite,radian_angle_list,coords=None,show_rays=False):
+        mask.update_bitmasks()
+
+
+    ############## MANAGE SPRITES (ADDITION, DELETION) ################
 
     def del_sprite(self,s):
         ''' delete sprite '''
@@ -203,6 +211,3 @@ class Game(object):
         return self.add_new_sprite('joueur',tileid,xy,tiled)
 
 
-#
-#    def setup_keyboard_callbacks(self):
-#        self.callbacks = self.player.gen_callbacks(self.player.rect.w, self.layers, self.mask)

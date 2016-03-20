@@ -29,7 +29,7 @@ def parle(texte=''):
 
     j.forward(j.rect.width)
     coll_boxes = game.mask.collision_list( j , {'personnage'})
-    j.resume_to_backup()
+    j._resume_to_backup()
 
     for p in coll_boxes:
         row,col = p.get_rowcol()

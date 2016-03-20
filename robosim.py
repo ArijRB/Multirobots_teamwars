@@ -3,14 +3,14 @@ Robosim Module
 """
 
 from __future__ import absolute_import, print_function, unicode_literals
-from gameclass import Game,check_init_game_done
-from sprite import MySprite,MovingSprite
-from players import Player,Turtle
-from spritebuilder import SpriteBuilder
+from core.gameclass import Game,check_init_game_done
+from core.sprite import MySprite,MovingSprite
+from robosim_player import Turtle,unsafe_throw_rays,throw_rays_for_many_players
+from core.spritebuilder import SpriteBuilder
 import random
 from math import pi,cos,sin,sqrt
 import pygame
-import glo
+from core import glo
 import pygame.draw
 
 
@@ -37,7 +37,7 @@ def init(_boardname=None,_spriteBuilder=TurtleSpriteBuilder):
     name = _boardname if _boardname else 'robot_obstacles'
     game = Game('Cartes/' + name + '.json', _spriteBuilder)
 
-    game.fps = 20  # frames per second
+    #game.fps = 20  # frames per second
     game.mainiteration()
     player = game.player
 
@@ -57,7 +57,7 @@ def frameskip(n):
 
 
 @check_init_game_done
-def avance(s=1.0,p=None):
+def avance(s=1.0,p=None,wait=False):
     """
     avance() deplace robot d'un pixel dans sa direction courante
     avance(x) le deplace de x pixels
@@ -69,7 +69,7 @@ def avance(s=1.0,p=None):
     p = player if p is None else p
     cx1,cy1 = p.get_centroid()
     r = p.forward(s,game.mask.check_collision_and_update)
-    game.mainiteration()
+    if not wait: game.mainiteration()
     return r
 
 @check_init_game_done
@@ -80,13 +80,13 @@ def obstacle(s=1.0,p=None):
     """
     p = player if p is None else p
     p.forward(s)
-    coll = game.mask.check_collision_and_update(p)
-    p.resume_to_backup()
-    return coll
+    collision = game.mask.check_collision_and_update(p)
+    p._resume_to_backup()
+    return collision
 
 
 @check_init_game_done
-def oriente(a,p=None):
+def oriente(a,p=None,wait=False):
     """
     oriente(a) fait pivoter le robot afin qu'il forme un angle de a degrees
     par rapport a l'horizontal.
@@ -97,25 +97,25 @@ def oriente(a,p=None):
     """
     p = player if p is None else p
     r = p.translate_sprite(p.x,p.y,a,relative=False,check_collision_and_update=game.mask.check_collision_and_update)
-    game.mainiteration()
+    if not wait: game.mainiteration()
     return r
 
 @check_init_game_done
-def tournegauche(a,p=None):
+def tournegauche(a,p=None,wait=False):
     """
     tournegauche(a) pivote d'un angle donne, en degrees
     """
     p = player if p is None else p
     r = p.translate_sprite(0,0,-a,relative=True,check_collision_and_update=game.mask.check_collision_and_update)
-    game.mainiteration()
+    if not wait: game.mainiteration()
     return r
 
 @check_init_game_done
-def tournedroite(a,p=None):
+def tournedroite(a,p=None,wait=False):
     """
     tournedroite(a) pivote d'un angle a donne, en degrees
     """
-    return tournegauche(-a,p)
+    return tournegauche(-a,p,wait)
 
 @check_init_game_done
 def telemetre(from_center=False,rel_angle=0,p=None):
@@ -130,15 +130,16 @@ def telemetre(from_center=False,rel_angle=0,p=None):
     """
     game.mask.update_bitmasks(game.layers)
     p = player if p is None else p
-    rayon_hit = p.throw_rays([(p.angle_degree+rel_angle)*pi/180] , game.mask,game.layers,show_rays=True)[0]
+    rayon_hit = unsafe_throw_rays(p,[rel_angle],game,coords=None,relative=True,show_rays=True)[0]
+
     game.mainiteration()
     d = p.dist(*rayon_hit)
     return d if from_center else d-(diametre_robot()//2)
 
 @check_init_game_done
-def telemetre_coords_list(x,y,angle_list,show_rays=True,p=None):
+def telemetre_coords_list(x,y,angle_degree_list,show_rays=True,p=None):
     """
-    telemetre_coords_list(x,y,angle_list,show_rays=True)
+    telemetre_coords_list(x,y,angle_degree_list,show_rays=True)
     tire un rayon laser depuis x,y avec les angles angle_list
     la fonction renvoie une liste contenant les nombres de pixels parcourus par le rayon avant
     de rencontrer un obstacle
@@ -146,7 +147,8 @@ def telemetre_coords_list(x,y,angle_list,show_rays=True,p=None):
     game.mask.update_bitmasks(game.layers)
     p = player if p is None else p
     x,y = int(x),int(y)
-    hitlist = p.throw_rays([a*pi/180 for a in angle_list] , game.mask,game.layers,coords=(x,y),show_rays=show_rays)
+
+    hitlist = unsafe_throw_rays(p,angle_degree_list , game,coords=(x,y),show_rays=show_rays)
     game.mainiteration()
     return [sqrt( (rx-x)**2 + (ry-y)**2 ) for rx,ry in hitlist]
 
@@ -190,7 +192,7 @@ def set_position(x,y,p=None):
     Renvoie False si la teleportation a echouee, pour cause d'obstacle
     """
     p = player if p is None else p
-    r = p.set_centroid(x,y,check_collision_and_update=game.mask.check_collision_and_update)
+    r = p.set_centroid(x,y,game.mask.check_collision_and_update)
     game.mainiteration()
     return r
 
@@ -202,7 +204,17 @@ def obstacle_coords(x,y,p=None):
     renvoie True s'il y a un obstacle, False sinon
     """
     p = player if p is None else p
-    return p.set_centroid(x,y,game.mask.check_collision_and_update)
+
+    p.set_centroid(x,y)
+    collision = game.mask.check_collision_and_update(p)
+    p._resume_to_backup()
+    return collision
+
+
+    #if not collision:
+    #    p._resume_to_backup(game.mask.check_collision_and_update)
+    #
+    #return collision
     #game.mask.handle_collision(game.layers, p)
 
     #if player.position_changed():
@@ -237,13 +249,16 @@ def circle(x1,y1,r=10,wait=False):
         game.mainiteration()
 
 @check_init_game_done
-def efface():
+def efface(force_efface_tout=False,wait=False):
     """
-    efface() va effacer tous les dessins
+    efface()     efface les dessins crees avec circle, pendown, etc...
+    efface(True) efface aussi les rayons lances par les joueurs
     """
-    game.del_all_sprites('dessinable')
+    if force_efface_tout:
+        game.del_all_sprites('dessinable')
     game.prepare_dessinable()
-    game.mainiteration()
+    game.surfaceDessinable.fill( (0,0,0) )
+    if not wait: game.mainiteration()
 
 
 @check_init_game_done

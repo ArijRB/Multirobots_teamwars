@@ -1,6 +1,6 @@
 import pygame
 from math import pi,sqrt,cos,sin,floor
-import polygons
+from core import polygons
 import copy
 
 class RecursiveDrawGroup(pygame.sprite.Group):
@@ -64,7 +64,7 @@ class DrawOnceSprite(pygame.sprite.Sprite):
     """ DrawOnceSprite est un sprite qui va s'afficher pendant quelques frames, puis s'autodetruire
         must be inside a RecursiveDrawGroup
     """
-    lifespan = 4
+    lifespan = 1
     def __init__(self,drawfun,arglist):
         pygame.sprite.Sprite.__init__(self)
         self.drawfun = drawfun
@@ -100,24 +100,25 @@ class MovingSprite(MySprite):
         self.angle_degree  = 0
         self.auto_rotate_image = True
 
-        self.backup()
+        self._backup()
         MovingSprite.up_to_date = False
 
 
-    def backup(self):
+    def _backup(self):
         self.backup_x , self.backup_y = self.x , self.y
         self.backup_angle_degree = self.angle_degree
         self.backup_image = self.image
         self.backup_mask  = self.mask
         self.resumed = False
 
-    def resume_to_backup(self):
+    def _resume_to_backup(self,check_collision_and_update=None):
         self.x , self.y = self.backup_x , self.backup_y
         self.rect.x , self.rect.y = int(self.x) , int(self.y)
         self.angle_degree = self.backup_angle_degree
         self.image = self.backup_image
         self.mask  = self.backup_mask
         self.resumed = True
+        assert check_collision_and_update is None or not check_collision_and_update(self),'resuming to backup provoques unexpected collision'
 
 
 
@@ -153,7 +154,7 @@ class MovingSprite(MySprite):
         :return: if collision test is done, it returns True of False depending on success or failure of test.
                  Otherwise returns None
         '''
-        self.backup()
+        self._backup()
         if relative:
             self.x += x
             self.y += y
@@ -171,7 +172,7 @@ class MovingSprite(MySprite):
             MovingSprite.up_to_date = False     # this means collisions will be dealt with latter
 
         elif check_collision_and_update(self):
-            self.resume_to_backup()
+            self._resume_to_backup()
             #print ('resuming to backup sprite ',id(self))
             #check_collision_and_update(self)
             return False
@@ -206,3 +207,8 @@ class MovingSprite(MySprite):
         self.translate_sprite(col*self.rect.w,row*self.rect.h,self.angle_degree,relative=False,check_collision_and_update=check_collision_and_update)
 
 
+
+
+
+class Player(MovingSprite):
+    pass

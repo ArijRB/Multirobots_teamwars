@@ -1,10 +1,9 @@
-from spritesheet_functions import SpriteSheet
+from core.spritesheet_functions import SpriteSheet
 import json
-import glo
+from core import glo
 import pygame
 from collections import OrderedDict
-from sprite import MySprite,MovingSprite,RecursiveDrawGroup
-from players import Player
+from core.sprite import MySprite,MovingSprite,RecursiveDrawGroup,Player
 import os
 import zlib
 
@@ -32,7 +31,7 @@ class SpriteBuilder(object):
 
         dirname = os.path.dirname(os.path.abspath(__file__))
 
-        with open(dirname + "/" + file_name, 'r') as f:
+        with open(dirname + "/../" + file_name, 'r') as f:
             self.carte = json.load(f)
 
         assert self.carte["tilewidth"]==self.carte["tileheight"], "les sprites doivent etre carres"
@@ -45,11 +44,15 @@ class SpriteBuilder(object):
             self.sheet      = SpriteSheet(sheet_filename,self.spritesize)
         except pygame.error:
             try:
-                sheet_filename  = dirname + "/Cartes/" + self.carte["tilesets"][0]["image"]
+                sheet_filename  = dirname + "/../" + self.carte["tilesets"][0]["image"]
                 self.sheet      = SpriteSheet(sheet_filename,self.spritesize)
-            except pygame.error as e2:
-                print ("Error - impossible de trouver le fichier images des sprites -")
-                raise e2
+            except pygame.error:
+                try:
+                    sheet_filename  = dirname + "/../Cartes/" + self.carte["tilesets"][0]["image"]
+                    self.sheet      = SpriteSheet(sheet_filename,self.spritesize)
+                except pygame.error as e2:
+                    print ("Error - impossible de trouver le fichier images des sprites -")
+                    raise e2
 
     def prepareSprites(self):
         self.sheet.convert_sprites()

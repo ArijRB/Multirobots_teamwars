@@ -23,8 +23,9 @@ except:
     cython_compiled = False
 
 
+
 # bresenham algorithm cropped in the window (0,0,w,h)
-def rayon(m1,m2,x,y,angle,w,h):
+def rayon(m1,m2,x,y,angle_degree,w,h):
     """
         cette fonction lance un rayon, avec l'algo de bresenham
         le rayon part de (x,y) et suit un angle donne jusqu'au bord
@@ -36,8 +37,8 @@ def rayon(m1,m2,x,y,angle,w,h):
         bm1 = cyGetBitmask(m1)
         bm2 = cyGetBitmask(m2)
 
-    x2 = x + int( cos(angle)*(w+h) )
-    y2 = y + int( sin(angle)*(w+h) )
+    x2 = x + int( cos(angle_degree*3.14159/180.0)*(w+h) )
+    y2 = y + int( sin(angle_degree*3.14159/180.0)*(w+h) )
     x,y = int(x),int(y)
     w,h = int(w),int(h)
 
@@ -111,7 +112,7 @@ def test_rayon():
     print ("Unit test launched...")
 
     T = np.zeros((w,h))
-    for angle in np.linspace(0,2*pi-0.1,50):
+    for angle in np.linspace(0,360,50):
         T[ rayon(m,m,w/2,h/2,angle,w,h) ] = 1
 
     plt.imshow(T,cmap='gist_ncar')

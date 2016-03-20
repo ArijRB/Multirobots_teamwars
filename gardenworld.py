@@ -1,12 +1,12 @@
 from __future__ import absolute_import, print_function, unicode_literals
-from gameclass import Game,check_init_game_done
-from spritebuilder import SpriteBuilder
-from players import Player
-from sprite import MovingSprite
+from core.gameclass import Game,check_init_game_done
+from core.spritebuilder import SpriteBuilder
+from gardenworld_player import GardenPlayer
+from core.sprite import MovingSprite
 from ontology import Ontology
 from itertools import chain
 import pygame
-import glo
+from core import glo
 
 """
     Ce fichier est specifique au sprite dans le monde discret (e.g. tiles 32x32),
@@ -19,7 +19,7 @@ class GardenSpriteBuilder(SpriteBuilder):
     """
     def basicPlayerFactory(self,tileid,x=0.0,y=0.0):
         imglist = [self.sheet[i, j] for i, j in ((10, 0), (8, 0), (9, 0), (11, 0))]
-        p = Player("joueur", tileid, x, y, imglist)
+        p = GardenPlayer("joueur", tileid, x, y, imglist)
         if tileid is not None and tileid[0] in [10, 8, 9, 11]:
             p.translate_sprite(0, 0, 90 * [10, 8, 9, 11].index(tileid[0]))
         return p
@@ -63,6 +63,8 @@ def avance(p=None):
     game.mainiteration()
     return p.position_changed()
 
+
+
 @check_init_game_done
 def ramasse(p=None):
     p = player if p is None else p
@@ -76,7 +78,7 @@ def obstacle(p=None):
     p.forward(p.rect.width)
     hors = game.mask.out_of_screen(p)
     coll = game.mask.collision_blocking_player(p)
-    p.resume_to_backup()
+    p._resume_to_backup()
     return hors or coll != []
 
 @check_init_game_done

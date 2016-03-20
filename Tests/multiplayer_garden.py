@@ -3,8 +3,8 @@ from time import sleep
 
 init()
 p1 = game.player
-p2 = game.add_players( (2,3) , game.player )
-p3 = game.add_players( (3,4) , game.player )
+p2 = game.add_players( (2,3) , game.player ,tiled=True)
+p3 = game.add_players( (3,4) , game.player ,tiled=True)
 
 for i in range(3):
     av(p1)

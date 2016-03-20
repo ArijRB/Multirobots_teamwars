@@ -54,16 +54,19 @@ def aller(x,y):
 
     oriente(45)
     while (cx+1) < x and (cy+1) < y:
-        av()
+        if not av():
+            print('bloque en cx,cy = ',(cx,cy))
         cx,cy = position(entiers=True)
 
     oriente(0)
     while cx < x:
+        #print('...cas2 : ',cx,cy,x,y)
         av()
         cx,cy = position(entiers=True)
 
     oriente(90)
     while cy < y:
+        #print('...cas3 : ',cx,cy,x,y)
         av()
         cx,cy = position(entiers=True)
 
@@ -74,11 +77,12 @@ def suivre_chemin(traj,aller_=aller):
     il rejoint le premier noeud de traj auquel il peut acceder
     """
     for x,y in traj:
+        #print('aller(',x,',',y,')')
         aller_(x,y)
 
 
 def main():
-    init('robot_obstacles_invisibles')
+    init('robot_obstacles_visibles')
     #frameskip(5) # affiche une image sur n pour acceler la simulation
     g = init_graph(xstart,xstop,gap)
     time.sleep(0.3)

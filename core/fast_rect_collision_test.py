@@ -1,5 +1,5 @@
 
-from fast_rect_collision import *
+from core.fast_rect_collision import *
 import random
 
 class NaiveGroupCollide:

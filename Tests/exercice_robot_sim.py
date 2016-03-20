@@ -2,14 +2,14 @@
 
 from robosim import *
 import numpy as np
-
+import time
 
 
 def main():
     Turtle.set_turtle_size(18)
 
     init()
-    game.fps = 100
+    #game.frameskip = 5
 
     for i in range(20):
         angles = np.random.randint(360, size=1)
@@ -26,8 +26,10 @@ def main():
         best = np.argmax(distances)
         oriente(angles[best])
 
-        while not obstacle(4):
-            avance(4)
+        while not obstacle(2):
+            avance(2)
+            #time.sleep(0.1)
+    Turtle.set_turtle_size(22)
 
 if __name__ == '__main__':
     main()

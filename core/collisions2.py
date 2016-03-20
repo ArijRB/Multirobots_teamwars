@@ -2,8 +2,8 @@ import pygame
 import pygame.sprite
 import random
 from itertools import chain
-import fast_rect_collision
-from sprite import MovingSprite,PointSprite
+from core import fast_rect_collision
+from core.sprite import MovingSprite,PointSprite
 
 
 
@@ -81,17 +81,20 @@ class CollisionHandler2:
             self.add_or_update_sprite(s)
             return False
 
-    def collision_with_point(self,x,y,group_filter=None):
+    def who_is_at(self,x,y,group_filter=None):
+        '''
+        who_is_at(x,y) returns the list of all sprites colliding the point (x,y)
+        '''
         s = PointSprite(x=x,y=y)
         return self.collision_list(s,group_filter)
 
-    def test_collision_with_point():
+    def test_who_is_at():
         import gardenworld as gw
 
         gw.init()
         gw.game.mask.update_fastCollider(gw.game.layers)
         for i in range(25,40):
-            print( 'i=',i,'  and  collisions=',gw.game.mask.collision_with_point(i,i) )
+            print( 'i=',i,'  and  collisions=',gw.game.mask.who_is_at(i,i) )
 
     ###############  compute collision ###################
 
