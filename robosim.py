@@ -25,7 +25,9 @@ class TurtleSpriteBuilder(SpriteBuilder):
 
 ###########################################
 
-game = Game()
+game         = Game()
+auto_refresh = True
+
 
 def init(_boardname=None,_spriteBuilder=TurtleSpriteBuilder):
     """
@@ -55,6 +57,10 @@ def frameskip(n):
     """
     game.frameskip = n
 
+@check_init_game_done
+def switch_auto_refresh(on=False):
+    global auto_refresh
+    auto_refresh = on
 
 @check_init_game_done
 def avance(s=1.0,p=None,wait=False):
@@ -69,7 +75,7 @@ def avance(s=1.0,p=None,wait=False):
     p = player if p is None else p
     cx1,cy1 = p.get_centroid()
     r = p.forward(s,game.mask.check_collision_and_update)
-    if not wait: game.mainiteration()
+    if not wait and auto_refresh: game.mainiteration()
     return r
 
 @check_init_game_done
@@ -97,7 +103,7 @@ def oriente(a,p=None,wait=False):
     """
     p = player if p is None else p
     r = p.translate_sprite(p.x,p.y,a,relative=False,check_collision_and_update=game.mask.check_collision_and_update)
-    if not wait: game.mainiteration()
+    if not wait and auto_refresh: game.mainiteration()
     return r
 
 @check_init_game_done
@@ -107,7 +113,7 @@ def tournegauche(a,p=None,wait=False):
     """
     p = player if p is None else p
     r = p.translate_sprite(0,0,-a,relative=True,check_collision_and_update=game.mask.check_collision_and_update)
-    if not wait: game.mainiteration()
+    if not wait and auto_refresh: game.mainiteration()
     return r
 
 @check_init_game_done
@@ -193,7 +199,7 @@ def set_position(x,y,p=None):
     """
     p = player if p is None else p
     r = p.set_centroid(x,y,game.mask.check_collision_and_update)
-    game.mainiteration()
+    if auto_refresh: game.mainiteration()
     return r
 
 @check_init_game_done
@@ -233,7 +239,7 @@ def line(x1,y1,x2,y2,wait=False):
     """
     game.prepare_dessinable()
     pygame.draw.aaline(game.surfaceDessinable, game.pencolor, (int(x1),int(y1)), (int(x2),int(y2)))
-    if not wait:
+    if not wait or auto_refresh:
         game.mainiteration()
 
 @check_init_game_done
@@ -245,7 +251,7 @@ def circle(x1,y1,r=10,wait=False):
     """
     game.prepare_dessinable()
     pygame.draw.circle(game.surfaceDessinable, game.pencolor, (int(x1),int(y1)), r)
-    if not wait:
+    if not wait and auto_refresh:
         game.mainiteration()
 
 @check_init_game_done
@@ -258,7 +264,7 @@ def efface(force_efface_tout=False,wait=False):
         game.del_all_sprites('dessinable')
     game.prepare_dessinable()
     game.surfaceDessinable.fill( (0,0,0) )
-    if not wait: game.mainiteration()
+    if not wait and auto_refresh: game.mainiteration()
 
 
 @check_init_game_done
