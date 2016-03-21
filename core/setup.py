@@ -10,16 +10,15 @@ from distutils.core import setup
 from Cython.Distutils.extension import Extension
 from Cython.Distutils import build_ext
 import numpy
+import pygame
 
 ext  = [Extension( "rayon", ["rayon.py"] ,\
-        include_dirs=['.'],\
         extra_compile_args=["-Wno-unused-function"]),\
         Extension( "fast_rect_collision", ["fast_rect_collision.py"] ,\
-        include_dirs=['.'],\
         extra_compile_args=["-Wno-unused-function"])]
 
 setup(
    cmdclass={'build_ext' : build_ext},
-   include_dirs = [numpy.get_include()],
+   include_dirs = [numpy.get_include(),'.'],
    ext_modules=ext
    )
