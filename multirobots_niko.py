@@ -6,7 +6,6 @@ import time
 
 
 
-
 def addObstacle(row,col):
     # le sprite situe colone 13, ligne 0 sur le spritesheet
     game.add_new_sprite('obstacle',tileid=(0,13),xy=(col,row),tiled=True)
@@ -49,9 +48,10 @@ for i in range(10,14):
     addObstacle(row=2,col=i)
 
 print "Arene: " + str(taille_terrain()) # donne width height de l'arene
+screenw,screenh = taille_terrain()
 
 # Initialisation robots
-maxSensorDistance = 200              # utilisé localement.
+maxSensorDistance = 30              # utilisé localement.
 
 MyTurtle.MaxRotationSpeed = 10 # donc entre -10 et 10
 #game.setMaxTranslationSpeed(3) # donc entre -3 et 3
@@ -75,7 +75,7 @@ for i in range(1000):
 
     # c'est plus rapide d'appeler cette fonction une fois pour toute car elle doit recalculer le masque de collision,
     # ce qui est lourd....
-    sensors = throw_rays_for_many_players(game,game.layers['joueur'],SensorBelt,show_rays=True)
+    sensors = throw_rays_for_many_players(game,game.layers['joueur'],SensorBelt,max_radius = maxSensorDistance+game.player.diametre_robot() , show_rays=True)
 
     for p in game.layers['joueur']:
 
