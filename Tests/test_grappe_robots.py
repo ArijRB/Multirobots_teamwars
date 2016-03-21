@@ -3,7 +3,7 @@ from random import random,choice
 import time
 
 init('vide')
-switch_auto_refresh(False)
+game.auto_refresh = False
 
 # Make 30 agents
 def test():

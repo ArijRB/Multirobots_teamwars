@@ -30,10 +30,13 @@ def init_graph( xstart,xstop,gap ):
 
 def draw_graph(g):
     efface()
+    game.auto_refresh = False
     for (i1,j1),(i2,j2) in g.edges():
         # wait=True retarde l'affichage
-        line(i1,j1,i2,j2,wait=True)
-    line(0,0,0,0,wait=False) # juste pour lancer l'affichage de tout ce qui a ete differe
+        line(i1,j1,i2,j2)
+    line(0,0,0,0) # juste pour lancer l'affichage de tout ce qui a ete differe
+    game.auto_refresh = True
+    game.mainiteration()
 
 
 def prune_nodes(g):

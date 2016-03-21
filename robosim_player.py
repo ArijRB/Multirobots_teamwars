@@ -7,6 +7,7 @@ from core import rayon
 from core import polygons
 from core import glo
 from collections import namedtuple
+import core.gameclass
 
 
 try:
@@ -45,6 +46,8 @@ class Turtle(Player):
             #pygame.gfxdraw.aacircle(self.image, w/2,h/2, self.taille_geometrique/2 - self.penwidth,glo.WHITE)
         return Turtle.static_imglist
 
+    def diametre_robot(self):
+        return self.diametre
 
     def __init__(self,layername,x,y):
         if Turtle.static_imglist is None:
@@ -52,8 +55,42 @@ class Turtle(Player):
         Player.__init__(self,layername,tileid=None,x=x,y=y,imglist=Turtle.build_Turtle_list_images())
 
 
+    def telemetre(self,from_center=False,rel_angle=0):
+        """
+        telemetre(from_center=False,rel_angle=0)
 
-###### Functions outside the class #######
+        telemetre() tire un rayon laser dans la direction du robot
+        la fonction renvoie le nombre de pixels que le robot peut parcourir avant
+        de rencontrer un obstacle.
+        telemetre(from_center=True) compte le nombre de pixels depuis le centre du robot (et non pas le bord)
+        telemetre(rel_angle) tire le rayon avec l'angle rel_angle (relativement a l'orientation du robot)
+        """
+        game = core.gameclass.get_game()
+        game.mask.update_bitmasks(game.layers)
+        rayon_hit = unsafe_throw_rays(self,[rel_angle],game,coords=None,relative=True,show_rays=True)[0]
+
+        game.mainiteration(force=False)
+
+        d = self.dist(*rayon_hit)
+        return d if from_center else d-(self.diametre_robot()//2)
+
+
+    def pendown(self):
+        """
+        pendown() abaisse le stylo
+        """
+        self.usepen = True
+
+
+    def penup(self):
+        """
+        penup() releve le stylo
+        """
+        self.usepen = False
+
+
+
+###### Functions outside the Turtle class #######
 
 def unsafe_throw_rays(player,angle_degree_list,game,coords=None,relative=False,show_rays=False):
     """
@@ -84,6 +121,28 @@ def unsafe_throw_rays(player,angle_degree_list,game,coords=None,relative=False,s
         for h in r:
             game.layers["dessinable"].add( DrawOnceSprite( pygame.draw.line , [(255,0,0),(cx,cy),h,4] ) )
     return r
+
+
+def telemetre_coords_list(x,y,angle_degree_list,show_rays=True,p=None):
+    """
+    telemetre_coords_list(x,y,angle_degree_list,show_rays=True)
+    tire un rayon laser depuis x,y avec les angles angle_list
+    la fonction renvoie une liste contenant les nombres de pixels parcourus par le rayon avant
+    de rencontrer un obstacle
+    """
+    game = core.gameclass.get_game()
+    game.mask.update_bitmasks(game.layers)
+    p = game.player if p is None else p
+    x,y = int(x),int(y)
+
+    hitlist = unsafe_throw_rays(p,angle_degree_list , game,coords=(x,y),show_rays=show_rays)
+    game.mainiteration(force=False)
+    return [sqrt( (rx-x)**2 + (ry-y)**2 ) for rx,ry in hitlist]
+
+
+def telemetre_coords(x,y,a):
+    """ voir telemetre_coords_list """
+    return telemetre_coords_list(x,y,[a])[0]
 
 
 
@@ -122,7 +181,7 @@ def throw_rays_for_many_players(game,player_collection,angle_degree_list,show_ra
         d[p] = []
         hitlist = unsafe_throw_rays(p,angle_degree_list,game,relative=True,show_rays=show_rays)
 
-        for x,y in hitlist:
+        for i,(x,y) in enumerate(hitlist):
             dis = p.dist( x,y )
             try:    d_border = dis - p.diametre//2
             except: d_border = None
@@ -130,9 +189,11 @@ def throw_rays_for_many_players(game,player_collection,angle_degree_list,show_ra
             l = game.mask.who_is_at(x,y,{'obstacle','joueur'})
             s2,lay = (l[0],l[0].layername) if l else (None,None)
 
-            d[p].append( RayImpactTuple(sprite=s2,layer=lay,x=x,y=y,dist_from_border=d_border,dist_from_center=dis) )
+            d[p].append( RayImpactTuple(sprite=s2,layer=lay,x=x,y=y,dist_from_border=d_border,dist_from_center=dis,
+                                        rel_angle_degree=angle_degree_list[i],
+                                        abs_angle_degree=angle_degree_list[i]+p.orientation() ) )
 
     return d
 
 
-RayImpactTuple = namedtuple('RayImpactTuple', ['sprite','layer','x', 'y','dist_from_border','dist_from_center'])
+RayImpactTuple = namedtuple('RayImpactTuple', ['sprite','layer','x', 'y','dist_from_border','dist_from_center','rel_angle_degree','abs_angle_degree'])

@@ -18,16 +18,30 @@ except:
 from core.collisions2 import CollisionHandler2
 
 
+
 def check_init_game_done(fun):
     """ decorator checking if init() has correctly been called before anything """
     @wraps(fun)
     def fun_checked(*args,**kwargs):
-        try:
-            Game.single_instance.screen
-        except:
-            raise Exception('Vous devez appeler la fonction init() avant toute chose')
+        get_game()
         return fun(*args,**kwargs)
     return fun_checked
+
+
+def get_game():
+    '''
+    Safe way to get the instance of Game object.
+    If game object is not initialized, raises an error
+    '''
+    try:
+        Game.single_instance.screen
+    except:
+        raise Exception('Vous devez appeler la fonction init() avant toute chose')
+
+    return Game.single_instance
+
+
+
 
 
 class Game(object):
@@ -40,7 +54,7 @@ class Game(object):
         return cls.single_instance
 
 
-    def __init__(self, fichiercarte=None, _SpriteBuilder=None):
+    def __init__(self, fichiercarte=None, _SpriteBuilder=None,screen_width=None,screen_height=None):
         # if no parameter is given, then __init__ will just create an empty Game object
         if fichiercarte is None or _SpriteBuilder is None:
             return
@@ -54,9 +68,15 @@ class Game(object):
         # charge la carte et le spritesheet
         self.spriteBuilder = _SpriteBuilder(fichiercarte)
 
+
         # cree la fenetre pygame
-        self.screen = pygame.display.set_mode([self.spriteBuilder.spritesize * self.spriteBuilder.rowsize,
-                                               self.spriteBuilder.spritesize * self.spriteBuilder.colsize])
+        if screen_width is None or screen_height is None:
+            screen_width = self.spriteBuilder.spritesize * self.spriteBuilder.rowsize
+            screen_height = self.spriteBuilder.spritesize * self.spriteBuilder.colsize
+        else:
+            assert (screen_width % self.spriteBuilder.spritesize)== 0 and (screen_height % self.spriteBuilder.spritesize)== 0, 'Attention : La taille de la fenetre doit etre un multiple de la taille des sprites'
+
+        self.screen = pygame.display.set_mode([screen_width,screen_height])
 
 
         pygame.display.set_caption("pySpriteWorld Experiment")
@@ -64,6 +84,8 @@ class Game(object):
 
         #self.fps = 10
         self.frameskip = 0
+        self.auto_refresh = True
+
         # converti les sprites meme format que l'ecran
         self.spriteBuilder.prepareSprites()
 
@@ -88,8 +110,9 @@ class Game(object):
         # click clock
         self.clock = 0
         self.framecount = 0
+        self.auto_refresh = True
         self.surfaceDessinable = None
-
+        self.pen_color = (255,0,0)
 
     def update(self):
         for layer in glo.NON_BG_LAYERS:
@@ -110,42 +133,39 @@ class Game(object):
             self.layers['dessinable'].add( s )
             self.surfaceDessinable = s.image
 
-    def mainiteration(self):
-        if os.environ.get("SDL_VIDEODRIVER") != 'dummy': # if there is a real x-server
-            if pygame.event.peek():
-                for event in pygame.event.get():  # User did something
-                    if event.type == pygame.QUIT:  # If user clicked close
-                        pygame.quit()
-                        quit()
 
-                    #if event.type == pygame.KEYDOWN:
-                    #    if event.key in self.callbacks:
-                    #        self.callbacks[event.key]()
+    def mainiteration(self,force=True):
+        '''
+        calls self.update() and self.draw()
+            1/ once every game.frameskip iterations if game.auto_refresh is true,
+            2/ immediately if force is True
 
-        self.update()
-
-        # call self.draw() once every 'frameskip' iterations
+        :param force: force update and refresh
+        '''
         self.framecount += 1
-        if self.framecount > self.frameskip:
+
+        if force or (self.framecount > self.frameskip and self.auto_refresh):
+
             self.framecount = 0
+            self.update()
             self.draw()
 
-
-        #t = time.time()
-        #if t - self.clock > 1.0/self.fps:
-        #    self.clock = t
-        #    #self.clock.tick(_fps if _fps is not None else self.fps)
+            if os.environ.get("SDL_VIDEODRIVER") != 'dummy': # if there is a real x-server
+                if pygame.event.peek():
+                    for event in pygame.event.get():  # User did something
+                        if event.type == pygame.QUIT:  # If user clicked close
+                            pygame.quit()
+                            quit()
 
 
     def mainloop(self):
         while True:
             self.mainiteration()
 
-    ############## MANAGE SPRITES (RAYS) ################
 
+    #def throw_rays(self,sprite,radian_angle_list,coords=None,show_rays=False):
+    #    mask.update_bitmasks()
 
-    def throw_rays(self,sprite,radian_angle_list,coords=None,show_rays=False):
-        mask.update_bitmasks()
 
 
     ############## MANAGE SPRITES (ADDITION, DELETION) ################
@@ -171,6 +191,7 @@ class Game(object):
         else:
             self.layers[layername].add(s)
             self.mask.add_or_update_sprite(s)
+            self.mainiteration(force=False)
             return True
 
 

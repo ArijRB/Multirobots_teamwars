@@ -2,6 +2,7 @@ import pygame
 from math import pi,sqrt,cos,sin,floor
 from core import polygons
 import copy
+import core.gameclass
 
 class RecursiveDrawGroup(pygame.sprite.Group):
     """ Standard pygame.sprite.Group classes draw sprites by calling 'blit' on sprite images.
@@ -111,14 +112,13 @@ class MovingSprite(MySprite):
         self.backup_mask  = self.mask
         self.resumed = False
 
-    def _resume_to_backup(self,check_collision_and_update=None):
+    def _resume_to_backup(self):
         self.x , self.y = self.backup_x , self.backup_y
         self.rect.x , self.rect.y = int(self.x) , int(self.y)
         self.angle_degree = self.backup_angle_degree
         self.image = self.backup_image
         self.mask  = self.backup_mask
         self.resumed = True
-        assert check_collision_and_update is None or not check_collision_and_update(self),'resuming to backup provoques unexpected collision'
 
 
 
@@ -137,7 +137,7 @@ class MovingSprite(MySprite):
         self.mask =  self.masklist [ i ]
 
 
-    def translate_sprite(self,x,y,a,relative=True,check_collision_and_update=None):
+    def simple_translation(self,x,y,a,relative=True,check_collision_and_update=None):
         '''
         Attempts to translate and rotate a sprite.
         A collision test can be done with check_and_validate_collision.
@@ -168,47 +168,130 @@ class MovingSprite(MySprite):
         self.rect.x , self.rect.y = int(self.x) , int(self.y)
         #print('attempting to move sprite ',id(self),' to ',(self.rect.x , self.rect.y))
 
-        if check_collision_and_update is None:
-            MovingSprite.up_to_date = False     # this means collisions will be dealt with latter
-
-        elif check_collision_and_update(self):
-            self._resume_to_backup()
-            #print ('resuming to backup sprite ',id(self))
-            #check_collision_and_update(self)
-            return False
-
-        else:
-            #print('attempt succeeded')
-            return True
-
-
-
-    def set_centroid(self,x,y,check_collision_and_update=None):
-        self.translate_sprite(x-self.rect.w//2,y-self.rect.h//2,self.angle_degree,relative=False,check_collision_and_update=check_collision_and_update)
-
-    def get_centroid(self):
-        #print "x=",self.x," , w=",self.rect.w
-        return self.x+self.rect.w//2,self.y+self.rect.h//2
-
-    def rotate(self,deg,check_collision_and_update=None):
-        return self.translate_sprite(0,0, deg ,relative=True,check_collision_and_update=check_collision_and_update)
-
-    def forward(self,t,check_collision_and_update=None):
-        dx,dy = cos(self.angle_degree * pi/180), sin(self.angle_degree * pi/180)
-        if self.angle_degree % 90 == 0:
-            dx,dy = round(dx),round(dy)
-        return self.translate_sprite(t*dx,t*dy,0,check_collision_and_update=check_collision_and_update)
 
     def get_rowcol(self):
         assert int(self.x) % self.rect.w == 0 and int(self.y) % self.rect.h == 0, "sprite must not be accross tiles for this function"
         return int(self.y) // self.rect.h , int(self.x) // self.rect.w
 
-    def set_rowcol(self,row,col,check_collision_and_update=None):
-        self.translate_sprite(col*self.rect.w,row*self.rect.h,self.angle_degree,relative=False,check_collision_and_update=check_collision_and_update)
 
+    def get_centroid(self,entiers=False):   return self.position(entiers=False)
+    def position(self,entiers=False):
+        """
+        position() renvoie un couple (x,y) representant les coordonnees du robot
+                   ces coordonnees peuvent etre des flottants
+        position(entiers=True) renvoie un couple de coordonnees entieres
+        """
+        cx,cy = self.x+self.rect.w//2,self.y+self.rect.h//2
+        return (int(cx),int(cy)) if entiers else (cx,cy)
+
+    def orientation(self):
+        """
+        orientation() renvoie l'angle en degres
+        """
+        return self.angle_degree
 
 
 
 
 class Player(MovingSprite):
-    pass
+    '''
+    A Player is an autonomous moving sprite
+    It refreshed itself automatically,
+    computes collisions and backtracks if necessary,
+    displays itself automatically too
+    '''
+
+    def translate(self,x,y,a,relative=True):
+        game = core.gameclass.get_game()
+        MovingSprite.simple_translation(self,x,y,a,relative)
+
+        r = game.mask.check_collision_and_update(self)
+        if r:
+            self._resume_to_backup()
+            game.mask.check_collision_and_update(self)
+
+        game.mainiteration(force=False)
+        return not r
+
+
+    def set_position(self,x,y):     return self.set_centroid(x,y)
+    def set_centroid(self,x,y):
+        """
+        set_centroid(x,y) tente une teleportation du robot aux coordonnees x,y
+        Renvoie False si la teleportation a echouee, pour cause d'obstacle
+        """
+        self.translate(x-self.rect.w//2,y-self.rect.h//2,self.angle_degree,relative=False)
+
+
+    def rotate(self,deg):
+        return self.translate(0,0, deg ,relative=True)
+
+    def oriente(self,a):
+        """
+        oriente(a) fait pivoter le robot afin qu'il forme un angle de a degrees
+        par rapport a l'horizontal.
+        Donc oriente(0) le fait se tourner vers l'Est
+        Donc oriente(90) le fait se tourner vers le Sud
+        Donc oriente(-90) le fait se tourner vers le Nord
+        Donc oriente(180) le fait se tourner vers l'Ouest
+        """
+        return self.translate(self.x,self.y,a,relative=False)
+
+    def _forward_vector(self,t):
+        dx,dy = cos(self.angle_degree * pi/180), sin(self.angle_degree * pi/180)
+        if self.angle_degree % 90 == 0:
+            dx,dy = round(dx),round(dy)
+        return t*dx,t*dy
+
+
+    def avance(self,t):     return self.forward(t)
+    def forward(self,t):
+        """
+        p.forward()   deplace robot d'un pixel dans sa direction courante
+        p.forward(x) le deplace de x pixels
+
+        si dans x pixels il y a un obstacle, alors le deplacement echoue,
+        et le robot reste a sa position courante et la fonction renvoie False.
+        S'il n'y a pas d'obstacle la fonction renvoie True
+        """
+        vx,vy = self._forward_vector(t)
+        return self.translate(vx,vy,0)
+
+
+    def set_rowcol(self,row,col):
+        return self.translate(col*self.rect.w,row*self.rect.h,self.angle_degree,relative=False)
+
+
+    def tournegauche(self,a):
+        """ tournegauche(a) pivote d'un angle donne, en degrees """
+        return self.translate(0,0,-a,relative=True)
+
+
+    def tournedroite(self,a):
+        """ tournedroite(a) pivote d'un angle a donne, en degrees """
+        return self.tournegauche(-a)
+
+    def _obstacle_xy(self,x,y,relative):
+        game = core.gameclass.get_game()
+        MovingSprite.simple_translation(self,x,y,self.angle_degree,relative)
+        r = game.mask.check_collision_and_update(self)
+        self._resume_to_backup()
+        game.mask.check_collision_and_update(self)
+        return r
+
+    def obstacle(self,s=1.0):
+        """
+        obstacle(x) verifie si un obstacle empeche le deplacement du robot de x pixel dans sa direction courante
+        obstacle()  verifie la meme chose pour un deplacement de un pixel
+        """
+        x,y = self._forward_vector(s)
+        return self._obstacle_xy(x,y,relative=True)
+
+
+    def obstacle_coords(self,x,y):
+        """
+        obstacle_coords(x,y) verifie si aux coordonnees x,y il y a un
+        obstacle qui empecherait le robot d'y etre
+        renvoie True s'il y a un obstacle, False sinon
+        """
+        return self._obstacle_xy(x-self.rect.w//2,y-self.rect.h//2,relative=False)

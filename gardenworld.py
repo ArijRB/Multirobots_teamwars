@@ -34,7 +34,7 @@ def init(_boardname=None):
     game = Game('Cartes/' + name + '.json', GardenSpriteBuilder)
     game.O = Ontology(True, 'SpriteSheet-32x32/tiny_spritesheet_ontology.csv')
     populate_sprite_names(game.O)
-    game.fps = 60  # frames per second
+    #game.fps = 60  # frames per second
     game.mainiteration()
     player = game.player
 
