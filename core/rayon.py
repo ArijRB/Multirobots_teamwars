@@ -25,11 +25,11 @@ except:
 
 
 # bresenham algorithm cropped in the window (0,0,w,h)
-def rayon(m1,m2,x,y,angle_degree,w,h):
+def rayon(m1,m2,x,y,angle_degree,w,h,max_radius):
     """
         cette fonction lance un rayon, avec l'algo de bresenham
         le rayon part de (x,y) et suit un angle donne jusqu'au bord
-        du carre (0,0,w,h)
+        du carre (left,top,right,bottom)
         la fonction renvoie les coordonnees du premier point du masque qui soit a 1.
     """
     _cython_compiled = cython_compiled
@@ -37,10 +37,13 @@ def rayon(m1,m2,x,y,angle_degree,w,h):
         bm1 = cyGetBitmask(m1)
         bm2 = cyGetBitmask(m2)
 
-    x2 = x + int( cos(angle_degree*3.14159/180.0)*(w+h) )
-    y2 = y + int( sin(angle_degree*3.14159/180.0)*(w+h) )
+    if max_radius is None: max_radius = w+h
+
+    x2 = x + int( cos(angle_degree*3.14159/180.0)*max_radius )
+    y2 = y + int( sin(angle_degree*3.14159/180.0)*max_radius )
     x,y = int(x),int(y)
     w,h = int(w),int(h)
+
 
     steep = 0
     dx = abs(x2 - x)
@@ -56,7 +59,7 @@ def rayon(m1,m2,x,y,angle_degree,w,h):
         x,y = y,x
         dx,dy = dy,dx
         sx,sy = sy,sx
-        w,h   = h,w
+        w,h = h,w
 
     d = (2 * dy) - dx
 
@@ -113,7 +116,7 @@ def test_rayon():
 
     T = np.zeros((w,h))
     for angle in np.linspace(0,360,50):
-        T[ rayon(m,m,w/2,h/2,angle,w,h) ] = 1
+        T[ rayon(m,m,w/2,h/2,angle,w,h,max_radius=None) ] = 1
 
     plt.imshow(T,cmap='gist_ncar')
     plt.savefig('carre.png')

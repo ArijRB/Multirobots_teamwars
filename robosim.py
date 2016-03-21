@@ -34,6 +34,7 @@ def init(_boardname=None,MyTurtleClass=Turtle,screen_width=None,screen_height=No
     global player,game
     pygame.quit()
 
+    # Let's define a builder class, using on the MyTurtleClass parameter
     class MySpriteBuilder(SpriteBuilder):
         def basicPlayerFactory(self,tileid=None,x=0.0,y=0.0):
             return MyTurtleClass("joueur",x,y)
@@ -51,6 +52,7 @@ def init(_boardname=None,MyTurtleClass=Turtle,screen_width=None,screen_height=No
     game.frameskip = 0
 
 
+# Fonctions dans le style non-objet
 def position(entiers=False,p=None):                  return (p or player).position(entiers)
 def avance(t=1.0,p=None):                            return (p or player).avance(t)
 def tournegauche(a,p=None):                          return (p or player).tournegauche(a)

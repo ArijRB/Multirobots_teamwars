@@ -28,7 +28,7 @@ class MyTurtle(Turtle):
 
 '''
 Note que ci-dessous, je redimensionne la fenetre comme je le souhaite
-et je donne la nouvelle classe MyTurtle a init pour qu'il sache comme creer des
+et je donne la nouvelle classe MyTurtle a init pour qu'il sache comment creer des
 nouveaux players
 '''
 
@@ -63,7 +63,7 @@ for i in range(50):
     while True:
         p = -1
         while p == -1: # p renvoi -1 s'il n'est pas possible de placer le robot ici (obstacle)
-	        p = game.add_players( (random()*500 , random()*500) , game.player , tiled=False)
+            p = game.add_players( (random()*500 , random()*500) , game.player , tiled=False)
         if p:
             p.rotate( random()*360 )
             break
@@ -106,4 +106,5 @@ for i in range(1000):
                         print "  - type obstacle"
                     else:
                         print "  - type boundary of window"
+
     game.mainiteration()

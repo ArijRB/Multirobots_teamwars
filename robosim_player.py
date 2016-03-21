@@ -92,7 +92,7 @@ class Turtle(Player):
 
 ###### Functions outside the Turtle class #######
 
-def unsafe_throw_rays(player,angle_degree_list,game,coords=None,relative=False,show_rays=False):
+def unsafe_throw_rays(player,angle_degree_list,game,coords=None,relative=False,max_radius=None,show_rays=False):
     """
     This function is 'unsafe' because before calling it, the mask MUST be up-to-date
     To update it, call game.mask.update_bitmasks(game.layers)
@@ -108,13 +108,13 @@ def unsafe_throw_rays(player,angle_degree_list,game,coords=None,relative=False,s
     assert not (relative and player is None) and not (player is None and coords is None)
     m   = game.mask
 
+    w,h = m.mask_players.get_size()
     cx,cy = coords if coords else player.get_centroid()
     if player is not None: m._erase_player_mask( player )
 
-    w,h = m.mask_players.get_size()
     rel = player.angle_degree if relative else 0.0
 
-    r = [rayon.rayon(m.mask_players,m.mask_obstacles,cx,cy,rel+a,w,h) for a in angle_degree_list]
+    r = [rayon.rayon(m.mask_players,m.mask_obstacles,cx,cy,rel+a,w,h,max_radius) for a in angle_degree_list]
 
     if player is not None: m._draw_player_mask( player )
     if show_rays:
@@ -147,7 +147,7 @@ def telemetre_coords(x,y,a):
 
 
 
-def throw_rays_for_many_players(game,player_collection,angle_degree_list,show_rays=False):
+def throw_rays_for_many_players(game,player_collection,angle_degree_list,max_radius=None,show_rays=False):
     '''
     For each player, throws rays along specified angles,
     and returns collisions as a dictionary
@@ -179,7 +179,7 @@ def throw_rays_for_many_players(game,player_collection,angle_degree_list,show_ra
 
     for p in player_collection:
         d[p] = []
-        hitlist = unsafe_throw_rays(p,angle_degree_list,game,relative=True,show_rays=show_rays)
+        hitlist = unsafe_throw_rays(p,angle_degree_list,game,relative=True,max_radius=max_radius,show_rays=show_rays)
 
         for i,(x,y) in enumerate(hitlist):
             dis = p.dist( x,y )

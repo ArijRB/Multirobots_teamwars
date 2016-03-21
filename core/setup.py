@@ -13,6 +13,7 @@ import numpy
 import pygame
 
 ext  = [Extension( "rayon", ["rayon.py"] ,\
+        cython_include_dirs = ['.'],\
         extra_compile_args=["-Wno-unused-function"]),\
         Extension( "fast_rect_collision", ["fast_rect_collision.py"] ,\
         extra_compile_args=["-Wno-unused-function"])]
