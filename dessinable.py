@@ -27,7 +27,7 @@ def efface(force_efface_tout=False):
         game.del_all_sprites('dessinable')
     game.prepare_dessinable()
     game.surfaceDessinable.fill( (0,0,0) )
-    game.mainiteration(force=False)
+    game.mainiteration(check_auto_refresh_flag=True)
 
 def line(x1,y1,x2,y2):
     """
@@ -38,7 +38,7 @@ def line(x1,y1,x2,y2):
     game = core.gameclass.get_game()
     game.prepare_dessinable()
     pygame.draw.aaline(game.surfaceDessinable, game.pencolor, (int(x1),int(y1)), (int(x2),int(y2)))
-    game.mainiteration(force=False)
+    game.mainiteration(check_auto_refresh_flag=True)
 
 def circle(x1,y1,r=10):
     """
@@ -50,7 +50,7 @@ def circle(x1,y1,r=10):
     game.prepare_dessinable()
     pygame.draw.circle(game.surfaceDessinable, game.pencolor, (int(x1),int(y1)), r)
 
-    game.mainiteration(force=False)
+    game.mainiteration(check_auto_refresh_flag=True)
 
 
 def taille_terrain():

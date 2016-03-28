@@ -12,6 +12,7 @@ def addObstacle(row,col):
 
 
 
+
 """
     Si tu veux limiter la vitesse des robots, alors le plus simple est de deriver la classe Turtle
 """
@@ -32,8 +33,8 @@ nouveaux players
 '''
 
 game = Game()
-init('vide2',MyTurtle,screen_width=768,screen_height=768)
-
+init('vide3',MyTurtle,screen_width=768,screen_height=768)
+game.frameskip = 2
 '''
 le auto_refresh=False signifie que l'ecran ne sera remis a jour
 que lors des appels explicites a game.mainiteration()
@@ -58,12 +59,14 @@ MyTurtle.MaxRotationSpeed = 10 # donc entre -10 et 10
 
 SensorBelt = [-80,-40,0,40,80]  # angles en degres
 
+
 # Make 30 agents
+
 for i in range(50):
     while True:
         p = -1
         while p == -1: # p renvoi -1 s'il n'est pas possible de placer le robot ici (obstacle)
-            p = game.add_players( (random()*500 , random()*500) , game.player , tiled=False)
+            p = game.add_players( (random()*500 , random()*500) , None , tiled=False)
         if p:
             p.rotate( random()*360 )
             break

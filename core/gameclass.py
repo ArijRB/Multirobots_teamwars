@@ -93,10 +93,8 @@ class Game(object):
         self.layers = self.spriteBuilder.buildGroups()
         pass
         # cherche le premier sprite joueur
-        try:
+        if (len(self.layers["joueur"]) > 0):
             self.player = first(self.layers["joueur"])
-        except Exception:
-            raise IndexError("Je ne trouve aucun joueur dans le fichier TMX")
 
         # prepare le bitmap 'background'
         self.background = pygame.Surface([self.screen.get_width(), self.screen.get_height()]).convert()
@@ -134,17 +132,25 @@ class Game(object):
             self.surfaceDessinable = s.image
 
 
-    def mainiteration(self,force=True):
-        '''
-        calls self.update() and self.draw()
-            1/ once every game.frameskip iterations if game.auto_refresh is true,
-            2/ immediately if force is True
 
-        :param force: force update and refresh
+
+    def mainiteration(self,allow_frameskip=True,check_auto_refresh_flag=False):
         '''
+        If check_auto_refresh_flag is True then it will first check that self.auto_refresh is True (otherwise quit)
+
+        Calls self.update() and self.draw()
+            => immediately if
+                - allow_frameskip==False
+
+            => Once every game.frameskip iterations otherwise
+                - mode is 'allow_skip_frames'
+        '''
+
+        if check_auto_refresh_flag and not self.auto_refresh:
+            return
+
         self.framecount += 1
-
-        if force or (self.framecount > self.frameskip and self.auto_refresh):
+        if not allow_frameskip or (self.framecount > self.frameskip):
 
             self.framecount = 0
             self.update()
@@ -191,7 +197,7 @@ class Game(object):
         else:
             self.layers[layername].add(s)
             self.mask.add_or_update_sprite(s)
-            self.mainiteration(force=False)
+            self.mainiteration(check_auto_refresh_flag=True)
             return True
 
 
@@ -204,6 +210,8 @@ class Game(object):
 
         s = self.spriteBuilder.basicSpriteFactory(layername,tileid,x,y)
         if self.add_sprite_to_layer(s,layername):
+            if layername == 'joueur' and len(self.layers['joueur'])==1:
+                self.player = s
             return s
         else:
             return False
@@ -230,5 +238,3 @@ class Game(object):
             tileid = None
 
         return self.add_new_sprite('joueur',tileid,xy,tiled)
-
-

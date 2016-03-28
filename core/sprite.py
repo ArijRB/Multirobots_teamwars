@@ -210,7 +210,7 @@ class Player(MovingSprite):
             self._resume_to_backup()
             game.mask.check_collision_and_update(self)
 
-        game.mainiteration(force=False)
+        game.mainiteration(check_auto_refresh_flag=True)
         return not r
 
 

@@ -69,7 +69,7 @@ class Turtle(Player):
         game.mask.update_bitmasks(game.layers)
         rayon_hit = unsafe_throw_rays(self,[rel_angle],game,coords=None,relative=True,show_rays=True)[0]
 
-        game.mainiteration(force=False)
+        game.mainiteration(check_auto_refresh_flag=True)
 
         d = self.dist(*rayon_hit)
         return d if from_center else d-(self.diametre_robot()//2)
@@ -136,7 +136,7 @@ def telemetre_coords_list(x,y,angle_degree_list,show_rays=True,p=None):
     x,y = int(x),int(y)
 
     hitlist = unsafe_throw_rays(p,angle_degree_list , game,coords=(x,y),show_rays=show_rays)
-    game.mainiteration(force=False)
+    game.mainiteration(check_auto_refresh_flag=True)
     return [sqrt( (rx-x)**2 + (ry-y)**2 ) for rx,ry in hitlist]
 
 

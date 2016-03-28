@@ -21,7 +21,6 @@ print("""=[ Pour l'aide, tapez help(fonction) ]=\n""")
 
 
 
-
 ###########################################
 
 game = Game()
@@ -44,7 +43,7 @@ def init(_boardname=None,MyTurtleClass=Turtle,screen_width=None,screen_height=No
 
     #game.fps = 20  # frames per second
     game.mainiteration()
-    player = game.player
+    #player = game.player
 
     # new attributes
     game.pencolor = glo.RED
@@ -53,15 +52,15 @@ def init(_boardname=None,MyTurtleClass=Turtle,screen_width=None,screen_height=No
 
 
 # Fonctions dans le style non-objet
-def position(entiers=False,p=None):                  return (p or player).position(entiers)
-def avance(t=1.0,p=None):                            return (p or player).avance(t)
-def tournegauche(a,p=None):                          return (p or player).tournegauche(a)
-def tournedroite(a,p=None):                          return (p or player).tournedroite(a)
-def set_position(x,y,p=None):                        return (p or player).set_position(x,y)
-def oriente(a,p=None):                               return (p or player).oriente(a)
-def obstacle(s=1.0,p=None):                          return (p or player).obstacle(s)
-def obstacle_coords(x,y,p=None):                     return (p or player).obstacle_coords(x,y)
-def telemetre(from_center=False,rel_angle=0,p=None): return (p or player).telemetre(from_center,rel_angle)
-def orientation(p=None):                             return (p or player).orientation()
+def position(entiers=False,p=None):                  return (p or game.player).position(entiers)
+def avance(t=1.0,p=None):                            return (p or game.player).avance(t)
+def tournegauche(a,p=None):                          return (p or game.player).tournegauche(a)
+def tournedroite(a,p=None):                          return (p or game.player).tournedroite(a)
+def set_position(x,y,p=None):                        return (p or game.player).set_position(x,y)
+def oriente(a,p=None):                               return (p or game.player).oriente(a)
+def obstacle(s=1.0,p=None):                          return (p or game.player).obstacle(s)
+def obstacle_coords(x,y,p=None):                     return (p or game.player).obstacle_coords(x,y)
+def telemetre(from_center=False,rel_angle=0,p=None): return (p or game.player).telemetre(from_center,rel_angle)
+def orientation(p=None):                             return (p or game.player).orientation()
 
 av, tele, setheading, tg, td, pos, teleporte  = avance, telemetre, oriente, tournegauche, tournedroite, position, set_position
