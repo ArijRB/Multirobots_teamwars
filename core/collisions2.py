@@ -19,13 +19,19 @@ class CollisionHandler2:
         wh = max( screen.get_width() , screen.get_height() )
         self.fastGroupCollide = fast_rect_collision.FastGroupCollide(group={},display_size=wh,max_interv=spritesize)
 
-
     def _erase_player_mask(self, spr, backup=False):
         self.mask_players.erase(spr.mask, spr.get_pos(backup))
 
-
     def _draw_player_mask(self, spr, backup=False):
         self.mask_players.draw(spr.mask, spr.get_pos(backup))
+
+    #def _erase_sprite_mask(self, spr, backup=False):
+    #    if spr.layername == 'joueur':
+    #    else:
+    #        self.mask_obstacles.erase(spr.mask, spr.get_pos(backup))
+    #
+    #def _draw_sprite_mask(self, spr, backup=False):
+    #    self.mask_obstacles.draw(spr.mask, spr.get_pos(backup))
 
 
     def _fill_with_sprites(self, bitmask , group, backup=False):
@@ -110,4 +116,3 @@ class CollisionHandler2:
         w -= player.rect.w
         h -= player.rect.h
         return player.rect.x > w or player.rect.x < 0 or player.rect.y > h or player.rect.y < 0
-

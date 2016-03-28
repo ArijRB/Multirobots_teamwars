@@ -123,6 +123,31 @@ def unsafe_throw_rays(player,angle_degree_list,game,coords=None,relative=False,m
     return r
 
 
+RayImpactTuple = namedtuple('RayImpactTuple', ['sprite','layer','x', 'y','dist_from_border','dist_from_center','rel_angle_degree','abs_angle_degree'])
+
+def build_RayImpact_info(player,game,hitlist,angle_degree_list=None):
+    '''
+    build_RayImpact_info takes a hitlist (output of unsafe_throw_rays for example)
+    and outputs a list of RayImpactTuple, giving collision information.
+    '''
+    ray_info = []
+    for i,(x,y) in enumerate(hitlist):
+        dis = player.dist( x,y )
+        try:    d_border = dis - player.diametre//2
+        except: d_border = None
+
+        l = game.mask.who_is_at(x,y,{'obstacle','joueur'})
+        s2,lay = (l[0],l[0].layername) if l else (None,None)
+
+        angle = None if angle_degree_list is None else angle_degree_list[i]
+
+        ray_info.append( RayImpactTuple(sprite=s2,layer=lay,x=x,y=y,dist_from_border=d_border,dist_from_center=dis,
+                                        rel_angle_degree=angle,
+                                        abs_angle_degree=angle+player.orientation() ) )
+
+    return ray_info
+
+
 def telemetre_coords_list(x,y,angle_degree_list,show_rays=True,p=None):
     """
     telemetre_coords_list(x,y,angle_degree_list,show_rays=True)
@@ -178,22 +203,7 @@ def throw_rays_for_many_players(game,player_collection,angle_degree_list,max_rad
     d = {}
 
     for p in player_collection:
-        d[p] = []
         hitlist = unsafe_throw_rays(p,angle_degree_list,game,relative=True,max_radius=max_radius,show_rays=show_rays)
-
-        for i,(x,y) in enumerate(hitlist):
-            dis = p.dist( x,y )
-            try:    d_border = dis - p.diametre//2
-            except: d_border = None
-
-            l = game.mask.who_is_at(x,y,{'obstacle','joueur'})
-            s2,lay = (l[0],l[0].layername) if l else (None,None)
-
-            d[p].append( RayImpactTuple(sprite=s2,layer=lay,x=x,y=y,dist_from_border=d_border,dist_from_center=dis,
-                                        rel_angle_degree=angle_degree_list[i],
-                                        abs_angle_degree=angle_degree_list[i]+p.orientation() ) )
+        d[p] = build_RayImpact_info(p,game,hitlist,angle_degree_list)
 
     return d
-
-
-RayImpactTuple = namedtuple('RayImpactTuple', ['sprite','layer','x', 'y','dist_from_border','dist_from_center','rel_angle_degree','abs_angle_degree'])
