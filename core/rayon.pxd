@@ -8,18 +8,38 @@ from libc.stdlib cimport abs
 
 ### Includes from pygame internals ###
 
-cdef extern from "pygame/bitmask.h":
+# Instead of writing
+#  cdef extern from "pygame/bitmask.h":
+#  cdef extern from "pygame/mask.h":
+# I put all important stuff in a single include file,
+# Thus if pygame includes are not installed, it does not yield a bug
+
+cdef extern from "pygame_mask_api.h":
+
     ctypedef struct bitmask_t:
         int w,h
         unsigned long int bits[1]
+
+    ctypedef struct PyMaskObject:
+            bitmask_t *mask
 
     int bitmask_getbit(const bitmask_t *m, int x, int y) nogil;
 
 ctypedef bitmask_t* bitmaskptr_t
 
-cdef extern from "pygame/mask.h":
-    ctypedef struct PyMaskObject:
-        bitmask_t *mask
+
+#cdef extern from "pygame/bitmask.h":
+#    ctypedef struct bitmask_t:
+#        int w,h
+#        unsigned long int bits[1]
+#
+#    int bitmask_getbit(const bitmask_t *m, int x, int y) nogil;
+#
+#ctypedef bitmask_t* bitmaskptr_t
+#
+#cdef extern from "pygame/mask.h":
+#    ctypedef struct PyMaskObject:
+#        bitmask_t *mask
 
 ### Fast Inline Functions ###
 
