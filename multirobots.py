@@ -91,7 +91,7 @@ class Agent(object):
         p.rotate( random()*maxRotationSpeed )   # normalisé -1,+1 -- valeur effective calculé avec maxRotationSpeed et maxTranslationSpeed
         p.forward(1) # normalisé -1,+1
 
-        #Pour info:
+        #Exemple: comment récuperer le senseur #2
         #dist = sensor_infos[2].dist_from_border
         #if dist > maxSensorDistance:
         #    dist = maxSensorDistance # borne
