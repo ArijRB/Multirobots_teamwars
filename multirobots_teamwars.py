@@ -245,15 +245,20 @@ def setupAgents():
     # Make agents
 
     nbAgentsTypeA = nbAgentsTypeB = nbAgents / 2
+    nbAgentsCreated = 0
 
     for i in range(nbAgentsTypeA):
         p = game.add_players( (16 , 200+32*i) , None , tiled=False)
         p.oriente( 0 )
+        p.numero = nbAgentsCreated
+        nbAgentsCreated = nbAgentsCreated + 1
         agents.append(AgentTypeA(p))
 
     for i in range(nbAgentsTypeB):
         p = game.add_players( (486 , 200+32*i) , None , tiled=False)
         p.oriente( 180 )
+        p.numero = nbAgentsCreated
+        nbAgentsCreated = nbAgentsCreated + 1
         agents.append(AgentTypeB(p))
 
     game.mainiteration()
