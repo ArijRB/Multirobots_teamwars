@@ -13,7 +13,7 @@
 #           Le jeu tourne pendant 4000 itérations
 #           Une case "appartient" à la dernière équipe qui l'a visitée
 #       Ce que vous avez le droit de faire:
-#           Vous ne pouvez modifier que les méthodes step(.) et getTeamName(.) de la classe AgentTypeA
+#           Vous ne pouvez modifier que la méthode step(.) de la classe AgentTypeA
 #       Recommandations:
 #           Conservez intact multirobot_teamwars.py (travaillez sur une copie!)
 #           Pour faire vos tests, vous pouvez aussi modifier (si vous le souhaitez) la méthode step() pour la classe AgentTypeB. Il ne sera pas possible de transmettre cette partie là lors de l'évaluation par contre.
@@ -25,7 +25,7 @@
 #               Vous devrez montrer votre résultat sur trois arènes inédites
 #               Vous devrez mettre en évidence la réutilisation des concepts vus en cours
 #               Vous devrez mettre en évidence les choix pragmatiques que vous avez du faire
-#               Assurez vous que la simple copie de vos fonctions step(.) et getTeamName(.) dans le fichier multirobots_teamwars.py suffit pour pouvoir le tester
+#               Assurez vous que la simple copie de votre fonctions step(.) dans le fichier multirobots_teamwars.py suffit pour pouvoir le tester
 #           Vous affronterez vos camarades
 #               Au tableau: une matrice des combats a mettre a jour en fonction des victoires et défaites
 #               Affrontement sur les trois arènes inédites
@@ -64,7 +64,7 @@ import atexit
 game = Game()
 agents = []
 
-arena = 0
+arena = 2
 
 nbAgents = 8 # doit être pair et inférieur a 32
 maxSensorDistance = 30              # utilisé localement.
@@ -113,7 +113,6 @@ class AgentTypeA(object):
     def getRobot(self):
         return self.robot
 
-
     # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     # =-= JOUEUR A -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -121,8 +120,7 @@ class AgentTypeA(object):
     # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
-    def getTeamName(self):
-        return "Equipe Alpha" # A modifier avec le nom de votre équipe
+    teamname = "Equipe Alpha" # A modifier avec le nom de votre équipe
 
     def step(self):
 
@@ -185,8 +183,15 @@ class AgentTypeB(object):
     def getRobot(self):
         return self.robot
 
-    def getTeamName(self):
-        return "Equipe Test"
+
+    # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    # =-= JOUEUR B -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+    teamname = "Equipe Test" # A modifier avec le nom de votre équipe
 
     def step(self):
 
@@ -216,6 +221,10 @@ class AgentTypeB(object):
         p.forward(1) # normalisé -1,+1
 
         return
+
+    # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 
 
@@ -333,9 +342,9 @@ def onExit():
     ret = displayOccupancyGrid()
     print "\n\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="
     if ret[0] > ret[1]:
-        print "Robots type A (\"" + str(AgentTypeA.getTeamName()) + "\") wins!"
+        print "Robots type A (\"" + str(AgentTypeA.teamname) + "\") wins!"
     elif ret[0] < ret[1]:
-        print "Robots type B (\"" + str(AgentTypeB.getTeamName()) + "\") wins!"
+        print "Robots type B (\"" + str(AgentTypeB.teamname) + "\") wins!"
     else: 
         print "Nobody wins!"
     print "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n"
