@@ -1,26 +1,34 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# multirobot.py
+# multirobot_teamwars.py
 # Contact (ce fichier uniquement): nicolas.bredeche(at)upmc.fr
+# Ce code utilise pySpriteWorld, développé par Yann Chevaleyre (U. Paris 13)
 # 
 # Description:
-#   Template pour projet multi-robots
-#   Ce code utilise pySpriteWorld, développé par Yann Chevaleyre (U. Paris 13)
-#   MULTIROBOT WARS: 
-#       but du jeu: posséder le maximum de cases!
-#           Chaque joueur dispose de quatre robots.
-#           Le monde est divisé en cases de 16x16.
-#           Le jeu tourne pendant 4000 itérations.
-#           Une case "appartient" à la dernière équipe qui l'a visitée.
+#   Template pour projet multi-robots "MULTIROBOT WARS"
+#       But du jeu: posséder le maximum de cases!
+#           Chaque joueur dispose de quatre robots
+#           Le monde est divisé en 1024 cases (ie. 32x32 cases de 16x16 pixels)
+#           Le jeu tourne pendant 4000 itérations
+#           Une case "appartient" à la dernière équipe qui l'a visitée
 #       Ce que vous avez le droit de faire:
-#           Vous transmettrez *uniquement* les fonctions step et getTeamName de la classe AgentTypeA.
-#               Vous ne devez donc modifier que ces deux fonctions. 
-#               Toutefois: pour faire vos tests, vous pouvez aussi modifier (si vous le souhaitez) les méthodes équivalentes pour la classe AgentTypeB
-#           La manière dont vous avez contruit votre fonction step est libre: 
-#               - code écrit à la main, code obtenu par un processus d'apprentissage ou d'optimisation préalable, etc.
-#               - comportements individuels, collectifs, parasites (p.ex: bloquer l'adversaire), etc.
-#           Vous pouvez aussi modifier le nom de votre équipe (variable "name" de l'objet)
+#           Vous ne pouvez modifier que les méthodes step(.) et getTeamName(.) de la classe AgentTypeA
+#       Recommandations:
+#           Pour faire vos tests, vous pouvez aussi modifier (si vous le souhaitez) la méthode step() pour la classe AgentTypeB. Il ne sera pas possible de transmettre cette partie là lors de l'évaluation par contre.
+#           La manière dont vous construirez votre fonction step(.) est libre. Par exemple:
+#               code écrit à la main, code obtenu par un processus d'apprentissage ou d'optimisation préalable, etc.
+#               comportements individuels, collectifs, parasites (p.ex: bloquer l'adversaire), etc.
+#       Evaluation:
+#           Soutenance devant machine (par binome, 15 min.) lors de la dernière séance de TP (matin et après-midi)
+#               Vous devrez montrer votre résultat sur trois arènes inédites
+#               Vous devrez mettre en évidence la réutilisation des concepts vus en cours
+#               Vous devrez mettre en évidence les choix pragmatiques que vous avez du faire
+#               Assurez vous que la simple copie de vos fonctions step(.) et getTeamName(.) dans le fichier multirobots_teamwars.py suffit pour pouvoir le tester
+#           Vous affronterez vos camarades
+#               Au tableau: une matrice des combats a mettre a jour en fonction des victoires et défaites
+#               Affrontement sur les trois arènes inédites
+#               vous pouvez utiliser http://piratepad.net pour échanger votre fonction step(.))
 #       Bon courage!
 # 
 # Dépendances:
