@@ -91,6 +91,11 @@ class Agent(object):
         p.rotate( random()*maxRotationSpeed )   # normalisé -1,+1 -- valeur effective calculé avec maxRotationSpeed et maxTranslationSpeed
         p.forward(1) # normalisé -1,+1
 
+        #Pour info:
+        #dist = sensor_infos[2].dist_from_border
+        #if dist > maxSensorDistance:
+        #    dist = maxSensorDistance # borne
+
         # monitoring - affiche diverses informations sur l'agent et ce qu'il voit.
         # pour ne pas surcharger l'affichage, je ne fais ca que pour le player 1
         if verbose == True and self.id == 0:
