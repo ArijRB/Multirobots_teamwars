@@ -5,8 +5,21 @@
 # Contact (ce fichier uniquement): nicolas.bredeche(at)upmc.fr
 # 
 # Description:
-#   Template pour simulation mono- et multi-robots type khepera/e-puck/thymio
+#   Template pour projet multi-robots
 #   Ce code utilise pySpriteWorld, développé par Yann Chevaleyre (U. Paris 13)
+#   MULTIROBOT WARS: 
+#       but du jeu: posséder le maximum de cases!
+#           Chaque joueur dispose de quatre robots.
+#           Le monde est divisé en cases de 16x16.
+#           Le jeu tourne pendant 4000 itérations.
+#           Une case "appartient" à la dernière équipe qui l'a visitée.
+#       Ce que vous avez le droit de faire:
+#           Le joueur A (resp. B) modifie *uniquement* la fonction step de la classe AgentTypeA (resp. AgentTypeB)
+#           La manière dont vous avez contruit votre fonction step est libre: 
+#               - code écrit à la main, code obtenu par un processus d'apprentissage ou d'optimisation préalable, etc.
+#               - comportements individuels, collectifs, parasites (p.ex: bloquer l'adversaire), etc.
+#           Vous pouvez aussi modifier le nom de votre équipe (variable "name" de l'objet)
+#       Bon courage!
 # 
 # Dépendances:
 #   Python 2.x
@@ -30,16 +43,6 @@ import time
 import sys
 import atexit
 
-'''''''''''''''''''''''''''''
-'''''''''''''''''''''''''''''
-'''  Aide                 '''
-'''''''''''''''''''''''''''''
-'''''''''''''''''''''''''''''
-
-#game.setMaxTranslationSpeed(3) # entre -3 et 3
-# size of arena: 
-#   screenw,screenh = taille_terrain()
-#   OU: screen_width,screen_height
 
 '''''''''''''''''''''''''''''
 '''''''''''''''''''''''''''''
@@ -59,7 +62,7 @@ screen_width=512 #512,768,... -- multiples de 32
 screen_height=512 #512,768,... -- multiples de 32
 
 maxIterations = 4000 # infinite: -1
-showSensors = True
+showSensors = False
 frameskip = 4   # 0: no-skip. >1: skip n-1 frames
 verbose = True
 
@@ -69,35 +72,6 @@ for y in range(screen_height/16):
     for x in range(screen_width/16):
         l.append("_")
     occupancyGrid.append(l)
-
-def displayOccupancyGrid():
-    nbA = nbB = nothing = 0
-
-    for y in range(screen_height/16):
-        for x in range(screen_width/16):
-            sys.stdout.write(occupancyGrid[x][y])
-            if occupancyGrid[x][y] == "A":
-                nbA = nbA+1
-            elif occupancyGrid[x][y] == "B":
-                nbB = nbB+1
-            else:
-                nothing = nothing + 1
-        sys.stdout.write('\n')
-
-    sys.stdout.write('Summary: \n')
-    sys.stdout.write('\tType A:')
-    sys.stdout.write(str(nbA))
-    sys.stdout.write('\n')
-    sys.stdout.write('\tType B:')
-    sys.stdout.write(str(nbB))
-    sys.stdout.write('\n')
-    sys.stdout.write('\tFree:')
-    sys.stdout.write(str(nothing))
-    sys.stdout.write('\n')
-    sys.stdout.flush() 
-
-    return nbA,nbB,nothing
-
 
 
 
@@ -128,6 +102,9 @@ class AgentTypeA(object):
         return self.robot
 
     def step(self):
+
+        color( (0,255,0) )
+        circle( *self.getRobot().get_centroid() , r = 22) # je dessine un rond bleu autour de ce robot
 
         #print "robot #", self.id, " -- step"
 
@@ -168,7 +145,7 @@ class AgentTypeB(object):
 
     agentType = "B"
 
-    name = "Equipe Test"
+    name = "Equipe Beta"
 
     def __init__(self,robot):
         self.id = AgentTypeB.agentIdCounter
@@ -183,6 +160,9 @@ class AgentTypeB(object):
         return self.robot
 
     def step(self):
+
+        color( (0,0,255) )
+        circle( *self.getRobot().get_centroid() , r = 22) # je dessine un rond bleu autour de ce robot
 
         #print "robot #", self.id, " -- step"
 
@@ -253,6 +233,9 @@ def setupArena():
 
 
 def stepWorld():
+
+    efface()
+        
     # chaque agent se met à jour. L'ordre de mise à jour change à chaque fois (permet d'éviter des effets d'ordre).
     shuffledIndexes = [i for i in range(len(agents))]
     shuffle(shuffledIndexes)     ### TODO: erreur sur macosx
@@ -280,6 +263,35 @@ class MyTurtle(Turtle): # also: limit robot speed through this derived class
         mx = MyTurtle.maxRotationSpeed
         Turtle.rotate(self, max(-mx,min(a,mx)))
 
+def displayOccupancyGrid():
+    global iteration
+    nbA = nbB = nothing = 0
+
+    for y in range(screen_height/16):
+        for x in range(screen_width/16):
+            sys.stdout.write(occupancyGrid[x][y])
+            if occupancyGrid[x][y] == "A":
+                nbA = nbA+1
+            elif occupancyGrid[x][y] == "B":
+                nbB = nbB+1
+            else:
+                nothing = nothing + 1
+        sys.stdout.write('\n')
+
+    sys.stdout.write('Time left: '+str(maxIterations-iteration)+'\n')
+    sys.stdout.write('Summary: \n')
+    sys.stdout.write('\tType A:')
+    sys.stdout.write(str(nbA))
+    sys.stdout.write('\n')
+    sys.stdout.write('\tType B:')
+    sys.stdout.write(str(nbB))
+    sys.stdout.write('\n')
+    sys.stdout.write('\tFree:')
+    sys.stdout.write(str(nothing))
+    sys.stdout.write('\n')
+    sys.stdout.flush() 
+
+    return nbA,nbB,nothing
 
 def onExit():
     ret = displayOccupancyGrid()
