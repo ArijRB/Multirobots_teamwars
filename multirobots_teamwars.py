@@ -15,6 +15,7 @@
 #       Ce que vous avez le droit de faire:
 #           Vous ne pouvez modifier que les méthodes step(.) et getTeamName(.) de la classe AgentTypeA
 #       Recommandations:
+#           Conservez intact multirobot_teamwars.py (travaillez sur une copie!)
 #           Pour faire vos tests, vous pouvez aussi modifier (si vous le souhaitez) la méthode step() pour la classe AgentTypeB. Il ne sera pas possible de transmettre cette partie là lors de l'évaluation par contre.
 #           La manière dont vous construirez votre fonction step(.) est libre. Par exemple:
 #               code écrit à la main, code obtenu par un processus d'apprentissage ou d'optimisation préalable, etc.

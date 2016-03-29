@@ -29,6 +29,8 @@ from random import random, shuffle
 import time
 import sys
 import atexit
+from itertools import count
+
 
 '''''''''''''''''''''''''''''
 '''''''''''''''''''''''''''''
@@ -119,7 +121,7 @@ class Agent(object):
                     print "- sensor #" + str(i) + " touches something at distance " + str(impact.dist_from_border)
                     if impact.layer == 'joueur':
                         playerTMP = impact.sprite
-                        print "  - type: robot"
+                        print "  - type: robot no." + str(playerTMP.numero) 
                         print "    - x,y = " + str( playerTMP.get_centroid() ) + ")" # renvoi un tuple
                         print "    - orientation = " + str( playerTMP.orientation() ) + ")" # p/r au "nord"
                     elif impact.layer == 'obstacle':
@@ -135,11 +137,11 @@ class Agent(object):
 '''''''''''''''''''''''''''''
 '''''''''''''''''''''''''''''
 
-
 def setupAgents():
     global screen_width, screen_height, nbAgents, agents, game
 
     # Make agents
+    nbAgentsCreated = 0
     for i in range(nbAgents):
         while True:
             p = -1
@@ -147,6 +149,8 @@ def setupAgents():
                 p = game.add_players( (random()*screen_width , random()*screen_height) , None , tiled=False)
             if p:
                 p.oriente( random()*360 )
+                p.numero = nbAgentsCreated
+                nbAgentsCreated = nbAgentsCreated + 1
                 agents.append(Agent(p))
                 break
     game.mainiteration()
