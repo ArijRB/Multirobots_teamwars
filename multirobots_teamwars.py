@@ -64,7 +64,7 @@ import atexit
 game = Game()
 agents = []
 
-arena = 2
+arena = 0
 
 nbAgents = 8 # doit être pair et inférieur a 32
 maxSensorDistance = 30              # utilisé localement.
