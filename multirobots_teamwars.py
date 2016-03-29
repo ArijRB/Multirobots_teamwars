@@ -64,6 +64,8 @@ import atexit
 game = Game()
 agents = []
 
+arena = 0
+
 nbAgents = 8 # doit être pair et inférieur a 32
 maxSensorDistance = 30              # utilisé localement.
 maxRotationSpeed = 5
@@ -245,7 +247,7 @@ def setupAgents():
 
 
 
-def setupArena():
+def setupArena0():
     for i in range(6,13):
         addObstacle(row=3,col=i)
     for i in range(3,10):
@@ -257,7 +259,14 @@ def setupArena():
     addObstacle(row=10,col=3)
     addObstacle(row=9,col=3)
 
+def setupArena1():
+    return
 
+def setupArena2():
+    for i in range(0,8):
+        addObstacle(row=i,col=7)
+    for i in range(8,16):
+        addObstacle(row=i,col=8)
 
 def stepWorld():
 
@@ -344,7 +353,13 @@ game.auto_refresh = False # display will be updated only if game.mainiteration()
 game.frameskip = frameskip
 atexit.register(onExit)
 
-setupArena()
+if arena == 0:
+    setupArena0()
+elif arena == 1:
+    setupArena1()
+else:
+    setupArena2()
+
 setupAgents()
 game.mainiteration()
 
