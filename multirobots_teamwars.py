@@ -14,6 +14,8 @@
 #           Une case "appartient" à la dernière équipe qui l'a visitée
 #       Ce que vous avez le droit de faire:
 #           Vous ne pouvez modifier que la méthode step(.) de la classe AgentTypeA
+#           Les vitesses de translation et rotation maximales sont données par maxTranslationSpeed et maxRotationSpeed
+#           La distance maximale autorisée des senseurs est maxSensorDistance
 #       Recommandations:
 #           Conservez intact multirobot_teamwars.py (travaillez sur une copie!)
 #           Pour faire vos tests, vous pouvez aussi modifier (si vous le souhaitez) la méthode step() pour la classe AgentTypeB. Il ne sera pas possible de transmettre cette partie là lors de l'évaluation par contre.
@@ -69,6 +71,7 @@ arena = 0
 nbAgents = 8 # doit être pair et inférieur a 32
 maxSensorDistance = 30              # utilisé localement.
 maxRotationSpeed = 5
+maxTranslationSpeed = 1
 SensorBelt = [-170,-80,-40,-20,+20,40,80,+170]  # angles en degres des senseurs
 
 screen_width=512 #512,768,... -- multiples de 32  
@@ -218,6 +221,7 @@ class AgentTypeB(object):
             p.rotate( -1 )
         else:
             p.rotate( 0 )
+        
         p.forward(1) # normalisé -1,+1
 
         return
