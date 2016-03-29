@@ -14,7 +14,9 @@
 #           Le jeu tourne pendant 4000 itérations.
 #           Une case "appartient" à la dernière équipe qui l'a visitée.
 #       Ce que vous avez le droit de faire:
-#           Le joueur A (resp. B) modifie *uniquement* la fonction step de la classe AgentTypeA (resp. AgentTypeB)
+#           Vous transmettrez *uniquement* les fonctions step et getTeamName de la classe AgentTypeA.
+#               Vous ne devez donc modifier que ces deux fonctions. 
+#               Toutefois: pour faire vos tests, vous pouvez aussi modifier (si vous le souhaitez) les méthodes équivalentes pour la classe AgentTypeB
 #           La manière dont vous avez contruit votre fonction step est libre: 
 #               - code écrit à la main, code obtenu par un processus d'apprentissage ou d'optimisation préalable, etc.
 #               - comportements individuels, collectifs, parasites (p.ex: bloquer l'adversaire), etc.
@@ -87,7 +89,6 @@ class AgentTypeA(object):
     id = -1
     robot = -1
     agentType = "A"
-    name = "Equipe Alpha" # A modifier avec le nom de votre équipe
 
     def __init__(self,robot):
         self.id = AgentTypeA.agentIdCounter
@@ -100,6 +101,17 @@ class AgentTypeA(object):
 
     def getRobot(self):
         return self.robot
+
+
+    # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    # =-= JOUEUR A -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+    def getTeamName(self):
+        return "Equipe Alpha" # A modifier avec le nom de votre équipe
 
     def step(self):
 
@@ -130,6 +142,11 @@ class AgentTypeA(object):
 
         return
 
+    # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+
 
 '''''''''''''''''''''''''''''
 '''''''''''''''''''''''''''''
@@ -145,8 +162,6 @@ class AgentTypeB(object):
 
     agentType = "B"
 
-    name = "Equipe Beta"
-
     def __init__(self,robot):
         self.id = AgentTypeB.agentIdCounter
         AgentTypeB.agentIdCounter = AgentTypeB.agentIdCounter + 1
@@ -158,6 +173,9 @@ class AgentTypeB(object):
 
     def getRobot(self):
         return self.robot
+
+    def getTeamName(self):
+        return "Equipe Test"
 
     def step(self):
 
@@ -297,9 +315,9 @@ def onExit():
     ret = displayOccupancyGrid()
     print "\n\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="
     if ret[0] > ret[1]:
-        print "Robots type A (\"" + str(AgentTypeA.name) + "\") wins!"
+        print "Robots type A (\"" + str(AgentTypeA.getTeamName()) + "\") wins!"
     elif ret[0] < ret[1]:
-        print "Robots type B (\"" + str(AgentTypeB.name) + "\") wins!"
+        print "Robots type B (\"" + str(AgentTypeB.getTeamName()) + "\") wins!"
     else: 
         print "Nobody wins!"
     print "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n"
