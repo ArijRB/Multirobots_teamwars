@@ -139,9 +139,9 @@ def setupAgents():
         while True:
             p = -1
             while p == -1: # p renvoi -1 s'il n'est pas possible de placer le robot ici (obstacle)
-                p = game.add_players( (random()*500 , random()*500) , None , tiled=False)
+                p = game.add_players( (random()*screen_width , random()*screen_height) , None , tiled=False)
             if p:
-                p.rotate( random()*360 )
+                p.oriente( random()*360 )
                 agents.append(Agent(p))
                 break
     game.mainiteration()
