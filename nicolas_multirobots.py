@@ -1,7 +1,41 @@
-# coding: utf-8
+
+# DEPRECATED: use multirobot.py instead
+# DEPRECATED: use multirobot.py instead
+# DEPRECATED: use multirobot.py instead
+# DEPRECATED: use multirobot.py instead
+# DEPRECATED: use multirobot.py instead
+# DEPRECATED: use multirobot.py instead
+# DEPRECATED: use multirobot.py instead
+# DEPRECATED: use multirobot.py instead
+# DEPRECATED: use multirobot.py instead
+
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Contact (ce fichier uniquement): nicolas.bredeche(at)upmc.fr
+# 
+# Description:
+#   Template pour simulation mono- et multi-robots type khepera/e-puck/thymio
+#   Ce code utilise pySpriteWorld, développé par Yann Chevaleyre (U. Paris 13)
+# 
+# Dépendances:
+#   Python 2.x
+#   Matplotlib
+#   Pygame
+# 
+# Historique: 
+#   2016-03-28__23:23 - template pour 3i025 (IA&RO, UPMC, licence info)
+#
+# Aide: code utile
+#   - Partie "variables globales"
+#   - La méthode "step" de la classe Agent
+#   - La fonction setupAgents (permet de placer les robots au début de la simulation)
+#   - La fonction setupArena (permet de placer des obstacles au début de la simulation)
+#   - il n'est pas conseillé de modifier les autres parties du code.
+#
 
 from robosim import *
-from random import random
+from random import random, shuffle
 import time
 import sys
 
@@ -37,7 +71,7 @@ maxIterations = -1 # infinite: -1
 
 showSensors = True
 frameskip = 0   # 0: no-skip. >1: skip n-1 frames
-verbose = False
+verbose = True
 
 '''''''''''''''''''''''''''''
 '''''''''''''''''''''''''''''
@@ -122,14 +156,23 @@ def setupAgents():
 
 
 def setupArena():
-    for i in range(10,14):
-        addObstacle(row=2,col=i)
+    for i in range(6,13):
+        addObstacle(row=3,col=i)
+    for i in range(3,10):
+        addObstacle(row=12,col=i)
+    addObstacle(row=4,col=12)
+    addObstacle(row=5,col=12)
+    addObstacle(row=6,col=12)
+    addObstacle(row=11,col=3)
+    addObstacle(row=10,col=3)
+    addObstacle(row=9,col=3)
+
 
 
 def stepWorld():
     # chaque agent se met à jour. L'ordre de mise à jour change à chaque fois (permet d'éviter des effets d'ordre).
     shuffledIndexes = [i for i in range(len(agents))]
-    #random.shuffle(shuffledIndexes)     ### TODO: erreur sur macosx
+    shuffle(shuffledIndexes)     ### TODO: erreur sur macosx
     for i in range(len(agents)):
         agents[shuffledIndexes[i]].step()
     return

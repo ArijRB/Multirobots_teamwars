@@ -1,3 +1,14 @@
+
+# DEPRECATED: use multirobot.py instead
+# DEPRECATED: use multirobot.py instead
+# DEPRECATED: use multirobot.py instead
+# DEPRECATED: use multirobot.py instead
+# DEPRECATED: use multirobot.py instead
+# DEPRECATED: use multirobot.py instead
+# DEPRECATED: use multirobot.py instead
+# DEPRECATED: use multirobot.py instead
+# DEPRECATED: use multirobot.py instead
+
 # coding: utf-8
 
 from robosim import *

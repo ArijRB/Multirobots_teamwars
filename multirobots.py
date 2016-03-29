@@ -72,13 +72,10 @@ verbose = True
 class Agent(object):
     
     agentIdCounter = 0 # use as static
-    x, y = 0,0
     id = -1
     robot = -1
 
-    def __init__(self,x,y,robot):
-        self.x = x
-        self.y = y
+    def __init__(self,robot):
         self.id = Agent.agentIdCounter
         Agent.agentIdCounter = Agent.agentIdCounter + 1
         #print "robot #", self.id, " -- init"
@@ -140,7 +137,7 @@ def setupAgents():
                 p = game.add_players( (random()*500 , random()*500) , None , tiled=False)
             if p:
                 p.rotate( random()*360 )
-                agents.append(Agent(0,0,p))
+                agents.append(Agent(p))
                 break
     game.mainiteration()
 
