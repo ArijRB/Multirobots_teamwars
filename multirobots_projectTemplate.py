@@ -48,40 +48,81 @@ import atexit
 '''''''''''''''''''''''''''''
 
 game = Game()
-
 agents = []
-screen_width=512 #512,768,... -- multiples de 32  
-screen_height=512 #512,768,... -- multiples de 32
-nbAgents = 10
 
+nbAgents = 8 # doit être pair et inférieur a 32
 maxSensorDistance = 30              # utilisé localement.
 maxRotationSpeed = 5
 SensorBelt = [-170,-80,-40,-20,+20,40,80,+170]  # angles en degres des senseurs
 
-maxIterations = -1 # infinite: -1
+screen_width=512 #512,768,... -- multiples de 32  
+screen_height=512 #512,768,... -- multiples de 32
 
+maxIterations = 4000 # infinite: -1
 showSensors = True
-frameskip = 0   # 0: no-skip. >1: skip n-1 frames
+frameskip = 4   # 0: no-skip. >1: skip n-1 frames
 verbose = True
 
+occupancyGrid = []
+for y in range(screen_height/16):
+    l = []
+    for x in range(screen_width/16):
+        l.append("_")
+    occupancyGrid.append(l)
+
+def displayOccupancyGrid():
+    nbA = nbB = nothing = 0
+
+    for y in range(screen_height/16):
+        for x in range(screen_width/16):
+            sys.stdout.write(occupancyGrid[x][y])
+            if occupancyGrid[x][y] == "A":
+                nbA = nbA+1
+            elif occupancyGrid[x][y] == "B":
+                nbB = nbB+1
+            else:
+                nothing = nothing + 1
+        sys.stdout.write('\n')
+
+    sys.stdout.write('Summary: \n')
+    sys.stdout.write('\tType A:')
+    sys.stdout.write(str(nbA))
+    sys.stdout.write('\n')
+    sys.stdout.write('\tType B:')
+    sys.stdout.write(str(nbB))
+    sys.stdout.write('\n')
+    sys.stdout.write('\tFree:')
+    sys.stdout.write(str(nothing))
+    sys.stdout.write('\n')
+    sys.stdout.flush() 
+
+    return nbA,nbB,nothing
+
+
+
+
 '''''''''''''''''''''''''''''
 '''''''''''''''''''''''''''''
-'''  Classe Agent/Robot   '''
+'''  Agent "A"            '''
 '''''''''''''''''''''''''''''
 '''''''''''''''''''''''''''''
 
-class Agent(object):
+class AgentTypeA(object):
     
     agentIdCounter = 0 # use as static
     id = -1
     robot = -1
+    agentType = "A"
     name = "Equipe Alpha" # A modifier avec le nom de votre équipe
 
     def __init__(self,robot):
-        self.id = Agent.agentIdCounter
-        Agent.agentIdCounter = Agent.agentIdCounter + 1
+        self.id = AgentTypeA.agentIdCounter
+        AgentTypeA.agentIdCounter = AgentTypeA.agentIdCounter + 1
         #print "robot #", self.id, " -- init"
         self.robot = robot
+
+    def getType(self):
+        return self.agentType
 
     def getRobot(self):
         return self.robot
@@ -93,40 +134,80 @@ class Agent(object):
         p = self.robot
 
         # actions
-        p.rotate( random()*maxRotationSpeed )   # normalisé -1,+1 -- valeur effective calculé avec maxRotationSpeed et maxTranslationSpeed
+        sensor_infos = sensors[p] # sensor_infos est une liste de namedtuple (un par capteur).
+        #print "sensor_infos: ", sensor_infos[0].dist_from_border
+        distGauche = sensor_infos[2].dist_from_border
+        if distGauche > maxSensorDistance:
+            distGauche = maxSensorDistance # borne
+        distDroite = sensor_infos[5].dist_from_border
+        if distDroite > maxSensorDistance:
+            distDroite = maxSensorDistance # borne
+
+        if distGauche < distDroite:
+            p.rotate( +1 )
+        elif distGauche > distDroite:
+            p.rotate( -1 )
+        else:
+            p.rotate( 0 )
         p.forward(1) # normalisé -1,+1
 
-        #Exemple: comment récuperer le senseur #2
-        #dist = sensor_infos[2].dist_from_border
-        #if dist > maxSensorDistance:
-        #    dist = maxSensorDistance # borne
-
-        # monitoring - affiche diverses informations sur l'agent et ce qu'il voit.
-        # pour ne pas surcharger l'affichage, je ne fais ca que pour le player 1
-        if verbose == True and self.id == 0:
-
-            efface()    # j'efface le cercle bleu de l'image d'avant
-            color( (0,0,255) )
-            circle( *game.player.get_centroid() , r = 22) # je dessine un rond bleu autour de ce robot
-
-            print "\n# Current robot at " + str(p.get_centroid()) + " with orientation " + str(p.orientation())
-
-            sensor_infos = sensors[p] # sensor_infos est une liste de namedtuple (un par capteur).
-            for i,impact in enumerate(sensors[p]):  # impact est donc un namedtuple avec plein d'infos sur l'impact: namedtuple('RayImpactTuple', ['sprite','layer','x', 'y','dist_from_border','dist_from_center','rel_angle_degree','abs_angle_degree'])
-                if impact.dist_from_border > maxSensorDistance:
-                    print "- sensor #" + str(i) + " touches nothing"
-                else:
-                    print "- sensor #" + str(i) + " touches something at distance " + str(impact.dist_from_border)
-                    if impact.layer == 'joueur':
-                        playerTMP = impact.sprite
-                        print "  - type: robot"
-                        print "    - x,y = " + str( playerTMP.get_centroid() ) + ")" # renvoi un tuple
-                        print "    - orientation = " + str( playerTMP.orientation() ) + ")" # p/r au "nord"
-                    elif impact.layer == 'obstacle':
-                        print "  - type obstacle"
-                    else:
-                        print "  - type boundary of window"
         return
+
+
+'''''''''''''''''''''''''''''
+'''''''''''''''''''''''''''''
+'''  Agent "B"            '''
+'''''''''''''''''''''''''''''
+'''''''''''''''''''''''''''''
+
+class AgentTypeB(object):
+    
+    agentIdCounter = 0 # use as static
+    id = -1
+    robot = -1
+
+    agentType = "B"
+
+    name = "Equipe Test"
+
+    def __init__(self,robot):
+        self.id = AgentTypeB.agentIdCounter
+        AgentTypeB.agentIdCounter = AgentTypeB.agentIdCounter + 1
+        #print "robot #", self.id, " -- init"
+        self.robot = robot
+
+    def getType(self):
+        return self.agentType
+
+    def getRobot(self):
+        return self.robot
+
+    def step(self):
+
+        #print "robot #", self.id, " -- step"
+
+        p = self.robot
+
+        # actions
+        sensor_infos = sensors[p] # sensor_infos est une liste de namedtuple (un par capteur).
+        #print "sensor_infos: ", sensor_infos[0].dist_from_border
+        distGauche = sensor_infos[2].dist_from_border
+        if distGauche > maxSensorDistance:
+            distGauche = maxSensorDistance # borne
+        distDroite = sensor_infos[5].dist_from_border
+        if distDroite > maxSensorDistance:
+            distDroite = maxSensorDistance # borne
+
+        if distGauche < distDroite:
+            p.rotate( +1 )
+        elif distGauche > distDroite:
+            p.rotate( -1 )
+        else:
+            p.rotate( 0 )
+        p.forward(1) # normalisé -1,+1
+
+        return
+
 
 
 '''''''''''''''''''''''''''''
@@ -140,16 +221,21 @@ def setupAgents():
     global screen_width, screen_height, nbAgents, agents, game
 
     # Make agents
-    for i in range(nbAgents):
-        while True:
-            p = -1
-            while p == -1: # p renvoi -1 s'il n'est pas possible de placer le robot ici (obstacle)
-                p = game.add_players( (random()*screen_width , random()*screen_height) , None , tiled=False)
-            if p:
-                p.oriente( random()*360 )
-                agents.append(Agent(p))
-                break
+
+    nbAgentsTypeA = nbAgentsTypeB = nbAgents / 2
+
+    for i in range(nbAgentsTypeA):
+        p = game.add_players( (16 , 200+32*i) , None , tiled=False)
+        p.oriente( 0 )
+        agents.append(AgentTypeA(p))
+
+    for i in range(nbAgentsTypeB):
+        p = game.add_players( (486 , 200+32*i) , None , tiled=False)
+        p.oriente( 180 )
+        agents.append(AgentTypeB(p))
+
     game.mainiteration()
+
 
 
 def setupArena():
@@ -172,6 +258,9 @@ def stepWorld():
     shuffle(shuffledIndexes)     ### TODO: erreur sur macosx
     for i in range(len(agents)):
         agents[shuffledIndexes[i]].step()
+        # met à jour la grille d'occupation
+        coord = agents[shuffledIndexes[i]].getRobot().get_centroid()
+        occupancyGrid[int(coord[0])/16][int(coord[1])/16] = agents[shuffledIndexes[i]].getType() # first come, first served
     return
 
 
@@ -191,8 +280,19 @@ class MyTurtle(Turtle): # also: limit robot speed through this derived class
         mx = MyTurtle.maxRotationSpeed
         Turtle.rotate(self, max(-mx,min(a,mx)))
 
+
 def onExit():
-    print "\n[Terminated]"
+    ret = displayOccupancyGrid()
+    print "\n\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="
+    if ret[0] > ret[1]:
+        print "Robots type A (\"" + str(AgentTypeA.name) + "\") wins!"
+    elif ret[0] < ret[1]:
+        print "Robots type B (\"" + str(AgentTypeB.name) + "\") wins!"
+    else: 
+        print "Nobody wins!"
+    print "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n"
+    print "\n[Simulation::stop]"
+
 
 '''''''''''''''''''''''''''''
 '''''''''''''''''''''''''''''
@@ -216,4 +316,7 @@ while iteration != maxIterations:
     sensors = throw_rays_for_many_players(game,game.layers['joueur'],SensorBelt,max_radius = maxSensorDistance+game.player.diametre_robot() , show_rays=showSensors)
     stepWorld()
     game.mainiteration()
+    if iteration % 200 == 0:
+        displayOccupancyGrid()
     iteration = iteration + 1
+
