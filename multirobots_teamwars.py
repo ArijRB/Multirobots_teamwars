@@ -145,25 +145,32 @@ class AgentTypeA(object):
             distDroite = maxSensorDistance # borne
 
         if distGauche < distDroite:
-            p.setRotationValue( +1 )
+            self.setRotationValue( +1 )
         elif distGauche > distDroite:
-            p.setRotationValue( -1 )
+            self.setRotationValue( -1 )
         else:
-            p.setRotationValue( 0 )
-        p.setTranslationValue(1) # normalisé -1,+1
+            self.setRotationValue( 0 )
+
+        self.setTranslationValue(1) # normalisé -1,+1
 
         return
+
+    # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
     def setTranslationValue(self,value):
         if value > 1:
             print "[WARNING] translation value not in [-1,+1]. Normalizing."
-            value = 1
+            value = maxTranslationSpeed
         elif value < -1:
             print "[WARNING] translation value not in [-1,+1]. Normalizing."
-            value = -1
-        p.forward(value)
+            value = -maxTranslationSpeed
+        else:
+            value = value * maxTranslationSpeed
+        self.robot.forward(value)
 
-    def setRotationalValue(self,value):
+    def setRotationValue(self,value):
         if value > 1:
             print "[WARNING] translation value not in [-1,+1]. Normalizing."
             value = maxRotationSpeed
@@ -172,12 +179,8 @@ class AgentTypeA(object):
             value = -maxRotationSpeed
         else:
             value = value * maxRotationSpeed
-        p.rotate(value)
+        self.robot.rotate(value)
 
-
-    # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-    # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-    # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 
 
@@ -237,13 +240,13 @@ class AgentTypeB(object):
             distDroite = maxSensorDistance # borne
 
         if distGauche < distDroite:
-            p.rotate( +1 )
+            self.setRotationValue( +1 )
         elif distGauche > distDroite:
-            p.rotate( -1 )
+            self.setRotationValue( -1 )
         else:
-            p.rotate( 0 )
-        
-        p.forward(1) # normalisé -1,+1
+            self.setRotationValue( 0 )
+
+        self.setTranslationValue(1) # normalisé -1,+1
 
         return
 
@@ -251,6 +254,28 @@ class AgentTypeB(object):
     # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
+
+    def setTranslationValue(self,value):
+        if value > 1:
+            print "[WARNING] translation value not in [-1,+1]. Normalizing."
+            value = maxTranslationSpeed
+        elif value < -1:
+            print "[WARNING] translation value not in [-1,+1]. Normalizing."
+            value = -maxTranslationSpeed
+        else:
+            value = value * maxTranslationSpeed
+        self.robot.forward(value)
+
+    def setRotationValue(self,value):
+        if value > 1:
+            print "[WARNING] translation value not in [-1,+1]. Normalizing."
+            value = maxRotationSpeed
+        elif value < -1:
+            print "[WARNING] translation value not in [-1,+1]. Normalizing."
+            value = -maxRotationSpeed
+        else:
+            value = value * maxRotationSpeed
+        self.robot.rotate(value)
 
 
 '''''''''''''''''''''''''''''
