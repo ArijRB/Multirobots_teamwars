@@ -102,6 +102,21 @@ class Agent(object):
         #dist = sensor_infos[2].dist_from_border
         #if dist > maxSensorDistance:
         #    dist = maxSensorDistance # borne
+        
+        sensor_infos = sensors[p] # sensor_infos est une liste de namedtuple
+        distGauche = sensor_infos[2].dist_from_border
+        distDroite = sensor_infos[4].dist_from_border
+        if distGauche == distDroite:
+            p.rotate(0)
+        elif distGauche > distDroite:
+            p.rotate(-1)
+        else:
+            p.rotate(+1)
+                    
+        #if dist > maxSensorDistance:
+        #    dist = maxSensorDistance # borne
+        
+        
 
         # monitoring - affiche diverses informations sur l'agent et ce qu'il voit.
         # pour ne pas surcharger l'affichage, je ne fais ca que pour le player 1
