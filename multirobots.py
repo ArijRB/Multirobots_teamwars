@@ -58,7 +58,9 @@ nbAgents = 10
 
 maxSensorDistance = 30              # utilisé localement.
 maxRotationSpeed = 5
-SensorBelt = [-170,-80,-40,-20,+20,40,80,+170]  # angles en degres des senseurs
+maxTranslationSpeed = 1
+
+SensorBelt = [-170,-80,-40,-20,+20,40,80,+170]  # angles en degres des senseurs (ordre clockwise)
 
 maxIterations = -1 # infinite: -1
 
@@ -88,6 +90,10 @@ class Agent(object):
     def getRobot(self):
         return self.robot
 
+    # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
     def step(self):
 
         #print "robot #", self.id, " -- step"
@@ -95,29 +101,23 @@ class Agent(object):
         p = self.robot
 
         # actions
-        p.rotate( random()*maxRotationSpeed )   # normalisé -1,+1 -- valeur effective calculé avec maxRotationSpeed et maxTranslationSpeed
-        p.forward(1) # normalisé -1,+1
+        # valeur de paramètre entre -1 et +1.
+        # cette valeur sera converti ensuite entre:
+        #  - pour setTranslation: entre -maxTranslationSpeed et +maxTranslationSpeed
+        #  - pour setRotation: entre -maxRotationSpeed et +maxRotationSpeed
+        # Attention:
+        #   ces fonctions *programment* la commande motrice, mais *ne l'exécute pas*
+        #   la dernière valeur allouée exécutée. Chaque fonction doit donc être appelé une seule fois.
+        self.setRotationValue( random()*2-1 )
+        self.setTranslationValue(1) # normalisé -1,+1
 
         #Exemple: comment récuperer le senseur #2
+        #sensor_infos = sensors[p]
         #dist = sensor_infos[2].dist_from_border
-        #if dist > maxSensorDistance:
-        #    dist = maxSensorDistance # borne
+        #if dist == 0:
+        #    p.rotate(-1)
+        #p.setTranslationValue(1)
         
-        sensor_infos = sensors[p] # sensor_infos est une liste de namedtuple
-        distGauche = sensor_infos[2].dist_from_border
-        distDroite = sensor_infos[4].dist_from_border
-        if distGauche == distDroite:
-            p.rotate(0)
-        elif distGauche > distDroite:
-            p.rotate(-1)
-        else:
-            p.rotate(+1)
-                    
-        #if dist > maxSensorDistance:
-        #    dist = maxSensorDistance # borne
-        
-        
-
         # monitoring - affiche diverses informations sur l'agent et ce qu'il voit.
         # pour ne pas surcharger l'affichage, je ne fais ca que pour le player 1
         if verbose == True and self.id == 0:
@@ -144,6 +144,32 @@ class Agent(object):
                     else:
                         print "  - type boundary of window"
         return
+
+    # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+    def setTranslationValue(self,value):
+        if value > 1:
+            print "[WARNING] translation value not in [-1,+1]. Normalizing."
+            value = maxTranslationSpeed
+        elif value < -1:
+            print "[WARNING] translation value not in [-1,+1]. Normalizing."
+            value = -maxTranslationSpeed
+        else:
+            value = value * maxTranslationSpeed
+        self.robot.forward(value)
+
+    def setRotationValue(self,value):
+        if value > 1:
+            print "[WARNING] translation value not in [-1,+1]. Normalizing."
+            value = maxRotationSpeed
+        elif value < -1:
+            print "[WARNING] translation value not in [-1,+1]. Normalizing."
+            value = -maxRotationSpeed
+        else:
+            value = value * maxRotationSpeed
+        self.robot.rotate(value)
 
 
 '''''''''''''''''''''''''''''
