@@ -89,7 +89,8 @@ from random import random, shuffle, randint
 import time
 import sys
 import atexit
-
+import math
+import numpy as np
 
 '''''''''''''''''''''''''''''
 '''''''''''''''''''''''''''''
@@ -137,7 +138,7 @@ class AgentTypeA(object):
     id = -1
     robot = -1
     agentType = "A"
-    etat = 0
+    
     
     translationValue = 0 # ne pas modifier directement
     rotationValue = 0 # ne pas modifier directement
@@ -149,6 +150,7 @@ class AgentTypeA(object):
         #print "robot #", self.id, " -- init"
         self.robot = robot
         self.robot.teamname = self.teamname
+        self.etat = 0
 
     def getType(self):
         return self.agentType
@@ -169,37 +171,91 @@ class AgentTypeA(object):
     # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
-    teamname = "Equipe Alpha" # A modifier avec le nom de votre équipe
+    teamname = "Titans" # A modifier avec le nom de votre équipe
 
     def stepController(self):
     
     	# cette méthode illustre l'ensemble des fonctions et informations que vous avez le droit d'utiliser.
     	# tout votre code doit tenir dans cette méthode. La seule mémoire autorisée est la variable self.etat
     	# (c'est un entier).
+        sensorMinus80 = self.getDistanceAtSensor(1)
+        sensorMinus40 = self.getDistanceAtSensor(2)
+        sensorMinus20 = self.getDistanceAtSensor(3)
+        sensorPlus20 = self.getDistanceAtSensor(4)
+        sensorPlus40 = self.getDistanceAtSensor(5)
+        sensorPlus80 = self.getDistanceAtSensor(6)
+       
 
+        params_avoid=[1.5,0.2,0.3,0.4,0.5,0.7,0.1,7.991821, -0.6982, -0.02061408,1,0.7639411, 7.9982821, -0.3943547820576982]
+        params_suiv=[0.772411, 5.991, -0.39982, -0.24, 7.413656, -3.3062686, -5.7096, 8.516, -7.061587133381, -10.01849019654961, 3.64602, -6.2003122, -8.701892822852477, -6.060942]
+        params_myTeam=[1.5,0.2,0.3,0.4,0.5,0.7,0.1,7.991821, -0.6982, -0.02061408,1,0.7639411, 7.9982821, -0.3943547820576982]
+        params_explo=[1.5,0.2,0.3,0.4,0.5,0.7,0.1,7.441821, -0.820576982, -0.020604,1,0.7, 7.9941821, -0.3943547820576982]
+        #Pour implementer l'ordre dans les architctures de  subsomption
+        adversaire_bol=False
+        my_team_bol=False
+        mur_bol = False
+        
         color( (0,255,0) )
-        circle( *self.getRobot().get_centroid() , r = 22) # je dessine un rond bleu autour de ce robot
+        circle( *self.getRobot().get_centroid() , r = 22) # je dessine un rond vert autour de ce robot
+        st=np.ones(8)
+        s=np.ones(8)
+        for i in range(len(SensorBelt)):
+                if self.getObjectTypeAtSensor(i) == 2:
+                    if self.getRobotInfoAtSensor(i)["teamname"]!= self.teamname  and (self.id % 4 == 0 or self.id % 4 == 1):
+                       adversaire_bol=True
+                       self.etat=-1
+                       s[i]=self.getDistanceAtSensor(i)
+                    else:
+                       my_team_bol=True
+                       team=i
+                       st[i]=self.getDistanceAtSensor(i)
+                elif self.getObjectTypeAtSensor(i) == 1:
+                     mur_bol = True
+        rotation=1
+        translation=1
+        if (self.id % 4 == 0 or self.id % 4 == 1):
+                if (my_team_bol== True) and (team % 4 == 0 or team % 4 == 1):
+                    sg = ( st[1]*1.5 + st[2]*1.5+st[3]+st[0]) / 5
+                    sd = ( st[5] + st[6]*1.5+st[4]*1.5+st[7]) / 5
+                    rotation=sd-sg
+                    translation=1
+                    
+                elif(adversaire_bol == True):
+                    sg = ( s[1]*1.5 + s[2]*1.5+s[3]+s[0]) / 5
+                    sd = ( s[5] + s[6]*1.5+s[4]*1.5+s[7]) / 5
+                    rotation=sg-sd
+                    translation=1 
+                elif (my_team_bol== True) :
+                    sg = ( st[1]*1.5 + st[2]*1.5+st[3]+st[0]) / 5
+                    sd = ( st[5] + st[6]*1.5+st[4]*1.5+st[7]) / 5
+                    rotation=sd-sg
+                    translation=1
+                elif (mur_bol == True):
+                     translation =  math.tanh( sensorMinus40 * params_avoid[0] + sensorMinus20 * params_avoid[1] + sensorPlus20 * params_avoid[2] + sensorPlus40 * params_avoid[3] + params_avoid[4] ) 
+                     rotation =  math.tanh( sensorMinus40 * params_avoid[5] + sensorMinus20 * params_avoid[6] + sensorPlus20 * params_avoid[7] + sensorPlus40 * params_avoid[8] + params_avoid[9] )
 
-        distGauche = self.getDistanceAtSensor(2) # renvoi une valeur normalisée entre 0 et 1
-        distDroite = self.getDistanceAtSensor(5) # renvoi une valeur normalisée entre 0 et 1
-        
-        if distGauche < distDroite:
-            self.setRotationValue( +1 )
-        elif distGauche > distDroite:
-            self.setRotationValue( -1 )
         else:
-            self.setRotationValue( 0 )
+            if (mur_bol == True):
+                sg = ( self.getDistanceAtSensor(1)*1.5 + self.getDistanceAtSensor(2)*1.5+self.getDistanceAtSensor(3)+self.getDistanceAtSensor(0)) / 5
+                sd = ( self.getDistanceAtSensor(5) + self.getDistanceAtSensor(6)*1.5+self.getDistanceAtSensor(4)*1.5+self.getDistanceAtSensor(7)) / 5
+                rotation=sd-sg
+                translation=1
+            else:
+                sg = ( self.getDistanceAtSensor(1)*1.5 + self.getDistanceAtSensor(2)*1.5+self.getDistanceAtSensor(3)+self.getDistanceAtSensor(0)) / 5
+                sd = ( self.getDistanceAtSensor(5) + self.getDistanceAtSensor(6)*1.5+self.getDistanceAtSensor(4)*1.5+self.getDistanceAtSensor(7)) / 5
+                rotation=sd-sg
+                translation=1
+        if (iteration !=0 and self.etat != -1):
+            x=self.getRobot().get_centroid()[0],self.getRobot().get_centroid()[1]
+            if (self.etat==x):
+                rotation=-0.2
+                translation=1
+            self.etat=self.getRobot().get_centroid()[0],self.getRobot().get_centroid()[1]
+        elif iteration ==0:
+            self.etat=self.getRobot().get_centroid()[0],self.getRobot().get_centroid()[1]
+        self.setRotationValue(rotation)
+        self.setTranslationValue(translation)
 
-        self.setTranslationValue(1) # normalisé -1,+1
-        
-		# monitoring (optionnel - changer la valeur de verbose)
-        if verbose == True:
-	        print "Robot #"+str(self.id)+" [teamname:\""+str(self.teamname)+"\"] [variable mémoire = "+str(self.etat)+"] :"
-	        for i in range(len(SensorBelt)):
-	            print "\tSenseur #"+str(i)+" (angle: "+ str(SensorBelt[i])+"°)"
-	            print "\t\tDistance  :",self.getDistanceAtSensor(i)
-	            print "\t\tType      :",self.getObjectTypeAtSensor(i) # 0: rien, 1: mur ou bord, 2: robot
-	            print "\t\tRobot info:",self.getRobotInfoAtSensor(i) # dict("id","centroid(x,y)","orientation") (si pas de robot: renvoi "None" et affiche un avertissement dans la console
 
         return
 
@@ -316,7 +372,12 @@ class AgentTypeB(object):
             self.setRotationValue( 0 )
 
         self.setTranslationValue(1) # normalisé -1,+1
-        
+#        sg = ( self.getDistanceAtSensor(1)*1.5 + self.getDistanceAtSensor(2)*1.5+self.getDistanceAtSensor(3)+self.getDistanceAtSensor(0)) / 5
+#        sd = ( self.getDistanceAtSensor(5) + self.getDistanceAtSensor(6)*1.5+self.getDistanceAtSensor(4)*1.5+self.getDistanceAtSensor(7)) / 5
+#                
+#        self.setRotationValue(sd-sg)
+#        self.setTranslationValue(1)
+#        
 		# monitoring (optionnel - changer la valeur de verbose)
         if verbose == True:
 	        print "Robot #"+str(self.id)+" [teamname:\""+str(self.teamname)+"\"] [variable mémoire = "+str(self.etat)+"] :"

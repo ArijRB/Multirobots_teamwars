@@ -15,9 +15,9 @@ from math import pi,cos,sin,sqrt
 import random
 
 
-print("""\n---==[ Fonction disponibles ]==---""")
-print("""init,avance,obstacle,oriente,\ntournegauche,tournedroite,telemetre,\ntelemetre_coords,position,orientation,diametre_robot,taille_terrain\nset_position,obstacle_coords\nline,circle,efface\npenup,pendown,color,frame_skip""")
-print("""=[ Pour l'aide, tapez help(fonction) ]=\n""")
+#print("""\n---==[ Fonction disponibles ]==---""")
+#print("""init,avance,obstacle,oriente,\ntournegauche,tournedroite,telemetre,\ntelemetre_coords,position,orientation,diametre_robot,taille_terrain\nset_position,obstacle_coords\nline,circle,efface\npenup,pendown,color,frame_skip""")
+#print("""=[ Pour l'aide, tapez help(fonction) ]=\n""")
 
 
 

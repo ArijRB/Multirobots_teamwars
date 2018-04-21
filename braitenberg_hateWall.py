@@ -113,8 +113,6 @@ class Agent(object):
         # Attention:
         #   ces fonctions *programment* la commande motrice, mais *ne l'exécute pas*
         #   la dernière valeur allouée exécutée. Chaque fonction doit donc être appelé une seule fois.
-        self.setRotationValue( random()*2-1 )
-        self.setTranslationValue(1) # normalisé -1,+1
 
         # monitoring - affiche diverses informations sur l'agent et ce qu'il voit.
         # pour ne pas surcharger l'affichage, je ne fais ca que pour le player 1
@@ -131,11 +129,20 @@ class Agent(object):
                 print "\t\tDistance  :",self.getDistanceAtSensor(i)
                 print "\t\tType      :",self.getObjectTypeAtSensor(i) # 0: rien, 1: mur ou bord, 2: robot
                 print "\t\tRobot info:",self.getRobotInfoAtSensor(i) # dict("id","centroid(x,y)","orientation") (si pas de robot: renvoi "None" et affiche un avertissement dans la console
-                sg = ( self.getDistanceAtSensor(1)*2 + self.getDistanceAtSensor(2)*2+self.getDistanceAtSensor(3)+self.getDistanceAtSensor(0)) / 6
-                sd = ( self.getDistanceAtSensor(5) + self.getDistanceAtSensor(6)*2+self.getDistanceAtSensor(4)*2+self.getDistanceAtSensor(7)) / 6
+                s=[0,1,2,3,4,5,6,7]
+                for i in range(len(s)):
+                    if self.getObjectTypeAtSensor(s[i]) == 1:
+                        s[i]=self.getDistanceAtSensor(s[i])
+                    else :
+                        s[i]=maxSensorDistance
+                sg = ( s[1]*1.5 + s[2]*1.5+s[3]+s[0]) / 5
+                sd = ( s[5] + s[6]*1.5+s[4]*1.5+s[7]) / 5
                 
                 self.setRotationValue(sd-sg)
                 self.setTranslationValue(1)
+        else:
+            self.setRotationValue( random()*2-1 )
+            self.setTranslationValue(1) # normalisé -1,+1
         return
 
     # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=

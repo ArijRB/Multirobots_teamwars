@@ -6,101 +6,65 @@
 # Ce code utilise pySpriteWorld, développé par Yann Chevaleyre (U. Paris 13)
 #
 # Historique:
-#   2016-03-28__23:23 - template pour 3i025 (IA&RO, UPMC, licence info)
-#   2018-03-26__23:06 - mise à jour de l'énoncé du projet
-#   2018-03-27__20:51 - reecriture de la fonction step(.)
-# 	2018-03-28__10:00 - renommage de la fonction step(.) en stepController(.), refactoring
+# 	2018-04-09__16:35 - version pour examen 2018
 #
-# Description:
-#   Template pour projet multi-robots "MULTIROBOT WARS"
-#
-#       But du jeu: posséder le maximum de cases!
-#           Chaque joueur dispose de quatre robots
-#           Le monde est divisé en 1024 cases (ie. 32x32 cases de 16x16 pixels)
-#           Le jeu tourne pendant 4000 itérations
-#           Une case "appartient" à la dernière équipe qui l'a visitée
-#
-#       Ce que vous avez le droit de faire:
-#           Seules modifications autorisées:
-#               la méthode stepController(.) de la classe AgentTypeA
-#               la valeur de la variable teamname de la classe AgentTypeA
-#               [!] tout autre modification est exclue!
-#           Les vitesses de translation et rotation et les distances renvoyées par les senseurs sont normalisées
-#               translation/rotation: entre -1 et +1
-#               distance à l'obstacle: entre 0 et +1
-#               En pratique, les valeurs réelles maximales sont fixées par maxTranslationSpeed et maxRotationSpeed et  maxSensorDistance.
-#           Liste *exhaustive* des informations que vous pouvez utiliser (cf. fonction stepController(.)):
-#               sur soi-même:
-#                   son propre numéro [non modifiable]
-#                   sa propre position (x,y) [non modifiable]
-#                   sa propre orientation [non modifiable]
-#                   son état [modifiable, type: entier -- exclusivement!]
-#               sur les éléments détectés par les senseurs:
-#                   distance à l'obstacle
-#                   type d'obstacle (rien, mur, robot)
-#                       si robot:
-#                           son identifiant
-#                           son orientation
-#                           sa position (x,y)
-#
-#       Contrainte imposée:
-#           Votre comportement doit être *réactif*.
-#           C'est à dire pas de mémoire (pas de variable globale, pas de carte, etc.)
-#           ...A la seule et unique exception donnée par la possibilité d'utiliser la variable entière "etat". (exemple d'utilisation: mémoriser l'occurence d'un évènement particulier, mémoriser le comportement utilisé à t-1, etc.)
-#
-#       Remarques:
-#           La méthode stepController() de multirobots.py illustre les senseurs autorisés
-#           Lors de l'évaluation, les numéros de vos robots peuvent être différents.
-#           Vous pouvez utiliser teamname pour reconnaitre les robots appartenant à la votre équipe (ou à l'équipe adverse)
-#           [!!!] les commandes de translation/rotation sont exécutées *après* la fonction stepController(.). Par conséquent, seules les valeurs passées lors du dernier appel des fonctions setTranslationValue(.) et setRotationValue(.) sont prises en compte!
-#
-#       Recommandations:
-#           Conservez intact multirobot_teamwars.py (travaillez sur une copie!)
-#           Pour faire vos tests, vous pouvez aussi modifier (si vous le souhaitez) la méthode stepController() pour la classe AgentTypeB. Il ne sera pas possible de transmettre cette partie là lors de l'évaluation par contre.
-#           La manière dont vous construirez votre fonction stepController(.) est libre. Par exemple: code écrit à la main, code obtenu par un processus d'apprentissage ou d'optimisation préalable, etc.; comportements individuels, collectifs, parasites (p.ex: bloquer l'adversaire), etc.
-#
-#       Evaluation:
-#           Soutenance devant machine (par binome, 15 min.) lors de la dernière séance de TP (matin et après-midi)
-#               Vous devrez m'envoyer votre code et un PDF de 2 pages résumant vos choix d'implémentation. Sujet: "[3i025] binome1, binome2", la veille de la soutenance
-#               Vous devrez montrer votre résultat sur plusieurs arènes inédites
-#               Vous devrez mettre en évidence la réutilisation des concepts vus en cours
-#               Vous devrez mettre en évidence les choix pragmatiques que vous avez du faire
-#               Assurez vous que la simple copie de votre fonctions stepController(.) dans le fichier multirobots_teamwars.py suffit pour pouvoir le tester
-#           Vous affronterez vos camarades
-#               Au tableau: une matrice des combats a mettre a jour en fonction des victoires et défaites
-#               Affrontement sur les trois arènes inédites
-#               vous pouvez utiliser http://piratepad.net pour échanger votre fonction stepController(.))
-#       Bon courage!
-# 
 # Dépendances:
 #   Python 2.x
 #   Matplotlib
 #   Pygame
 #
-# Aide: code utile
-#   - Partie "variables globales": en particulier pour définir le nombre d'agents et l'arène utilisée. La liste SensorBelt donne aussi les orientations des différentes capteurs de proximité.
-#   - La méthode "step" de la classe Agent, la variable teamname.
-#   - La fonction setupAgents (permet de placer les robots au début de la simulation) - ne pas modifier pour l'évaluation
-#   - La fonction setupArena (permet de placer des obstacles au début de la simulation) - ne pas modifier pour l'évaluation. Cependant, cela peut-être très utile de faire des arènes originales.
+# Description:
+#   Template pour projet multi-robots "MULTIROBOT WARS"
+#   Les équipes "verte" et "bleue" ont chacune une stratégie d'exploration
+#
+# Mode d'emploi pour l'évaluation:
+#   Mettre votre fonction stepController() à la place de celle de AgentTypeA
+#   Tout autre modification est interdite
+#   Vous êtes l'équipe verte
+#   Pour lancer le code: "python teamwarsTournament.py <numero_de_l'arene>" avec <numero_de_l'arene> = 0, 1, 2, 3 ou 4
+#
+# Mode d'emploi pour un tournoi entre deux équipes:
+#   Une équipe copie sa fonction stepController dans AgentTypeA
+#   L'autre équipe fait de même avec AgentTypeB
+#   Evaluation sur 10 matchs:
+#       1. testez avec chacune des 5 arènes (variable "arena" ci-dessous, valeurs de 0 à 4)
+#       2. pour chaque arène, testez deux fois, en échangeant la position initiale entre chaque essais (variable "invertInitPop" ci-dessous)
+#   Pour lancer le code: "python teamwarsTournament.py <numero_de_l'arene> <position_standard>"
+#       avec <numero_de_l'arene> = 0, 1, 2, 3 ou 4
+#       avec <position_standard> = True ou False (False (par défaut): l'équipe verte commence à gauche, sinon, l'inverse)
+#   => Comptez le nombre de victoires de chacun. En cas d'égalité: +0.5 point chacun.
+#
 #
 
 from robosim import *
-from random import random, shuffle, randint
+from random import random, shuffle, randint,uniform
 import time
 import sys
 import atexit
+import math
+import numpy as np
+''''''''''''''''''''''''''''''
+''''''''''''''''''''''''''''''
+''' Paramètres du Tournoi  '''
+''''''''''''''''''''''''''''''
+''''''''''''''''''''''''''''''
 
+# Quelle arêne? (valeurs de 0 à 4)
+arena = 0
 
-'''''''''''''''''''''''''''''
-'''''''''''''''''''''''''''''
-'''  variables globales   '''
-'''''''''''''''''''''''''''''
-'''''''''''''''''''''''''''''
+# Position de départ? (si la valeur est vraie, alors les deux équipes échangent leur position de départ)
+invertInitPop = True
+
+''''''''''''''''''''''''''''''
+''''''''''''''''''''''''''''''
+'''  variables globales    '''
+''''''''''''''''''''''''''''''
+''''''''''''''''''''''''''''''
 
 game = Game()
 agents = []
 
-arena = 0
+running = False
 
 nbAgents = 8 # doit être pair et inférieur a 32
 maxSensorDistance = 30              # utilisé localement.
@@ -160,46 +124,107 @@ class AgentTypeA(object):
     # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     # =-= JOUEUR A -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= 
     # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-    # =-=-=-=-= pour l'évaluation, seul le teamname et la fct  stepController(.)  =-=
-    # =-=-=-=-= seront utilisés. Assurez-vous donc que tout votre code utile est  =-=
-    # =-=-=-=-= auto-contenu dans la fonction stepControlelr. Vous pouvez changer =-=
-    # =-=-=-=-= teamname (c'est même conseillé si vous souhaitez que vos robots   =-=
-    # =-=-=-=-= se reconnaissent entre eux.                                       =-=
     # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
-    teamname = "Equipe Alpha" # A modifier avec le nom de votre équipe
+    teamname = "Equipe VERTE" # A modifier avec le nom de votre équipe
 
     def stepController(self):
     
     	# cette méthode illustre l'ensemble des fonctions et informations que vous avez le droit d'utiliser.
     	# tout votre code doit tenir dans cette méthode. La seule mémoire autorisée est la variable self.etat
     	# (c'est un entier).
-
+        sensorMinus80 = self.getDistanceAtSensor(1)
+        sensorMinus40 = self.getDistanceAtSensor(2)
+        sensorMinus20 = self.getDistanceAtSensor(3)
+        sensorPlus20 = self.getDistanceAtSensor(4)
+        sensorPlus40 = self.getDistanceAtSensor(5)
+        sensorPlus80 = self.getDistanceAtSensor(6)
+          
+        #Pour implementer l'ordre dans les architctures de  subsomption
+        adversaire_bol=False
+        my_team_bol=False
+        mur_bol = False
+        
         color( (0,255,0) )
-        circle( *self.getRobot().get_centroid() , r = 22) # je dessine un rond bleu autour de ce robot
-
-        distGauche = self.getDistanceAtSensor(2) # renvoi une valeur normalisée entre 0 et 1
-        distDroite = self.getDistanceAtSensor(5) # renvoi une valeur normalisée entre 0 et 1
+        circle( *self.getRobot().get_centroid() , r = 22) # je dessine un rond vert autour de ce robot
         
-        if distGauche < distDroite:
-            self.setRotationValue( +1 )
-        elif distGauche > distDroite:
-            self.setRotationValue( -1 )
-        else:
-            self.setRotationValue( 0 )
+        #Pour detecter les sensors activées qui indique la presence d'un autre joueur soit adversaire ou de notre equipe
+        st=np.ones(8)
+        s=np.ones(8)
+        sm=np.ones(8)
+        for i in range(len(SensorBelt)):
+            if self.getObjectTypeAtSensor(i) == 2:
+                if self.getRobotInfoAtSensor(i)["teamname"]!= self.teamname  and (self.id % 4 == 0 or self.id % 4 == 1):
+                    adversaire_bol=True
+                    self.etat=-1
+                    s[i]=self.getDistanceAtSensor(i)
+                else:
+                    my_team_bol=True
+                    team=(self.getRobotInfoAtSensor(i))["id"]
+                    st[i]=self.getDistanceAtSensor(i)
+            elif self.getObjectTypeAtSensor(i) == 1:
+                    mur_bol = True
+                    sm[i]=self.getDistanceAtSensor(i)
+        #les comportements selon les robots
+         
+        if (self.id % 4 == 0 or self.id % 4 == 1):#agents gourmands
+                if (my_team_bol== True) and (team % 4 == 0 or team % 4 == 1):
+                    sg = ( st[1]*1.5 + st[2]*1.5+st[3]+st[0]) / 5
+                    sd = ( st[5] + st[6]*1.5+st[4]*1.5+st[7]) / 5
+                    rotation=sd-sg
+                    translation=1
+                    self.etat=self.getRobot().get_centroid()[0],self.getRobot().get_centroid()[1]
+                elif(adversaire_bol == True):
+                    sg = ( s[1]*1.5 + s[2]*1.5+s[3]+s[0]) / 5
+                    sd = ( s[5] + s[6]*1.5+s[4]*1.5+s[7]) / 5
+                    rotation=sg-sd
+                    translation=1 
+                elif (my_team_bol== True) :
+                    sg = ( st[1]*1.5 + st[2]*1.5+st[3]+st[0]+2) / 7
+                    sd = ( st[5] + st[6]*1.5+st[4]*1.5+st[7]+2)/ 7
+                    rotation=sd-sg
+                    translation=1
+                    self.etat=self.getRobot().get_centroid()[0],self.getRobot().get_centroid()[1]
+                elif (mur_bol == True):
+                    sg = ( self.getDistanceAtSensor(1)*1.5 + self.getDistanceAtSensor(2)*1.5+self.getDistanceAtSensor(3)+self.getDistanceAtSensor(0)) / 5
+                    sd = ( self.getDistanceAtSensor(5) + self.getDistanceAtSensor(6)*1.5+self.getDistanceAtSensor(4)*1.5+self.getDistanceAtSensor(7)) / 5
+                    rotation=sd-sg
+                    translation=1
+                else:
+                    rotation=uniform(-1,1)
+                    translation=1
 
-        self.setTranslationValue(1) # normalisé -1,+1
-        
-		# monitoring (optionnel - changer la valeur de verbose)
-        if verbose == True:
-	        print "Robot #"+str(self.id)+" [teamname:\""+str(self.teamname)+"\"] [variable mémoire = "+str(self.etat)+"] :"
-	        for i in range(len(SensorBelt)):
-	            print "\tSenseur #"+str(i)+" (angle: "+ str(SensorBelt[i])+"°)"
-	            print "\t\tDistance  :",self.getDistanceAtSensor(i)
-	            print "\t\tType      :",self.getObjectTypeAtSensor(i) # 0: rien, 1: mur ou bord, 2: robot
-	            print "\t\tRobot info:",self.getRobotInfoAtSensor(i) # dict("id","centroid(x,y)","orientation") (si pas de robot: renvoi "None" et affiche un avertissement dans la console
+        else:#agents explorateurs
+            if iteration ==0 and self.id % 4 == 2 :
+                rotation=1
+                translation=-1
+            else:
+                if (mur_bol == True):
+                    sg = ( self.getDistanceAtSensor(1)*1.5 + self.getDistanceAtSensor(2)*1.5+self.getDistanceAtSensor(3)+self.getDistanceAtSensor(0)) / 5
+                    sd = ( self.getDistanceAtSensor(5) + self.getDistanceAtSensor(6)*1.5+self.getDistanceAtSensor(4)*1.5+self.getDistanceAtSensor(7)) / 5
+                    rotation=sd-sg
+                    translation=1
+                elif (my_team_bol== True) :
+                    sg = ( st[1]*1.5 + st[2]*1.5+st[3]+st[0]+2) / 7
+                    sd = ( st[5] + st[6]*1.5+st[4]*1.5+st[7]+2)/ 7
+                    rotation=sd-sg
+                    translation=1
+                else:
+                    rotation=uniform(-1,1)
+                    translation=1
+        if (iteration !=0 and self.etat != -1):
+            x=self.getRobot().get_centroid()[0],self.getRobot().get_centroid()[1]
+            if (self.etat==x):
+                rotation=-0.1
+                translation=0.95
+            self.etat=self.getRobot().get_centroid()[0],self.getRobot().get_centroid()[1]
+        elif iteration ==0:
+            self.etat=self.getRobot().get_centroid()[0],self.getRobot().get_centroid()[1]
+        self.setRotationValue(rotation)
+        self.setTranslationValue(translation)
+
 
         return
 
@@ -297,37 +322,43 @@ class AgentTypeB(object):
     # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
-    teamname = "Equipe Test" # A modifier avec le nom de votre équipe
+    teamname = "Equipe BLEUE" # A modifier avec le nom de votre équipe
 
     def stepController(self):
-
+        
         color( (0,0,255) )
         circle( *self.getRobot().get_centroid() , r = 22) # je dessine un rond bleu autour de ce robot
 
-        distGauche = self.getDistanceAtSensor(2) # renvoi une valeur normalisée entre 0 et 1
-        distDroite = self.getDistanceAtSensor(5) # renvoi une valeur normalisée entre 0 et 1
-        
-        if distGauche < distDroite:
-            self.setRotationValue( +1 )
-        elif distGauche > distDroite:
-            self.setRotationValue( -1 )
-        else:
-            self.setRotationValue( 0 )
+        sensorMinus170 = self.getDistanceAtSensor(0)
+        sensorMinus80 = self.getDistanceAtSensor(1)
+        sensorMinus40 = self.getDistanceAtSensor(2)
+        sensorMinus20 = self.getDistanceAtSensor(3)
+        sensorPlus20 = self.getDistanceAtSensor(4)
+        sensorPlus40 = self.getDistanceAtSensor(5)
+        sensorPlus80 = self.getDistanceAtSensor(6)
+        sensorPlus170 = self.getDistanceAtSensor(7)
 
-        self.setTranslationValue(1) # normalisé -1,+1
-        
-		# monitoring (optionnel - changer la valeur de verbose)
-        if verbose == True:
-	        print "Robot #"+str(self.id)+" [teamname:\""+str(self.teamname)+"\"] [variable mémoire = "+str(self.etat)+"] :"
-	        for i in range(8):
-	            print "\tSenseur #"+str(i)+" (angle: "+ str(SensorBelt[i])+"°)"
-	            print "\t\tDistance  :",self.getDistanceAtSensor(i)
-	            print "\t\tType      :",self.getObjectTypeAtSensor(i) # 0: nothing, 1: wall/border, 2: robot
-	            print "\t\tRobot info:",self.getRobotInfoAtSensor(i) # dict("id","centroid(x,y)","orientation") (if not a robot: returns None and display a warning)
+		#Combinaison lineaire pour éviter les murs et les adversaires 
+        sd = sensorMinus170 + sensorMinus80 + sensorMinus40 + sensorMinus20 
+        sg = sensorPlus170 + sensorPlus20 + sensorPlus40 + sensorPlus80
+
+		#Rotation normalisée 
+        rotation =  math.tanh(sg - sd )
+		#Demi tour 180 deg 
+        mod = iteration % 1000
+        if  (  mod>=0 and mod<25 ) :
+                rotation = -1
+		##################
+
+        self.setRotationValue(rotation)
+        self.setTranslationValue(1)
+
+
+
 
         return
-
     # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -405,20 +436,26 @@ def setupAgents():
         p.oriente( 0 )
         p.numero = nbAgentsCreated
         nbAgentsCreated = nbAgentsCreated + 1
-        agents.append(AgentTypeA(p))
+        if invertInitPop == True:
+            agents.append(AgentTypeB(p))
+        else:
+            agents.append(AgentTypeA(p))
 
     for i in range(nbAgentsTypeB):
         p = game.add_players( (486 , 200+32*i) , None , tiled=False)
         p.oriente( 180 )
         p.numero = nbAgentsCreated
         nbAgentsCreated = nbAgentsCreated + 1
-        agents.append(AgentTypeB(p))
+        if invertInitPop == True:
+            agents.append(AgentTypeA(p))
+        else:
+            agents.append(AgentTypeB(p))
 
     game.mainiteration()
 
 
 
-def setupArena0():
+def setupArena0(): # classic
     for i in range(6,13):
         addObstacle(row=3,col=i)
     for i in range(3,10):
@@ -430,14 +467,50 @@ def setupArena0():
     addObstacle(row=10,col=3)
     addObstacle(row=9,col=3)
 
-def setupArena1():
+def setupArena1(): # the void
     return
 
-def setupArena2():
-    for i in range(0,8):
+def setupArena2(): # the gaps
+    for i in range(0,3):
         addObstacle(row=i,col=7)
-    for i in range(8,16):
-        addObstacle(row=i,col=8)
+    for i in range(4,13):
+        addObstacle(row=i,col=7)
+    for i in range(14,16):
+        addObstacle(row=i,col=7)
+
+def setupArena3(): # the cross
+    for i in range(3,12):
+        if i != 7:
+            addObstacle(row=i,col=6)
+            addObstacle(row=i,col=8)
+    for j in range(3,12):
+        if not(j >= 6 and j <= 7):
+            addObstacle(row=6,col=j)
+            addObstacle(row=8,col=j)
+
+def setupArena4(): # the lanes
+    for i in range(0,15):
+        for j in range(2,7,2):
+            addObstacle(row=(j/2)%2+i,col=j)
+    for i in range(0,15):
+        for j in range(9,15,2):
+            addObstacle(row=(j/2)%2+i,col=j)
+    return
+
+'''
+def setupArena5(): # the vault
+    for i in range(0,5):
+        addObstacle(row=11,col=i)
+        addObstacle(row=4,col=i)
+        addObstacle(row=11,col=11+i)
+        addObstacle(row=4,col=11+i)
+    for i in range(1,3):
+        addObstacle(row=11-i,col=11)
+        addObstacle(row=4+i,col=4)
+    addObstacle(row=5,col=11)
+    addObstacle(row=10,col=4)
+    return
+'''
 
 def updateSensors():
     global sensors 
@@ -507,16 +580,17 @@ def displayOccupancyGrid():
     return nbA,nbB,nothing
 
 def onExit():
-    ret = displayOccupancyGrid()
-    print "\n\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="
-    if ret[0] > ret[1]:
-        print "Robots type A (\"" + str(AgentTypeA.teamname) + "\") wins!"
-    elif ret[0] < ret[1]:
-        print "Robots type B (\"" + str(AgentTypeB.teamname) + "\") wins!"
-    else: 
-        print "Nobody wins!"
-    print "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n"
-    print "\n[Simulation::stop]"
+    if running == True:
+        ret = displayOccupancyGrid()
+        print "\n\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="
+        if ret[0] > ret[1]:
+            print "Robots type A (\"" + str(AgentTypeA.teamname) + "\") wins!"
+        elif ret[0] < ret[1]:
+            print "Robots type B (\"" + str(AgentTypeB.teamname) + "\") wins!"
+        else:
+            print "Nobody wins!"
+        print "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n"
+        print "\n[Simulation::stop]"
 
 
 '''''''''''''''''''''''''''''
@@ -530,12 +604,37 @@ game.auto_refresh = False # display will be updated only if game.mainiteration()
 game.frameskip = frameskip
 atexit.register(onExit)
 
+print 'Number of arguments:', len(sys.argv), 'arguments.'
+print 'Argument List:', str(sys.argv)
+
+if len(sys.argv) > 1:
+    arena = int(sys.argv[1])
+    print "Arena: ", str(arena), "(user-selected)"
+    if len(sys.argv) == 3:
+        if sys.argv[2] == "True" or sys.argv[2] == "true":
+            invertInitPop = True
+        if invertInitPop == False:
+            print "Equipe BLEUE commence à gauche."
+        else:
+            print "Equipe VERTE commence à gauche."
+else:
+    print "Arena: ", str(arena), "(default), équipe BLEUE commence à gauche."
+
 if arena == 0:
     setupArena0()
 elif arena == 1:
     setupArena1()
-else:
+elif arena == 2:
     setupArena2()
+elif arena == 3:
+    setupArena3()
+elif arena == 4:
+    setupArena4()
+else:
+    print "labyrinthe inconnu."
+    exit (-1)
+
+running = True
 
 setupAgents()
 game.mainiteration()

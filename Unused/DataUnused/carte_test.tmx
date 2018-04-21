@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="16" height="16" tilewidth="32" tileheight="32" nextobjectid="1">
- <layer name="Calque de Tile 1" width="16" height="16">
-  <data encoding="base64" compression="zlib">
-   eJxjYBgFo2AUjFQAAAQAAAE=
-  </data>
- </layer>
-</map>

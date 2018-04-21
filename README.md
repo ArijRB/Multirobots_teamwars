@@ -1,59 +1,48 @@
-# pySpriteWorld
+# General information
 
-## Disclaimer:
-Les graphiques utilisés dans ce projet ont été principalement pris ici:
-http://opengameart.org/content/tiny-16-basic
-Et du code a été pris ici:
-http://programarcadegames.com/index.php
+pySpriteWorld_multirobots: a multirobot simulation tools for Python. This is a fork from Yann Chevaleyre's pySpriteWorld. It is meant for quick and easy implementation of simplistic multi-robots experimental setup. It is also not particularly clean, but still remains very easy to understand and use.
 
-## Introduction
+The core is __exactly__ the same as Yann Chevaleyre's pySpriteWorld (as of march 2018), with files removed for clarity and with added files that wraps around pySpriteWorld to turn it into a multirobot simulator (mostly, this means writing an interface that looks like what you may expect from a (crude) robot simulator). That's all. This project is made available mostly for my students. 
 
-Affiche des sprites a l'ecran et tout et tout.
-Pour l'instant les sprites se deplacent de facon discrete, mais le code est prevu pour gerer des deplacements au pixel pres.
+Description of added content:
 
-On peut par exemple afficher ce genre de map:
+ * multirobots.py: a template for a multirobot setup. Each robot wanders randomly in the arena.
 
-![alt tag](https://github.com/yannche/pySpriteWorld/blob/master/Cartes/gardenofdelight.png)
+ * multirobots_teamwars.py: a capture-the-flag/patrolling challenge with two 4-robots teams playing against each other. Each robot explores the environment. 
 
+ * robot_randomsearch.py: a template for implementing evolutionary robotics. Currently: super fast random exploration of a search space defined as motor outputs computed from a weighted combination of sensory inputs. Evaluate and store best candidate wrt to getting as far as possible from the center arena. Reinitialize (incl. reposition and reset parameters) inbetween each trial.
 
-Pour voir la demo d'utilisation du ramasseur de laitues, taper
+Contact author for robot modules: nicolas.bredeche(at)sorbonne-universite.fr
 
-    python -m Tests.exercice_laitues
+Original pySpriteWorld project: https://github.com/yannche/pySpriteWorld/ (author: Yann Chevaleyre). Note that pySpriteWorld also implement a discrete world setup. Check github project.
 
-Pour une demo du simulateur de robot, taper
+## Usage and dependances:
 
-    python -m Tests.exercice_robot_sim
+Dependencies:
+ * python version 2.7 -> version 3.5
+ * pygame
 
+Usage: python multirobots.py (or: multirobots_teamwars.py, or: robot_randomsearch.py)
 
-Les cartes doivent être construites avec le logiciel Tiled ( http://www.mapeditor.org ) et exportées au format json
+pySpriteWorld_multirobots uses Python 2.x, but can be easily ported to Python 3.x (the core is compatible with both versions)
 
+## Additional information
 
-## Layers
+Quoted (and translated) from the original pySpriteWorld README.md.
 
-Dans ces cartes, les sprites sont organisees par Layers.
-Par convention, ces layers doivent etre l'une des suivantes:
-"bg1","bg2","obstacle","ramassable","joueur"
+Graphics come from http://opengameart.org/content/tiny-16-basic and some code was taken from http://programarcadegames.com/index.php
 
-Chaque layer a des conventions qui lui sont propres:
+Maps (i.e. arenas) must be build with Tiled software ( http://www.mapeditor.org ), and exported to json format.
 
-  * les layers bg1 et bg2 decrivent le background.
-    Le joueur n'a aucune interaction avec le background.
-    le layer bg1 est affiche en premier, puis bg2
+A map is organized by layers. By convention, each layer must be named from one of the following: "bg1","bg2","obstacle","ramassable","joueur"
 
-  * le layer obstacle comporte tous les objets non-deplacables et non-ramassables et infranchissables
-    par exemple: un mur ou de l'eau
+Each layer follows its own conventions:
 
-  * le layer ramassable comporte des objets ramassables par l'instruction "ramasse".
-    le joueur doit se trouver dessus. L'instruction "ramasse" n'en ramasse qu'un a la fois.
-    les objets ramassables sont reposables devant soi, avec l'instruction "depose"
+  * "bg1" and "bg2" layers are background, and are just there to make things look nice (i.e. robots do not interact with these layers). bg1 is displayed before bg2.
 
-  * le layer joueur contient le ou les joueurs. Un joueur est considere comme un obstacle pour un autre joueur.
+  * the "obstacle" layer contains all objects that cannot be moved (or taken). e.g.: walls, water, etc.
 
-  PS: si possible, chaque objet doit figurer dans un seul layer
+  * the "ramassable" layer contains object that can be taken with the "ramasse" command (translation: "get_object"). Can later be "depose" in front of the robot (translation: "drop_object"). This is *not* used in pySpriteWorld_multirobots.
 
+  * the "joueur" layer contains the robot(s). Robot cannot overlap.
 
-
-## Dépendances:
-  python version 2.7 -> version 3.5
-
-  pygame

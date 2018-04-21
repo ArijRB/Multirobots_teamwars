@@ -180,17 +180,17 @@ class AgentTypeA(object):
         color( (0,255,0) )
         circle( *self.getRobot().get_centroid() , r = 22) # je dessine un rond bleu autour de ce robot
 
-        distGauche = self.getDistanceAtSensor(2) # renvoi une valeur normalisée entre 0 et 1
-        distDroite = self.getDistanceAtSensor(5) # renvoi une valeur normalisée entre 0 et 1
-        
-        if distGauche < distDroite:
-            self.setRotationValue( +1 )
-        elif distGauche > distDroite:
-            self.setRotationValue( -1 )
-        else:
-            self.setRotationValue( 0 )
-
-        self.setTranslationValue(1) # normalisé -1,+1
+#        distGauche = self.getDistanceAtSensor(2) # renvoi une valeur normalisée entre 0 et 1
+#        distDroite = self.getDistanceAtSensor(5) # renvoi une valeur normalisée entre 0 et 1
+#        
+#        if distGauche < distDroite:
+#            self.setRotationValue( +1 )
+#        elif distGauche > distDroite:
+#            self.setRotationValue( -1 )
+#        else:
+#            self.setRotationValue( 0 )
+#
+#        self.setTranslationValue(1) # normalisé -1,+1
         
 		# monitoring (optionnel - changer la valeur de verbose)
         if verbose == True:
@@ -200,7 +200,11 @@ class AgentTypeA(object):
 	            print "\t\tDistance  :",self.getDistanceAtSensor(i)
 	            print "\t\tType      :",self.getObjectTypeAtSensor(i) # 0: rien, 1: mur ou bord, 2: robot
 	            print "\t\tRobot info:",self.getRobotInfoAtSensor(i) # dict("id","centroid(x,y)","orientation") (si pas de robot: renvoi "None" et affiche un avertissement dans la console
-
+        sg = ( self.getDistanceAtSensor(1) + self.getDistanceAtSensor(2)*1.5+self.getDistanceAtSensor(3)* 1.5+self.getDistanceAtSensor(0)) / 5
+        sd = ( self.getDistanceAtSensor(4)*1.5 + self.getDistanceAtSensor(5)*1.5+self.getDistanceAtSensor(6)+self.getDistanceAtSensor(7)) / 5
+                
+        self.setRotationValue(sd-sg)
+        self.setTranslationValue(1)
         return
 
     # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
